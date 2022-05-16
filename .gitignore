@@ -1,0 +1,7 @@
+elm-stuff/
+node_modules/
+index.html
+yarn-error.log
+
+public/*.*
+!public/index.html

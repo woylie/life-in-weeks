@@ -1,0 +1,20 @@
+{
+  "name": "life_in_weeks",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/woylie/life-in-weeks",
+  "author": "Mathias Polligkeit",
+  "license": "Apache-2.0",
+  "scripts": {
+    "analyse": "elm-analyse -s",
+    "build": "elm make src/Main.elm --optimize --output=./public/life-in-weeks.js",
+    "format": "elm-format src/",
+    "watch": "elm-live src/Main.elm"
+  },
+  "devDependencies": {
+    "elm": "^0.19.1-5",
+    "elm-analyse": "^0.16.5",
+    "elm-format": "^0.8.5",
+    "elm-live": "^4.0.2"
+  }
+}
