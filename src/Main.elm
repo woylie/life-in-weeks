@@ -22,8 +22,8 @@ main =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { birthdate = Date.fromCalendarDate 1991 Apr 13
-      , lifeExpectancy = 72
+    ( { birthdate = Date.fromCalendarDate 1990 Jan 1
+      , lifeExpectancy = 73
       , today = Date.fromCalendarDate 2000 Jan 1
       , unit = Weeks
       }
@@ -34,11 +34,16 @@ init _ =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        NoOp ->
-            ( model, Cmd.none )
-
         ReceiveDate date ->
             ( { model | today = date }, Cmd.none )
+
+        SetBirthdate s ->
+            case Date.fromIsoString s of
+                Ok date ->
+                    ( { model | birthdate = date }, Cmd.none )
+
+                Err _ ->
+                    ( model, Cmd.none )
 
         SetLifeExpectancy s ->
             case String.toInt s of

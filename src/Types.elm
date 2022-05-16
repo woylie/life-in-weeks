@@ -12,8 +12,8 @@ type alias Model =
 
 
 type Msg
-    = NoOp
-    | ReceiveDate Date
+    = ReceiveDate Date
+    | SetBirthdate String
     | SetLifeExpectancy String
     | SetUnit String
 

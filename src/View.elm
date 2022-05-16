@@ -69,6 +69,14 @@ sidepanel model =
                 [ ( "weeks", "weeks" ), ( "months", "months" ) ]
             ]
         , Components.field
+            "liw-field-birthdate"
+            "Birthdate"
+            [ Components.dateInput
+                "liw-field-birthdate"
+                model.birthdate
+                SetBirthdate
+            ]
+        , Components.field
             "liw-field-life-expectancy"
             "Life expectancy"
             [ Components.numberInput
@@ -101,6 +109,7 @@ grid today unit unitsPerYear years =
                             let
                                 endOfUnit =
                                     Date.add unit 1 startOfUnit
+                                        |> Date.add Days -1
 
                                 state =
                                     if Date.isBetween startOfUnit endOfUnit today then

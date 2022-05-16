@@ -1,5 +1,6 @@
 module Components exposing
     ( container
+    , dateInput
     , field
     , fieldset
     , numberInput
@@ -36,6 +37,7 @@ import Css
         , width
         , wrap
         )
+import Date exposing (Date)
 import Html.Styled as Html
     exposing
         ( Html
@@ -131,6 +133,18 @@ label inputId labelText =
             ]
         ]
         [ text labelText ]
+
+
+dateInput : String -> Date -> (String -> msg) -> Html msg
+dateInput inputId currentValue event =
+    input
+        [ id inputId
+        , type_ "date"
+        , value <| Date.toIsoString currentValue
+        , onInput event
+        , css inputCss
+        ]
+        []
 
 
 numberInput :
