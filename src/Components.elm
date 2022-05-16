@@ -219,7 +219,7 @@ footer =
         [ link "https://www.mathiaspolligkeit.com"
             "mathiaspolligkeit.com"
         , text " | "
-        , link "https://github.com/woylie/running-pace-calculator"
+        , link "https://github.com/woylie/life-in-weeks"
             "view source on Github"
         ]
 
