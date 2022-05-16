@@ -5,6 +5,7 @@ import Css
     exposing
         ( backgroundColor
         , block
+        , border3
         , display
         , displayFlex
         , flexDirection
@@ -12,6 +13,7 @@ import Css
         , hex
         , px
         , rem
+        , solid
         , width
         )
 import Date exposing (Date, Interval(..), Unit(..))
@@ -23,7 +25,7 @@ import Html.Styled
         )
 import Html.Styled.Attributes exposing (css, style)
 import Time exposing (Month(..))
-import Types exposing (Model, Msg(..))
+import Types exposing (Model, Msg(..), State(..))
 
 
 gapSize : String
@@ -50,29 +52,9 @@ view model =
         [ div
             [ css [ displayFlex ] ]
             [ sidepanel model
-            , grid model.unit unitsPerYear years
+            , grid model.today model.unit unitsPerYear years
             ]
         ]
-
-
-grid : Unit -> Int -> List Date -> Html msg
-grid unit unitsPerYear years =
-    div
-        [ css [ displayFlex, flexDirection Css.column ], style "gap" gapSize ]
-    <|
-        List.indexedMap
-            (\_ startOfYear ->
-                let
-                    oneYearLater =
-                        Date.add unit unitsPerYear startOfYear
-
-                    units =
-                        dateRange unit 1 startOfYear oneYearLater
-                in
-                row <|
-                    List.indexedMap (\_ _ -> column) units
-            )
-            years
 
 
 sidepanel : Model -> Html Msg
@@ -99,6 +81,44 @@ sidepanel model =
         ]
 
 
+grid : Date -> Unit -> Int -> List Date -> Html msg
+grid today unit unitsPerYear years =
+    div
+        [ css [ displayFlex, flexDirection Css.column ], style "gap" gapSize ]
+    <|
+        List.indexedMap
+            (\_ startOfYear ->
+                let
+                    oneYearLater =
+                        Date.add unit unitsPerYear startOfYear
+
+                    units =
+                        dateRange unit 1 startOfYear oneYearLater
+                in
+                row <|
+                    List.indexedMap
+                        (\_ startOfUnit ->
+                            let
+                                endOfUnit =
+                                    Date.add unit 1 startOfUnit
+
+                                state =
+                                    if Date.isBetween startOfUnit endOfUnit today then
+                                        Present
+
+                                    else if Date.compare startOfUnit today == LT then
+                                        Past
+
+                                    else
+                                        Future
+                            in
+                            column state
+                        )
+                        units
+            )
+            years
+
+
 row : List (Html msg) -> Html msg
 row content =
     div
@@ -106,13 +126,26 @@ row content =
         content
 
 
-column : Html msg
-column =
+column : State -> Html msg
+column state =
+    let
+        ( boxColor, borderColor ) =
+            case state of
+                Past ->
+                    ( "BBBBBB", "BBBBBB" )
+
+                Present ->
+                    ( "24b373", "24b373" )
+
+                Future ->
+                    ( "FFFFFF", "BBBBBB" )
+    in
     div
         [ css
-            [ width (px 8)
-            , height (px 8)
-            , backgroundColor (hex "71819c")
+            [ width (px 6)
+            , height (px 6)
+            , backgroundColor (hex boxColor)
+            , border3 (px 1) solid (hex borderColor)
             , display block
             ]
         ]
