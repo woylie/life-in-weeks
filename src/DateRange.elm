@@ -1,4 +1,9 @@
-module DateRange exposing (dateRange)
+module DateRange exposing
+    ( dateRange
+    , numberOfUnitsPerYear
+    , stringToUnit
+    , unitToString
+    )
 
 import Date exposing (Date, Interval(..), Unit(..))
 
@@ -17,3 +22,54 @@ dateRange unit count startDate endDate =
                 accumulatedDates
     in
     buildRange startDate [] |> List.reverse
+
+
+numberOfUnitsPerYear : Unit -> Int
+numberOfUnitsPerYear unit =
+    case unit of
+        Years ->
+            1
+
+        Months ->
+            12
+
+        Weeks ->
+            52
+
+        Days ->
+            365
+
+
+unitToString : Unit -> String
+unitToString unit =
+    case unit of
+        Years ->
+            "years"
+
+        Months ->
+            "months"
+
+        Weeks ->
+            "weeks"
+
+        Days ->
+            "days"
+
+
+stringToUnit : String -> Maybe Unit
+stringToUnit s =
+    case s of
+        "years" ->
+            Just Years
+
+        "months" ->
+            Just Months
+
+        "weeks" ->
+            Just Weeks
+
+        "days" ->
+            Just Days
+
+        _ ->
+            Nothing

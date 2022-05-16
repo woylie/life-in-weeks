@@ -1,15 +1,12 @@
-module Main exposing (Msg(..), main, update, view)
+module Main exposing (main)
 
 import Browser
-import Components
-import Date exposing (Date, Interval(..), Unit(..))
-import DateRange exposing (dateRange)
-import Html.Styled
-    exposing
-        ( Html
-        , toUnstyled
-        )
+import Date exposing (Interval(..), Unit(..))
+import DateRange
+import Html.Styled exposing (toUnstyled)
 import Time exposing (Month(..))
+import Types exposing (Model, Msg(..))
+import View exposing (view)
 
 
 main : Program () Model Msg
@@ -19,17 +16,6 @@ main =
         , update = update
         , view = view >> toUnstyled
         }
-
-
-type alias Model =
-    { birthdate : Date
-    , lifeExpectancy : Int
-    , unit : Unit
-    }
-
-
-type Msg
-    = NoOp
 
 
 init : Model
@@ -46,36 +32,18 @@ update msg model =
         NoOp ->
             model
 
+        SetLifeExpectancy s ->
+            case String.toInt s of
+                Just i ->
+                    { model | lifeExpectancy = i }
 
-view : Model -> Html Msg
-view model =
-    let
-        unitsPerYear =
-            numberOfUnitsPerYear model.unit
+                Nothing ->
+                    model
 
-        deathdate =
-            Date.add
-                model.unit
-                (unitsPerYear * model.lifeExpectancy)
-                model.birthdate
+        SetUnit s ->
+            case DateRange.stringToUnit s of
+                Just unit ->
+                    { model | unit = unit }
 
-        years =
-            dateRange model.unit unitsPerYear model.birthdate deathdate
-    in
-    Components.grid model.unit unitsPerYear years
-
-
-numberOfUnitsPerYear : Unit -> Int
-numberOfUnitsPerYear unit =
-    case unit of
-        Years ->
-            1
-
-        Months ->
-            12
-
-        Weeks ->
-            52
-
-        Days ->
-            365
+                Nothing ->
+                    model
