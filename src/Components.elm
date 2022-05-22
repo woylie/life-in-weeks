@@ -3,6 +3,7 @@ module Components exposing
     , dateInput
     , field
     , fieldset
+    , link
     , numberInput
     , select
     )

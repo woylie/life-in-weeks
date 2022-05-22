@@ -9,6 +9,7 @@ import Css
         , display
         , displayFlex
         , flexDirection
+        , fontSize
         , height
         , hex
         , px
@@ -21,9 +22,12 @@ import DateRange exposing (dateRange, numberOfUnitsPerYear)
 import Html.Styled
     exposing
         ( Html
+        , a
         , div
+        , p
+        , text
         )
-import Html.Styled.Attributes exposing (css, style)
+import Html.Styled.Attributes exposing (css, href, style, target)
 import Time exposing (Month(..))
 import Types exposing (Model, Msg(..), State(..))
 
@@ -88,6 +92,14 @@ sidepanel model =
                     SetLifeExpectancy
                     (Just 0)
                     (Just 150)
+                ]
+            , p
+                [ css [ fontSize (rem 0.75) ] ]
+                [ text "You can find the life expectancy for your country and gender on "
+                , Components.link
+                    "https://www.worldometers.info/demographics/life-expectancy/"
+                    "worldometer.com"
+                , text "."
                 ]
             ]
         ]
