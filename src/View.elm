@@ -50,7 +50,7 @@ view model =
     in
     Components.container
         [ div
-            [ css [ displayFlex ] ]
+            [ css [ displayFlex ], style "gap" "2rem" ]
             [ sidepanel model
             , grid model.today model.unit unitsPerYear years
             ]
@@ -61,30 +61,34 @@ sidepanel : Model -> Html Msg
 sidepanel model =
     div
         [ css [ width (rem 20) ] ]
-        [ Components.field "liw-field-unit"
-            "Time unit"
-            [ Components.select "liw-field-unit"
-                (DateRange.unitToString model.unit)
-                SetUnit
-                [ ( "weeks", "weeks" ), ( "months", "months" ) ]
+        [ Components.fieldset "Display"
+            [ Components.field "liw-field-unit"
+                "Time unit"
+                [ Components.select "liw-field-unit"
+                    (DateRange.unitToString model.unit)
+                    SetUnit
+                    [ ( "weeks", "weeks" ), ( "months", "months" ) ]
+                ]
             ]
-        , Components.field
-            "liw-field-birthdate"
-            "Birthdate"
-            [ Components.dateInput
+        , Components.fieldset "Base variables"
+            [ Components.field
                 "liw-field-birthdate"
-                model.birthdate
-                SetBirthdate
-            ]
-        , Components.field
-            "liw-field-life-expectancy"
-            "Life expectancy"
-            [ Components.numberInput
+                "Birthdate"
+                [ Components.dateInput
+                    "liw-field-birthdate"
+                    model.birthdate
+                    SetBirthdate
+                ]
+            , Components.field
                 "liw-field-life-expectancy"
-                model.lifeExpectancy
-                SetLifeExpectancy
-                (Just 0)
-                (Just 150)
+                "Life expectancy"
+                [ Components.numberInput
+                    "liw-field-life-expectancy"
+                    model.lifeExpectancy
+                    SetLifeExpectancy
+                    (Just 0)
+                    (Just 150)
+                ]
             ]
         ]
 
