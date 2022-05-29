@@ -80,7 +80,10 @@ update msg model =
             )
 
         SetUnit s ->
-            ( { model | unit = s |> DateRange.stringToUnit |> Maybe.withDefault model.unit }
+            ( { model
+                | selectedDate = Nothing
+                , unit = s |> DateRange.stringToUnit |> Maybe.withDefault model.unit
+              }
             , Cmd.none
             )
 
