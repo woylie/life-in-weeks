@@ -131,6 +131,7 @@ categoryFromString s =
 type Msg
     = AddEvent
     | AddPeriod Category
+    | Export
     | ReceiveDate Date
     | RemoveEvent Int
     | RemovePeriod Int

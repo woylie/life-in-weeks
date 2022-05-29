@@ -107,6 +107,7 @@ view model =
             [ grid model dates unitsPerYear
             , details model dates
             , settings model
+            , actionButtons
             ]
         ]
 
@@ -192,6 +193,13 @@ settings model =
             [ periodFieldsets Other (filterPeriods Other model.periods) ]
         , Components.fieldset "Singular events"
             [ eventFieldsets model.events ]
+        ]
+
+
+actionButtons : Html Msg
+actionButtons =
+    Components.fieldset "Import/Export"
+        [ Components.button "export JSON" Export
         ]
 
 

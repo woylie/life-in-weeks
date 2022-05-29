@@ -5,7 +5,10 @@ import Color.Manipulate exposing (lighten)
 import Colors
 import Date exposing (Interval(..), Unit(..))
 import DateRange
+import Encoder
+import File.Download
 import Html.Styled exposing (toUnstyled)
+import Json.Encode
 import Task
 import Time exposing (Month(..))
 import Types
@@ -67,6 +70,14 @@ update msg model =
 
         AddPeriod category ->
             ( { model | periods = addPeriod category model.periods }, Cmd.none )
+
+        Export ->
+            ( model
+            , File.Download.string
+                "life-in-weeks.json"
+                "application/json"
+                (Json.Encode.encode 2 (Encoder.encode model))
+            )
 
         ReceiveDate date ->
             ( { model | today = date }, Cmd.none )
