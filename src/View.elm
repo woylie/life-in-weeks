@@ -472,7 +472,11 @@ details model =
         Nothing ->
             div
                 []
-                [ text <| "Select " ++ unitToString model.unit ++ " to show details" ]
+                [ text <|
+                    "Select "
+                        ++ unitToString model.unit
+                        ++ " to show details"
+                ]
 
 
 detailsForDate : Model -> Date -> Html Msg

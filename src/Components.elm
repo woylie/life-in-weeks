@@ -232,9 +232,7 @@ select inputId currentValue msg options =
                    , property "appearance" "none"
                    ]
         ]
-    <|
-        Html.option [] []
-            :: List.map option options
+        (List.map option options)
 
 
 button : String -> msg -> Html msg
