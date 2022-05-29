@@ -13,6 +13,7 @@ import Css
         , borderStyle
         , borderWidth
         , center
+        , cursor
         , display
         , displayFlex
         , flex3
@@ -28,6 +29,7 @@ import Css
         , margin
         , padding
         , pct
+        , pointer
         , property
         , px
         , rem
@@ -46,6 +48,7 @@ import Html.Styled
         , text
         )
 import Html.Styled.Attributes exposing (css)
+import Html.Styled.Events exposing (onClick)
 import Time exposing (Month(..))
 import Types
     exposing
@@ -234,7 +237,7 @@ periodFields period =
     ]
 
 
-grid : Model -> Html msg
+grid : Model -> Html Msg
 grid model =
     let
         unitsPerYear =
@@ -306,7 +309,7 @@ horizontalAxis unit =
             "Years →"
 
 
-row : Model -> Dates -> List Period -> Int -> Date -> Html msg
+row : Model -> Dates -> List Period -> Int -> Date -> Html Msg
 row model dates periods unitsPerYear startOfYear =
     let
         oneYearLater =
@@ -323,7 +326,7 @@ row model dates periods unitsPerYear startOfYear =
             units
 
 
-column : Model -> Dates -> List Period -> Date -> Html msg
+column : Model -> Dates -> List Period -> Date -> Html Msg
 column model dates periods startOfUnit =
     let
         endOfUnit =
@@ -332,7 +335,7 @@ column model dates periods startOfUnit =
                 |> Date.add Days -1
 
         state =
-            getState model.today startOfUnit endOfUnit
+            getState model.today model.selectedDate startOfUnit endOfUnit
 
         phase =
             getPhase dates periods startOfUnit endOfUnit
@@ -350,7 +353,9 @@ column model dates periods startOfUnit =
             , display block
             , property "background-color" (Color.toCssString boxColor)
             , property "border-color" (Color.toCssString borderColor)
+            , cursor pointer
             ]
+        , onClick (SelectDate (Just startOfUnit))
         ]
         []
 
@@ -370,9 +375,12 @@ getDates model unitsPerYear =
     }
 
 
-getState : Date -> Date -> Date -> State
-getState today startOfUnit endOfUnit =
-    if Date.isBetween startOfUnit endOfUnit today then
+getState : Date -> Maybe Date -> Date -> Date -> State
+getState today selectedDate startOfUnit endOfUnit =
+    if Just startOfUnit == selectedDate then
+        Selected
+
+    else if Date.isBetween startOfUnit endOfUnit today then
         Present
 
     else if Date.compare startOfUnit today == LT then
@@ -395,24 +403,8 @@ getPhase dates periods startOfUnit endOfUnit =
 
         pastLifeExpectancy =
             Date.compare startOfUnit dates.death /= LT
-    in
-    case matchingPeriod of
-        Just period ->
-            case period.category of
-                Work ->
-                    if pastLifeExpectancy then
-                        PastLifeExpectancy
 
-                    else if retirement then
-                        Retirement
-
-                    else
-                        Phase period
-
-                _ ->
-                    Phase period
-
-        Nothing ->
+        phaseWithDefault default =
             if pastLifeExpectancy then
                 PastLifeExpectancy
 
@@ -420,7 +412,19 @@ getPhase dates periods startOfUnit endOfUnit =
                 Retirement
 
             else
-                Default
+                default
+    in
+    case matchingPeriod of
+        Just period ->
+            case period.category of
+                Work ->
+                    phaseWithDefault (Phase period)
+
+                _ ->
+                    Phase period
+
+        Nothing ->
+            phaseWithDefault Default
 
 
 filterMatchingPeriods : Date -> Date -> List Period -> List Period

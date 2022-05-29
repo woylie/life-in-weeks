@@ -36,6 +36,7 @@ init _ =
               }
             ]
       , retirementAge = 65
+      , selectedDate = Nothing
       , today = Date.fromCalendarDate 2000 Jan 1
       , unit = Weeks
       }
@@ -59,6 +60,9 @@ update msg model =
               }
             , Cmd.none
             )
+
+        SelectDate date ->
+            ( { model | selectedDate = date }, Cmd.none )
 
         SetBirthdate s ->
             ( { model | birthdate = s |> Date.fromIsoString |> Result.withDefault model.birthdate }

@@ -24,6 +24,11 @@ todayColor =
     rgb255 73 198 229
 
 
+selectedColor : Color
+selectedColor =
+    rgb255 60 73 63
+
+
 categoryColor : Category -> Color
 categoryColor category =
     case category of
@@ -83,3 +88,6 @@ getColor state phase =
 
         Future ->
             ( Color.white, phaseColor )
+
+        Selected ->
+            ( selectedColor, selectedColor )

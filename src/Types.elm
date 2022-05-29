@@ -19,6 +19,7 @@ type alias Model =
     , lifeExpectancy : Int
     , periods : List Period
     , retirementAge : Int
+    , selectedDate : Maybe Date
     , today : Date
     , unit : Unit
     }
@@ -60,6 +61,7 @@ type Msg
     = AddPeriod Category
     | ReceiveDate Date
     | RemovePeriod Int
+    | SelectDate (Maybe Date)
     | SetBirthdate String
     | SetLifeExpectancy String
     | SetRetirementAge String
@@ -71,6 +73,7 @@ type State
     = Past
     | Present
     | Future
+    | Selected
 
 
 type Phase
