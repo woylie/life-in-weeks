@@ -1,5 +1,6 @@
 module DateRange exposing
     ( dateRange
+    , endOfUnit
     , intToOrdinal
     , numberOfUnitsPerYear
     , stringToUnit
@@ -178,3 +179,10 @@ intToOrdinal i =
 
     else
         s ++ "th"
+
+
+endOfUnit : Unit -> Date -> Date
+endOfUnit unit startOfUnit =
+    startOfUnit
+        |> Date.add unit 1
+        |> Date.add Days -1

@@ -59,6 +59,7 @@ import Html.Styled
         )
 import Html.Styled.Attributes exposing (css)
 import Html.Styled.Events exposing (onClick)
+import List.Extra as List
 import Time exposing (Month(..))
 import Types
     exposing
@@ -70,6 +71,7 @@ import Types
         , PeriodField(..)
         , Phase(..)
         , State(..)
+        , categoryToString
         )
 
 
@@ -342,9 +344,7 @@ column : Model -> Dates -> List Period -> Date -> Html Msg
 column model dates periods startOfUnit =
     let
         endOfUnit =
-            startOfUnit
-                |> Date.add model.unit 1
-                |> Date.add Days -1
+            DateRange.endOfUnit model.unit startOfUnit
 
         state =
             getState model.today model.selectedDate startOfUnit endOfUnit
@@ -486,9 +486,7 @@ detailsForDate : Model -> Dates -> Date -> Html Msg
 detailsForDate model dates date =
     let
         endOfUnit =
-            date
-                |> Date.add model.unit 1
-                |> Date.add Days -1
+            DateRange.endOfUnit model.unit date
 
         dateFormat =
             "MMMM ddd, y"
@@ -508,34 +506,55 @@ detailsForDate model dates date =
                     endOfUnit
 
         pastRetirement =
-            if Date.compare endOfUnit dates.retirement == GT then
-                DateRange.timeDifferenceAsOrdinal dates.retirement date
+            justIf
+                (Date.compare endOfUnit dates.retirement == GT)
+                (DateRange.timeDifferenceAsOrdinal dates.retirement date
                     ++ " of retirement"
-                    |> Just
-
-            else
-                Nothing
+                )
 
         pastLifeExpectancy =
-            if Date.compare date dates.death == GT then
-                DateRange.timeDifferenceAsString dates.death endOfUnit
+            justIf (Date.compare date dates.death == GT)
+                (DateRange.timeDifferenceAsString dates.death endOfUnit
                     ++ " past life expectancy"
-                    |> Just
+                )
 
-            else
-                Nothing
-
-        items =
+        defaultItems =
             List.filterMap identity
                 [ Just <| selectedPeriod
                 , Just <| age
                 , pastRetirement
                 , pastLifeExpectancy
                 ]
+
+        joinPeriodNames : List Period -> String
+        joinPeriodNames periods =
+            periods
+                |> List.map .name
+                |> String.join ", "
+
+        periodItems =
+            model.periods
+                |> filterMatchingPeriods date endOfUnit
+                |> List.gatherEqualsBy .category
+                |> List.map
+                    (\( head, tail ) ->
+                        categoryToString head.category
+                            ++ ": "
+                            ++ joinPeriodNames (head :: tail)
+                    )
     in
     ul
         [ css [ margin (rem 0), padding (rem 0), listStyleType none ] ]
         (List.map
             (\item -> li [] [ text item ])
-            items
+            (defaultItems ++ periodItems)
         )
+
+
+justIf : Bool -> a -> Maybe a
+justIf condition value =
+    if condition then
+        Just value
+
+    else
+        Nothing

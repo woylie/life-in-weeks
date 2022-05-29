@@ -8,6 +8,7 @@ module Types exposing
     , PeriodField(..)
     , Phase(..)
     , State(..)
+    , categoryToString
     )
 
 import Color exposing (Color)
@@ -55,6 +56,31 @@ type Category
     | Relationship
     | Residence
     | Work
+
+
+categoryToString : Category -> String
+categoryToString category =
+    case category of
+        Education ->
+            "Education"
+
+        Hobby ->
+            "Hobby"
+
+        Membership ->
+            "Membership"
+
+        Other ->
+            "Other"
+
+        Relationship ->
+            "Relationship"
+
+        Residence ->
+            "Residence"
+
+        Work ->
+            "Work"
 
 
 type Msg
