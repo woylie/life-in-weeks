@@ -143,6 +143,10 @@ update msg model =
             }
                 |> save
 
+        SortPeriods ->
+            { model | periods = sortPeriods model.periods }
+                |> save
+
         UpdateEvent id field value ->
             { model | events = updateEvents id field value model.events }
                 |> save
@@ -305,6 +309,16 @@ updatePeriod field value period =
                         |> Date.fromIsoString
                         |> Result.toMaybe
             }
+
+
+sortPeriods : List Period -> List Period
+sortPeriods periods =
+    let
+        _ =
+            Debug.log "here" "yes"
+    in
+    periods
+        |> List.sortWith (\p1 p2 -> Date.compare p1.startDate p2.startDate)
 
 
 toIntWithDefault : Int -> String -> Int

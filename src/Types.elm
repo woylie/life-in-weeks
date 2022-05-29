@@ -144,6 +144,7 @@ type Msg
     | SetLifeExpectancy String
     | SetRetirementAge String
     | SetUnit String
+    | SortPeriods
     | UpdateEvent Int EventField String
     | UpdatePeriod Int PeriodField String
 
@@ -162,9 +163,10 @@ type Phase
     | Phase Period
 
 
-type alias FieldOpts =
+type alias FieldOpts msg =
     { min : Maybe Int
     , max : Maybe Int
+    , onBlur : Maybe msg
     , required : Bool
     }
 

@@ -73,7 +73,7 @@ import Html.Styled.Attributes as Attr
         , type_
         , value
         )
-import Html.Styled.Events exposing (onClick, onInput)
+import Html.Styled.Events exposing (onBlur, onClick, onInput)
 import Types exposing (FieldOpts)
 
 
@@ -148,22 +148,32 @@ label inputId labelText =
         [ text labelText ]
 
 
-dateInput : String -> Maybe Date -> (String -> msg) -> FieldOpts -> Html msg
+dateInput : String -> Maybe Date -> (String -> msg) -> FieldOpts msg -> Html msg
 dateInput inputId currentValue event opts =
     let
         stringValue =
             currentValue
                 |> Maybe.map Date.toIsoString
                 |> Maybe.withDefault ""
+
+        onBlurAttr =
+            case opts.onBlur of
+                Just msg ->
+                    [ onBlur msg ]
+
+                Nothing ->
+                    []
     in
     input
-        [ id inputId
-        , type_ "date"
-        , value stringValue
-        , onInput event
-        , css inputCss
-        , required opts.required
-        ]
+        ([ id inputId
+         , type_ "date"
+         , value stringValue
+         , onInput event
+         , css inputCss
+         , required opts.required
+         ]
+            ++ onBlurAttr
+        )
         []
 
 
@@ -171,7 +181,7 @@ numberInput :
     String
     -> Int
     -> (String -> msg)
-    -> FieldOpts
+    -> FieldOpts msg
     -> Html msg
 numberInput inputId currentValue event opts =
     let
@@ -191,7 +201,7 @@ numberInput inputId currentValue event opts =
         []
 
 
-textInput : String -> String -> (String -> msg) -> FieldOpts -> Html msg
+textInput : String -> String -> (String -> msg) -> FieldOpts msg -> Html msg
 textInput inputId currentValue event opts =
     input
         [ id inputId
@@ -204,9 +214,10 @@ textInput inputId currentValue event opts =
         []
 
 
-defaultFieldOpts : FieldOpts
+defaultFieldOpts : FieldOpts msg
 defaultFieldOpts =
-    { min = Nothing
+    { onBlur = Nothing
+    , min = Nothing
     , max = Nothing
     , required = False
     }

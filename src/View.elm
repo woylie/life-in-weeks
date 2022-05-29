@@ -260,7 +260,10 @@ periodFields period =
             (inputIdPrefix ++ "startDate")
             (Just period.startDate)
             (UpdatePeriod period.id PeriodStartDate)
-            { defaultFieldOpts | required = True }
+            { defaultFieldOpts
+                | required = True
+                , onBlur = Just SortPeriods
+            }
         ]
     , Components.field
         (inputIdPrefix ++ "endDate")
