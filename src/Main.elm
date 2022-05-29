@@ -135,7 +135,7 @@ defaultPeriodName category =
         Education ->
             "University of Oxford"
 
-        Hobby ->
+        Activity ->
             "Painting"
 
         Membership ->

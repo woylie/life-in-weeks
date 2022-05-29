@@ -50,7 +50,7 @@ type PeriodField
 
 type Category
     = Education
-    | Hobby
+    | Activity
     | Membership
     | Other
     | Relationship
@@ -64,8 +64,8 @@ categoryToString category =
         Education ->
             "Education"
 
-        Hobby ->
-            "Hobby"
+        Activity ->
+            "Activity"
 
         Membership ->
             "Membership"

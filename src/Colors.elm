@@ -41,7 +41,7 @@ categoryColor category =
             -- cyber yellow
             rgb255 255 207 0
 
-        Hobby ->
+        Activity ->
             -- spanish-viridian
             rgb255 12 124 89
 

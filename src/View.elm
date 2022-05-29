@@ -173,8 +173,8 @@ settings model =
             [ periodFieldsets Education (filterPeriods Education model.periods) ]
         , Components.fieldset "Work"
             [ periodFieldsets Work (filterPeriods Work model.periods) ]
-        , Components.fieldset "Hobbies"
-            [ periodFieldsets Hobby (filterPeriods Hobby model.periods) ]
+        , Components.fieldset "Activities"
+            [ periodFieldsets Activity (filterPeriods Activity model.periods) ]
         , Components.fieldset "Memberships"
             [ periodFieldsets Membership (filterPeriods Membership model.periods) ]
         , Components.fieldset "Relationships"
