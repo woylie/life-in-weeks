@@ -3,15 +3,24 @@ module View exposing (view)
 import Components
 import Css
     exposing
-        ( backgroundColor
+        ( auto
+        , backgroundColor
         , block
         , border3
         , display
         , displayFlex
+        , flex
+        , flex3
+        , flexBasis
         , flexDirection
+        , flexGrow
+        , flexShrink
         , fontSize
         , height
         , hex
+        , int
+        , margin
+        , pct
         , px
         , rem
         , solid
@@ -54,17 +63,17 @@ view model =
     in
     Components.container
         [ div
-            [ css [ displayFlex ], style "gap" "2rem" ]
-            [ sidepanel model
-            , grid model.today model.unit unitsPerYear years
+            []
+            [ grid model.today model.unit unitsPerYear years
+            , settings model
             ]
         ]
 
 
-sidepanel : Model -> Html Msg
-sidepanel model =
+settings : Model -> Html Msg
+settings model =
     div
-        [ css [ width (rem 20) ] ]
+        []
         [ Components.fieldset "Display"
             [ Components.field "liw-field-unit"
                 "Time unit"
@@ -94,7 +103,14 @@ sidepanel model =
                     (Just 150)
                 ]
             , p
-                [ css [ fontSize (rem 0.75) ] ]
+                [ css
+                    [ fontSize (rem 0.75)
+                    , margin (px 0)
+                    , flexGrow (int 1)
+                    , flexShrink (int 1)
+                    , flexBasis (pct 100)
+                    ]
+                ]
                 [ text "You can find the life expectancy for your country and gender on "
                 , Components.link
                     "https://www.worldometers.info/demographics/life-expectancy/"

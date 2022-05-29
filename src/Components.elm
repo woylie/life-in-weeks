@@ -17,9 +17,11 @@ import Css
         , border3
         , borderRadius
         , center
+        , ch
         , color
         , display
         , displayFlex
+        , flexStart
         , flexWrap
         , fontFamilies
         , fontSize
@@ -29,6 +31,7 @@ import Css
         , int
         , lineHeight
         , margin2
+        , maxWidth
         , padding
         , px
         , rem
@@ -99,7 +102,7 @@ fieldset legendText content =
     Html.fieldset
         [ css
             [ displayFlex
-            , alignItems center
+            , alignItems flexStart
             , flexWrap wrap
             , backgroundColor (hex "fbfbfb")
             , border3 (px 1) solid (hex "eeeeee")
@@ -204,8 +207,7 @@ container content =
             , padding (rem 0)
             , lineHeight (rem 1.5)
             , color (hex "202c31")
-
-            --, maxWidth (ch 65)
+            , maxWidth (ch 65)
             ]
         ]
     <|
