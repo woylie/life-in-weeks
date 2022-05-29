@@ -1,7 +1,7 @@
 module Main exposing (main)
 
 import Browser
-import Color.Manipulate exposing (darken, lighten)
+import Color.Manipulate exposing (lighten)
 import Colors
 import Date exposing (Interval(..), Unit(..))
 import DateRange

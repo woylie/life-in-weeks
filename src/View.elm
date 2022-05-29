@@ -1,18 +1,18 @@
 module View exposing (view)
 
-import Color exposing (Color)
+import Color
 import Colors
 import Components
 import Css
     exposing
         ( alignItems
-        , backgroundColor
+        , alignSelf
         , block
         , border
-        , border3
         , borderRadius
         , borderStyle
         , borderWidth
+        , center
         , display
         , displayFlex
         , flex3
@@ -24,7 +24,6 @@ import Css
         , flexWrap
         , fontSize
         , height
-        , hex
         , int
         , margin
         , padding
@@ -33,6 +32,7 @@ import Css
         , px
         , rem
         , solid
+        , textAlign
         , wrap
         )
 import Date exposing (Date, Interval(..), Unit(..))
@@ -164,15 +164,15 @@ filterPeriods category periods =
 periodFieldsets : Category -> List Period -> Html Msg
 periodFieldsets category periods =
     div [] <|
-        List.map (periodFieldset category) periods
+        List.map periodFieldset periods
             ++ [ div
                     [ css [ flexBasis (pct 100), flexShrink (int 0) ] ]
                     [ Components.button "add" (AddPeriod category) ]
                ]
 
 
-periodFieldset : Category -> Period -> Html Msg
-periodFieldset category period =
+periodFieldset : Period -> Html Msg
+periodFieldset period =
     fieldset
         [ css
             [ border (px 0)
@@ -246,11 +246,54 @@ grid model =
                 model.periods
     in
     div
-        [ css [ displayFlex, flexDirection Css.column, property "gap" gapSize ] ]
-    <|
-        List.indexedMap
-            (\_ startOfYear -> row model dates periods unitsPerYear startOfYear)
-            years
+        [ css
+            [ property "display" "grid"
+            , property "grid-template-columns" "auto 1fr"
+            , property "grid-template-rows" "auto 1fr"
+            ]
+        ]
+        [ div [] []
+        , div [ css [ textAlign center ] ] [ text (horizontalAxis model.unit) ]
+        , div
+            [ css
+                [ property "text-orientation" "mixed"
+                , property
+                    "writing-mode"
+                    "vertical-rl"
+                , alignSelf center
+                ]
+            ]
+            [ text "Years →" ]
+        , div
+            [ css
+                [ displayFlex
+                , flexDirection Css.column
+                , property "gap" gapSize
+                ]
+            ]
+            (List.indexedMap
+                (\_ startOfYear ->
+                    row model dates periods unitsPerYear startOfYear
+                )
+                years
+            )
+        ]
+
+
+horizontalAxis : Unit -> String
+horizontalAxis unit =
+    case unit of
+        Days ->
+            "Days →"
+
+        Weeks ->
+            "Weeks →"
+
+        Months ->
+            "Months →"
+
+        Years ->
+            "Years →"
 
 
 row : Model -> Dates -> List Period -> Int -> Date -> Html msg

@@ -1,15 +1,12 @@
 {
     "type": "application",
-    "source-directories": [
-        "src"
-    ],
+    "source-directories": ["src"],
     "elm-version": "0.19.1",
     "dependencies": {
         "direct": {
             "avh4/elm-color": "1.0.0",
             "elm/browser": "1.0.2",
             "elm/core": "1.0.5",
-            "elm/random": "1.0.0",
             "elm/time": "1.0.0",
             "justinmimbs/date": "4.0.1",
             "noahzgordon/elm-color-extra": "1.0.2",
