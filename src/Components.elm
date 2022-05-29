@@ -1,17 +1,20 @@
 module Components exposing
-    ( container
+    ( button
+    , container
     , dateInput
     , field
     , fieldset
     , link
     , numberInput
     , select
+    , textInput
     )
 
 import Css
     exposing
         ( Style
         , alignItems
+        , alignSelf
         , backgroundColor
         , block
         , border3
@@ -19,8 +22,10 @@ import Css
         , center
         , ch
         , color
+        , cursor
         , display
         , displayFlex
+        , flexEnd
         , flexStart
         , flexWrap
         , fontFamilies
@@ -30,9 +35,11 @@ import Css
         , hover
         , int
         , lineHeight
+        , margin
         , margin2
         , maxWidth
         , padding
+        , pointer
         , px
         , rem
         , right
@@ -65,7 +72,7 @@ import Html.Styled.Attributes as Attr
         , type_
         , value
         )
-import Html.Styled.Events exposing (onInput)
+import Html.Styled.Events exposing (onClick, onInput)
 
 
 defaultFontFamily : List String
@@ -139,12 +146,18 @@ label inputId labelText =
         [ text labelText ]
 
 
-dateInput : String -> Date -> (String -> msg) -> Html msg
+dateInput : String -> Maybe Date -> (String -> msg) -> Html msg
 dateInput inputId currentValue event =
+    let
+        stringValue =
+            currentValue
+                |> Maybe.map Date.toIsoString
+                |> Maybe.withDefault ""
+    in
     input
         [ id inputId
         , type_ "date"
-        , value <| Date.toIsoString currentValue
+        , value stringValue
         , onInput event
         , css inputCss
         ]
@@ -175,6 +188,18 @@ numberInput inputId currentValue event minValue maxValue =
         []
 
 
+textInput : String -> String -> (String -> msg) -> Html msg
+textInput inputId currentValue event =
+    input
+        [ id inputId
+        , type_ "text"
+        , value currentValue
+        , onInput event
+        , css inputCss
+        ]
+        []
+
+
 select : String -> String -> (String -> msg) -> List ( String, String ) -> Html msg
 select inputId currentValue msg options =
     let
@@ -197,6 +222,25 @@ select inputId currentValue msg options =
     <|
         Html.option [] []
             :: List.map option options
+
+
+button : String -> msg -> Html msg
+button buttonText msg =
+    Html.button
+        [ css
+            [ fontSize (rem 0.75)
+            , padding (rem 0.5)
+            , border3 (px 1) solid (hex "bbbbbb")
+            , borderRadius (px 4)
+            , fontFamilies defaultFontFamily
+            , margin2 (rem 0.375) (rem 0)
+            , backgroundColor (hex "eeeeee")
+            , cursor pointer
+            , alignSelf flexEnd
+            ]
+        , onClick msg
+        ]
+        [ text buttonText ]
 
 
 container : List (Html msg) -> Html msg

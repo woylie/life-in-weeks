@@ -1,4 +1,13 @@
-module Types exposing (Dates, Model, Msg(..), Phase(..), State(..))
+module Types exposing
+    ( Category(..)
+    , Dates
+    , Model
+    , Msg(..)
+    , Period
+    , PeriodField(..)
+    , Phase(..)
+    , State(..)
+    )
 
 import Date exposing (Date, Unit)
 
@@ -6,6 +15,7 @@ import Date exposing (Date, Unit)
 type alias Model =
     { birthdate : Date
     , lifeExpectancy : Int
+    , periods : List Period
     , retirementAge : Int
     , today : Date
     , unit : Unit
@@ -18,12 +28,40 @@ type alias Dates =
     }
 
 
+type alias Period =
+    { id : Int
+    , name : String
+    , startDate : Date
+    , endDate : Maybe Date
+    , category : Category
+    }
+
+
+type PeriodField
+    = Name
+    | StartDate
+    | EndDate
+
+
+type Category
+    = Education
+    | Hobby
+    | Membership
+    | Other
+    | Relationship
+    | Residence
+    | Work
+
+
 type Msg
-    = ReceiveDate Date
+    = AddPeriod Category
+    | ReceiveDate Date
+    | RemovePeriod Int
     | SetBirthdate String
     | SetLifeExpectancy String
     | SetRetirementAge String
     | SetUnit String
+    | UpdatePeriod Int PeriodField String
 
 
 type State

@@ -3,9 +3,11 @@ module View exposing (view)
 import Components
 import Css
     exposing
-        ( auto
+        ( alignItems
+        , auto
         , backgroundColor
         , block
+        , border
         , border3
         , borderRadius
         , display
@@ -16,16 +18,20 @@ import Css
         , flexDirection
         , flexGrow
         , flexShrink
+        , flexStart
+        , flexWrap
         , fontSize
         , height
         , hex
         , int
         , margin
+        , padding
         , pct
         , px
         , rem
         , solid
         , width
+        , wrap
         )
 import Date exposing (Date, Interval(..), Unit(..))
 import DateRange exposing (dateRange, numberOfUnitsPerYear)
@@ -34,12 +40,23 @@ import Html.Styled
         ( Html
         , a
         , div
+        , fieldset
         , p
         , text
         )
 import Html.Styled.Attributes exposing (css, href, style, target)
 import Time exposing (Month(..))
-import Types exposing (Dates, Model, Msg(..), Phase(..), State(..))
+import Types
+    exposing
+        ( Category(..)
+        , Dates
+        , Model
+        , Msg(..)
+        , Period
+        , PeriodField(..)
+        , Phase(..)
+        , State(..)
+        )
 
 
 gapSize : String
@@ -82,7 +99,7 @@ settings model =
                 "Birthdate"
                 [ Components.dateInput
                     "liw-field-birthdate"
-                    model.birthdate
+                    (Just model.birthdate)
                     SetBirthdate
                 ]
             , Components.field
@@ -121,7 +138,82 @@ settings model =
                 , text "."
                 ]
             ]
+        , Components.fieldset "Education"
+            [ periodFieldset Education (filterPeriods Education model.periods) ]
+        , Components.fieldset "Work"
+            [ periodFieldset Work (filterPeriods Work model.periods) ]
+        , Components.fieldset "Hobbies"
+            [ periodFieldset Hobby (filterPeriods Hobby model.periods) ]
+        , Components.fieldset "Memberships"
+            [ periodFieldset Membership (filterPeriods Membership model.periods) ]
+        , Components.fieldset "Relationships"
+            [ periodFieldset Relationship (filterPeriods Relationship model.periods) ]
+        , Components.fieldset "Places of residence"
+            [ periodFieldset Residence (filterPeriods Residence model.periods) ]
+        , Components.fieldset "Other periods"
+            [ periodFieldset Other (filterPeriods Other model.periods) ]
         ]
+
+
+filterPeriods : Category -> List Period -> List Period
+filterPeriods category periods =
+    List.filter (\p -> p.category == category) periods
+
+
+periodFieldset : Category -> List Period -> Html Msg
+periodFieldset category periods =
+    div []
+        [ fieldset
+            [ css
+                [ border (px 0)
+                , margin (px 0)
+                , padding (px 0)
+                , displayFlex
+                , alignItems flexStart
+                , flexWrap wrap
+                , padding (rem 0)
+                ]
+            , style "gap" "0.375rem 0.75rem"
+            ]
+            (List.concatMap periodFields periods)
+        , div
+            [ css [ flexBasis (pct 100), flexShrink (int 0) ] ]
+            [ Components.button "add" (AddPeriod category) ]
+        ]
+
+
+periodFields : Period -> List (Html Msg)
+periodFields period =
+    let
+        inputIdPrefix =
+            "liw-field-period-" ++ String.fromInt period.id ++ "-"
+    in
+    [ Components.field
+        (inputIdPrefix ++ "name")
+        "Description"
+        [ Components.textInput
+            (inputIdPrefix ++ "name")
+            period.name
+            (UpdatePeriod period.id Name)
+        ]
+    , Components.field
+        (inputIdPrefix ++ "startDate")
+        "Start date"
+        [ Components.dateInput
+            (inputIdPrefix ++ "startDate")
+            (Just period.startDate)
+            (UpdatePeriod period.id StartDate)
+        ]
+    , Components.field
+        (inputIdPrefix ++ "endDate")
+        "End date"
+        [ Components.dateInput
+            (inputIdPrefix ++ "endDate")
+            period.endDate
+            (UpdatePeriod period.id EndDate)
+        ]
+    , Components.button "remove" (RemovePeriod period.id)
+    ]
 
 
 grid : Model -> Html msg
