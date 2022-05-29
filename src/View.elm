@@ -30,6 +30,7 @@ import Css
         , height
         , hex
         , int
+        , justifyContent
         , listStyleType
         , margin
         , margin2
@@ -43,6 +44,7 @@ import Css
         , rem
         , solid
         , textAlign
+        , width
         , wrap
         )
 import Date exposing (Date, Interval(..), Unit(..))
@@ -85,6 +87,11 @@ gapSize =
 squareSize : Float
 squareSize =
     6
+
+
+dotSize : Float
+dotSize =
+    4
 
 
 view : Model -> Html Msg
@@ -413,8 +420,18 @@ column model dates periods startOfUnit =
         phase =
             getPhase dates periods startOfUnit endOfUnit
 
+        events =
+            filterMatchingEvents startOfUnit endOfUnit model.events
+
         ( boxColor, borderColor ) =
             Colors.getColor state phase
+
+        dotColor =
+            if state == Selected then
+                Color.white
+
+            else
+                Colors.selectedColor
     in
     div
         [ css
@@ -427,10 +444,26 @@ column model dates periods startOfUnit =
             , property "background-color" (Color.toCssString boxColor)
             , property "border-color" (Color.toCssString borderColor)
             , cursor pointer
+            , displayFlex
+            , alignItems center
+            , justifyContent center
             ]
         , onClick (SelectDate (Just startOfUnit))
         ]
-        []
+        [ if events /= [] then
+            div
+                [ css
+                    [ width (px dotSize)
+                    , height (px dotSize)
+                    , borderRadius (px 142191)
+                    , property "background-color" (Color.toCssString dotColor)
+                    ]
+                ]
+                []
+
+          else
+            text ""
+        ]
 
 
 getDates : Model -> Int -> Dates
@@ -517,6 +550,18 @@ filterMatchingPeriods startOfUnit endOfUnit periods =
     List.filter filterCondition periods
 
 
+filterMatchingEvents : Date -> Date -> List Event -> List Event
+filterMatchingEvents startOfUnit endOfUnit events =
+    let
+        filterCondition e =
+            Date.compare e.date startOfUnit
+                /= LT
+                && Date.compare e.date endOfUnit
+                /= GT
+    in
+    List.filter filterCondition events
+
+
 details : Model -> Dates -> Html Msg
 details model dates =
     div
@@ -558,10 +603,10 @@ detailsForDate model dates date =
                 ++ Date.format dateFormat endOfUnit
 
         selectedPeriod =
-            "selected period: " ++ periodText
+            "Selected period: " ++ periodText
 
         age =
-            "age: "
+            "Age: "
                 ++ DateRange.timeDifferenceAsString
                     model.birthdate
                     endOfUnit
@@ -603,12 +648,21 @@ detailsForDate model dates date =
                             ++ ": "
                             ++ joinPeriodNames (head :: tail)
                     )
+
+        eventItems =
+            model.events
+                |> filterMatchingEvents date endOfUnit
+                |> List.sortWith (\e1 e2 -> Date.compare e1.date e2.date)
+                |> List.map
+                    (\event ->
+                        Date.format "MMMM ddd" event.date ++ ": " ++ event.name
+                    )
     in
     ul
         [ css [ margin (rem 0), padding (rem 0), listStyleType none ] ]
         (List.map
             (\item -> li [] [ text item ])
-            (defaultItems ++ periodItems)
+            (defaultItems ++ periodItems ++ eventItems)
         )
 
 

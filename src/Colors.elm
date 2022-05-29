@@ -1,4 +1,4 @@
-module Colors exposing (categoryColor, getColor, invertColor)
+module Colors exposing (categoryColor, getColor, invertColor, selectedColor)
 
 import Color exposing (Color, rgb255)
 import Types exposing (Category(..), Phase(..), State(..))
