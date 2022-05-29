@@ -2,7 +2,7 @@ module View exposing (view)
 
 import Color
 import Colors
-import Components
+import Components exposing (defaultFieldOpts)
 import Css
     exposing
         ( alignItems
@@ -102,6 +102,7 @@ settings model =
                     "liw-field-birthdate"
                     (Just model.birthdate)
                     SetBirthdate
+                    { defaultFieldOpts | required = True }
                 ]
             , Components.field
                 "liw-field-life-expectancy"
@@ -110,8 +111,11 @@ settings model =
                     "liw-field-life-expectancy"
                     model.lifeExpectancy
                     SetLifeExpectancy
-                    (Just 0)
-                    (Just 150)
+                    { defaultFieldOpts
+                        | min = Just 0
+                        , max = Just 150
+                        , required = True
+                    }
                 ]
             , Components.field
                 "liw-field-retirement-age"
@@ -120,8 +124,11 @@ settings model =
                     "liw-field-retirement-age"
                     model.retirementAge
                     SetRetirementAge
-                    (Just 0)
-                    (Just 100)
+                    { defaultFieldOpts
+                        | min = Just 0
+                        , max = Just 100
+                        , required = True
+                    }
                 ]
             , p
                 [ css
@@ -203,6 +210,7 @@ periodFields period =
             (inputIdPrefix ++ "name")
             period.name
             (UpdatePeriod period.id Name)
+            { defaultFieldOpts | required = True }
         ]
     , Components.field
         (inputIdPrefix ++ "startDate")
@@ -211,6 +219,7 @@ periodFields period =
             (inputIdPrefix ++ "startDate")
             (Just period.startDate)
             (UpdatePeriod period.id StartDate)
+            { defaultFieldOpts | required = True }
         ]
     , Components.field
         (inputIdPrefix ++ "endDate")
@@ -219,6 +228,7 @@ periodFields period =
             (inputIdPrefix ++ "endDate")
             period.endDate
             (UpdatePeriod period.id EndDate)
+            { defaultFieldOpts | required = False }
         ]
     , Components.button "remove" (RemovePeriod period.id)
     ]

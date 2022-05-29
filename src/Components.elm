@@ -2,6 +2,7 @@ module Components exposing
     ( button
     , container
     , dateInput
+    , defaultFieldOpts
     , field
     , fieldset
     , link
@@ -65,12 +66,14 @@ import Html.Styled.Attributes as Attr
         , for
         , href
         , id
+        , required
         , selected
         , target
         , type_
         , value
         )
 import Html.Styled.Events exposing (onClick, onInput)
+import Types exposing (FieldOpts)
 
 
 defaultFontFamily : List String
@@ -144,8 +147,8 @@ label inputId labelText =
         [ text labelText ]
 
 
-dateInput : String -> Maybe Date -> (String -> msg) -> Html msg
-dateInput inputId currentValue event =
+dateInput : String -> Maybe Date -> (String -> msg) -> FieldOpts -> Html msg
+dateInput inputId currentValue event opts =
     let
         stringValue =
             currentValue
@@ -158,6 +161,7 @@ dateInput inputId currentValue event =
         , value stringValue
         , onInput event
         , css inputCss
+        , required opts.required
         ]
         []
 
@@ -166,10 +170,9 @@ numberInput :
     String
     -> Int
     -> (String -> msg)
-    -> Maybe Int
-    -> Maybe Int
+    -> FieldOpts
     -> Html msg
-numberInput inputId currentValue event minValue maxValue =
+numberInput inputId currentValue event opts =
     let
         rangeAttr maybeInt =
             maybeInt |> Maybe.map String.fromInt |> Maybe.withDefault ""
@@ -179,23 +182,33 @@ numberInput inputId currentValue event minValue maxValue =
         , type_ "number"
         , value <| String.fromInt currentValue
         , onInput event
-        , Attr.min <| rangeAttr minValue
-        , Attr.max <| rangeAttr maxValue
+        , Attr.min <| rangeAttr opts.min
+        , Attr.max <| rangeAttr opts.max
+        , required opts.required
         , css inputCss
         ]
         []
 
 
-textInput : String -> String -> (String -> msg) -> Html msg
-textInput inputId currentValue event =
+textInput : String -> String -> (String -> msg) -> FieldOpts -> Html msg
+textInput inputId currentValue event opts =
     input
         [ id inputId
         , type_ "text"
         , value currentValue
         , onInput event
         , css inputCss
+        , required opts.required
         ]
         []
+
+
+defaultFieldOpts : FieldOpts
+defaultFieldOpts =
+    { min = Nothing
+    , max = Nothing
+    , required = False
+    }
 
 
 select : String -> String -> (String -> msg) -> List ( String, String ) -> Html msg
@@ -243,6 +256,22 @@ button buttonText msg =
         [ text buttonText ]
 
 
+link : String -> String -> Html msg
+link url linkText =
+    Html.a
+        [ href url
+        , target "_blank"
+        , css
+            [ fontSize (rem 0.75)
+            , color (hex "202c31")
+            , hover [ color (hex "71819c") ]
+            ]
+        ]
+        [ a [] []
+        , text linkText
+        ]
+
+
 container : List (Html msg) -> Html msg
 container content =
     Html.section
@@ -268,20 +297,4 @@ footer =
         , text " | "
         , link "https://github.com/woylie/life-in-weeks"
             "view source on Github"
-        ]
-
-
-link : String -> String -> Html msg
-link url linkText =
-    Html.a
-        [ href url
-        , target "_blank"
-        , css
-            [ fontSize (rem 0.75)
-            , color (hex "202c31")
-            , hover [ color (hex "71819c") ]
-            ]
-        ]
-        [ a [] []
-        , text linkText
         ]

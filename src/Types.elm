@@ -1,6 +1,7 @@
 module Types exposing
     ( Category(..)
     , Dates
+    , FieldOpts
     , Model
     , Msg(..)
     , Period
@@ -77,3 +78,10 @@ type Phase
     | Retirement
     | PastLifeExpectancy
     | Phase Period
+
+
+type alias FieldOpts =
+    { min : Maybe Int
+    , max : Maybe Int
+    , required : Bool
+    }
