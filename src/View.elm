@@ -44,8 +44,10 @@ import Html.Styled
         ( Html
         , div
         , fieldset
+        , li
         , p
         , text
+        , ul
         )
 import Html.Styled.Attributes exposing (css)
 import Html.Styled.Events exposing (onClick)
@@ -447,32 +449,66 @@ filterMatchingPeriods startOfUnit endOfUnit periods =
 
 details : Model -> Html Msg
 details model =
+    let
+        unitToString : Unit -> String
+        unitToString unit =
+            case unit of
+                Days ->
+                    "day"
+
+                Weeks ->
+                    "week"
+
+                Months ->
+                    "month"
+
+                Years ->
+                    "year"
+    in
     case model.selectedDate of
         Just date ->
             detailsForDate model date
 
         Nothing ->
-            div [] [ text "Select box to show details" ]
+            div
+                []
+                [ text <| "Select " ++ unitToString model.unit ++ " to show details" ]
 
 
 detailsForDate : Model -> Date -> Html Msg
 detailsForDate model date =
-    div
+    let
+        endOfUnit =
+            date
+                |> Date.add model.unit 1
+                |> Date.add Days -1
+
+        dateFormat =
+            "MMMM ddd, y"
+
+        periodText =
+            Date.format dateFormat date
+                ++ " - "
+                ++ Date.format dateFormat endOfUnit
+    in
+    ul
         []
-        [ text <| ageText model.birthdate date ]
+        [ li [] [ text <| "selected period: " ++ periodText ]
+        , li [] [ text <| "age: " ++ timeDifference model.birthdate date ]
+        ]
 
 
-ageText : Date -> Date -> String
-ageText birthdate selectedDate =
+timeDifference : Date -> Date -> String
+timeDifference date1 date2 =
     let
         years =
-            Date.diff Years birthdate selectedDate
+            Date.diff Years date1 date2
 
         months =
-            Date.diff Months birthdate selectedDate
+            Date.diff Months date1 date2
 
         weeks =
-            Date.diff Weeks birthdate selectedDate
+            Date.diff Weeks date1 date2
 
         monthsAsString =
             if months == 1 then
@@ -489,10 +525,10 @@ ageText birthdate selectedDate =
                 String.fromInt weeks ++ " weeks"
     in
     if months < 1 then
-        "age: " ++ weeksAsString
+        weeksAsString
 
     else if years < 1 then
-        "age: " ++ monthsAsString
+        monthsAsString
 
     else
-        "age: " ++ String.fromInt years ++ " years"
+        String.fromInt years ++ " years"
