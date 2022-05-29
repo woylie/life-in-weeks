@@ -11651,7 +11651,7 @@ var $author$project$View$detailsForDate = F3(
 				A3($author$project$View$filterMatchingPeriods, date, endOfUnit, model.c7)));
 		var dateFormat = 'MMMM ddd, y';
 		var periodText = A2($justinmimbs$date$Date$format, dateFormat, date) + (' - ' + A2($justinmimbs$date$Date$format, dateFormat, endOfUnit));
-		var selectedPeriod = 'Selected period: ' + periodText;
+		var selectedPeriod = 'Selected ' + ($author$project$DateRange$unitToStringSingular(model.dl) + (': ' + periodText));
 		var age = 'Age: ' + A2($author$project$DateRange$timeDifferenceAsString, model.cy, endOfUnit);
 		var defaultItems = A2(
 			$elm$core$List$filterMap,
