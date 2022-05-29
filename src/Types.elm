@@ -9,6 +9,7 @@ module Types exposing
     , State(..)
     )
 
+import Color exposing (Color)
 import Date exposing (Date, Unit)
 
 
@@ -34,6 +35,7 @@ type alias Period =
     , startDate : Date
     , endDate : Maybe Date
     , category : Category
+    , color : Color
     }
 
 

@@ -140,19 +140,19 @@ settings model =
                 ]
             ]
         , Components.fieldset "Education"
-            [ periodFieldset Education (filterPeriods Education model.periods) ]
+            [ periodFieldsets Education (filterPeriods Education model.periods) ]
         , Components.fieldset "Work"
-            [ periodFieldset Work (filterPeriods Work model.periods) ]
+            [ periodFieldsets Work (filterPeriods Work model.periods) ]
         , Components.fieldset "Hobbies"
-            [ periodFieldset Hobby (filterPeriods Hobby model.periods) ]
+            [ periodFieldsets Hobby (filterPeriods Hobby model.periods) ]
         , Components.fieldset "Memberships"
-            [ periodFieldset Membership (filterPeriods Membership model.periods) ]
+            [ periodFieldsets Membership (filterPeriods Membership model.periods) ]
         , Components.fieldset "Relationships"
-            [ periodFieldset Relationship (filterPeriods Relationship model.periods) ]
+            [ periodFieldsets Relationship (filterPeriods Relationship model.periods) ]
         , Components.fieldset "Places of residence"
-            [ periodFieldset Residence (filterPeriods Residence model.periods) ]
+            [ periodFieldsets Residence (filterPeriods Residence model.periods) ]
         , Components.fieldset "Other periods"
-            [ periodFieldset Other (filterPeriods Other model.periods) ]
+            [ periodFieldsets Other (filterPeriods Other model.periods) ]
         ]
 
 
@@ -161,26 +161,33 @@ filterPeriods category periods =
     List.filter (\p -> p.category == category) periods
 
 
-periodFieldset : Category -> List Period -> Html Msg
-periodFieldset category periods =
-    div []
-        [ fieldset
-            [ css
-                [ border (px 0)
-                , margin (px 0)
-                , padding (px 0)
-                , displayFlex
-                , alignItems flexStart
-                , flexWrap wrap
-                , padding (rem 0)
-                , property "gap" "0.375rem 0.75rem"
-                ]
+periodFieldsets : Category -> List Period -> Html Msg
+periodFieldsets category periods =
+    div [] <|
+        List.map (periodFieldset category) periods
+            ++ [ div
+                    [ css [ flexBasis (pct 100), flexShrink (int 0) ] ]
+                    [ Components.button "add" (AddPeriod category) ]
+               ]
+
+
+periodFieldset : Category -> Period -> Html Msg
+periodFieldset category period =
+    fieldset
+        [ css
+            [ border (px 0)
+            , margin (px 0)
+            , padding (px 0)
+            , displayFlex
+            , alignItems flexStart
+            , flexWrap wrap
+            , flexBasis (pct 100)
+            , flexShrink (int 0)
+            , padding (rem 0)
+            , property "gap" "0.375rem 0.75rem"
             ]
-            (List.concatMap periodFields periods)
-        , div
-            [ css [ flexBasis (pct 100), flexShrink (int 0) ] ]
-            [ Components.button "add" (AddPeriod category) ]
         ]
+        (periodFields period)
 
 
 periodFields : Period -> List (Html Msg)
@@ -329,13 +336,25 @@ getPhase dates periods startOfUnit endOfUnit =
             periods
                 |> filterMatchingPeriods startOfUnit endOfUnit
                 |> List.head
+
+        retirement =
+            Date.compare startOfUnit dates.retirement /= LT
     in
     case matchingPeriod of
         Just period ->
-            Phase period
+            case period.category of
+                Work ->
+                    if retirement then
+                        Retirement
+
+                    else
+                        Phase period
+
+                _ ->
+                    Phase period
 
         Nothing ->
-            if Date.compare startOfUnit dates.retirement /= LT then
+            if retirement then
                 Retirement
 
             else

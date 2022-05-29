@@ -11,7 +11,7 @@ defaultColor =
 
 retirementColor : Color
 retirementColor =
-    rgb255 139 215 210
+    rgb255 210 198 207
 
 
 todayColor : Color
@@ -47,8 +47,8 @@ categoryColor category =
             rgb255 254 95 85
 
         Work ->
-            -- magic-mint
-            rgb255 174 246 199
+            -- malachite
+            rgb255 35 231 103
 
 
 getColor : State -> Phase -> ( Color, Color )
@@ -63,7 +63,7 @@ getColor state phase =
                     retirementColor
 
                 Phase period ->
-                    categoryColor period.category
+                    period.color
     in
     -- (backgroundColor, borderColor)
     case state of

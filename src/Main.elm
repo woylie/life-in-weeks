@@ -1,6 +1,8 @@
 module Main exposing (main)
 
 import Browser
+import Color.Manipulate exposing (darken, lighten)
+import Colors
 import Date exposing (Interval(..), Unit(..))
 import DateRange
 import Html.Styled exposing (toUnstyled)
@@ -30,6 +32,7 @@ init _ =
               , startDate = Date.fromCalendarDate 2008 Sep 1
               , endDate = Just <| Date.fromCalendarDate 2014 Jun 30
               , category = Education
+              , color = Colors.categoryColor Education
               }
             ]
       , retirementAge = 65
@@ -91,12 +94,29 @@ addPeriod category periods =
                 |> List.map .id
                 |> List.maximum
                 |> Maybe.withDefault -1
+
+        lastColor =
+            periods
+                |> List.filter (\p -> p.category == category)
+                |> List.sortBy .id
+                |> List.reverse
+                |> List.head
+                |> Maybe.map .color
+
+        color =
+            case lastColor of
+                Just someColor ->
+                    lighten 0.15 someColor
+
+                Nothing ->
+                    Colors.categoryColor category
     in
     { id = maxId + 1
     , name = defaultPeriodName category
     , startDate = Date.fromCalendarDate 2000 Jan 1
     , endDate = Just <| Date.fromCalendarDate 2005 Jan 1
     , category = category
+    , color = color
     }
         :: List.reverse periods
         |> List.reverse
