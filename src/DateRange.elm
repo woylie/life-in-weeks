@@ -1,7 +1,11 @@
 module DateRange exposing
     ( dateRange
+    , intToOrdinal
     , numberOfUnitsPerYear
     , stringToUnit
+    , timeDifference
+    , timeDifferenceAsOrdinal
+    , timeDifferenceAsString
     , unitToString
     , unitToStringSingular
     )
@@ -90,3 +94,87 @@ stringToUnit s =
 
         _ ->
             Nothing
+
+
+timeDifference : Date -> Date -> ( Unit, Int )
+timeDifference date1 date2 =
+    let
+        years =
+            Date.diff Years date1 date2
+
+        months =
+            Date.diff Months date1 date2
+
+        weeks =
+            Date.diff Weeks date1 date2
+
+        days =
+            Date.diff Days date1 date2
+    in
+    if weeks < 1 then
+        ( Days, days )
+
+    else if months < 1 then
+        ( Weeks, weeks )
+
+    else if years < 1 then
+        ( Months, months )
+
+    else
+        ( Years, years )
+
+
+timeDifferenceAsString : Date -> Date -> String
+timeDifferenceAsString date1 date2 =
+    let
+        ( unit, num ) =
+            timeDifference date1 date2
+
+        pluralS i =
+            if i == 1 then
+                ""
+
+            else
+                "s"
+    in
+    String.fromInt num ++ " " ++ unitToStringSingular unit ++ pluralS num
+
+
+timeDifferenceAsOrdinal : Date -> Date -> String
+timeDifferenceAsOrdinal date1 date2 =
+    let
+        ( unit, num ) =
+            timeDifference date1 date2
+
+        ordinal =
+            intToOrdinal (num + 1)
+    in
+    ordinal ++ " " ++ unitToStringSingular unit
+
+
+intToOrdinal : Int -> String
+intToOrdinal i =
+    let
+        s =
+            String.fromInt i
+    in
+    if String.endsWith "11" s then
+        s ++ "th"
+
+    else if String.endsWith "12" s then
+        s ++ "th"
+
+    else if String.endsWith "13" s then
+        s ++ "th"
+
+    else if String.endsWith "1" s then
+        s ++ "st"
+
+    else if String.endsWith "2" s then
+        s ++ "nd"
+
+    else if String.endsWith "3" s then
+        s ++ "rd"
+
+    else
+        s ++ "th"

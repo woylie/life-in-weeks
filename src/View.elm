@@ -480,121 +480,44 @@ detailsForDate model dates date =
                 ++ " - "
                 ++ Date.format dateFormat endOfUnit
 
-        pastLifeExpectancy =
-            Date.compare date dates.death == GT
+        selectedPeriod =
+            "selected period: " ++ periodText
+
+        age =
+            "age: "
+                ++ DateRange.timeDifferenceAsString
+                    model.birthdate
+                    endOfUnit
 
         pastRetirement =
-            Date.compare endOfUnit dates.retirement == GT
+            if Date.compare endOfUnit dates.retirement == GT then
+                DateRange.timeDifferenceAsOrdinal dates.retirement date
+                    ++ " of retirement"
+                    |> Just
+
+            else
+                Nothing
+
+        pastLifeExpectancy =
+            if Date.compare date dates.death == GT then
+                DateRange.timeDifferenceAsString dates.death endOfUnit
+                    ++ " past life expectancy"
+                    |> Just
+
+            else
+                Nothing
+
+        items =
+            List.filterMap identity
+                [ Just <| selectedPeriod
+                , Just <| age
+                , pastRetirement
+                , pastLifeExpectancy
+                ]
     in
     ul
         []
-        [ li [] [ text <| "selected period: " ++ periodText ]
-        , li [] [ text <| "age: " ++ timeDifference model.birthdate endOfUnit ]
-        , showIf pastLifeExpectancy <|
-            li
-                []
-                [ text <|
-                    timeDifference dates.death endOfUnit
-                        ++ " past life expectancy"
-                ]
-        , showIf pastRetirement <|
-            li [] [ text <| retirementText dates.retirement date ]
-        ]
-
-
-retirementText : Date -> Date -> String
-retirementText retirementDate date =
-    let
-        ( unit, num ) =
-            timeDifferenceNum retirementDate date
-
-        numAsString =
-            String.fromInt (num + 1)
-
-        ordinal =
-            if String.endsWith "11" numAsString then
-                numAsString ++ "th"
-
-            else if String.endsWith "12" numAsString then
-                numAsString ++ "th"
-
-            else if String.endsWith "13" numAsString then
-                numAsString ++ "th"
-
-            else if String.endsWith "1" numAsString then
-                numAsString ++ "st"
-
-            else if String.endsWith "2" numAsString then
-                numAsString ++ "nd"
-
-            else if String.endsWith "3" numAsString then
-                numAsString ++ "rd"
-
-            else
-                numAsString ++ "th"
-    in
-    ordinal ++ " " ++ DateRange.unitToStringSingular unit ++ " of retirement"
-
-
-showIf : Bool -> Html Msg -> Html Msg
-showIf show content =
-    if show then
-        content
-
-    else
-        text ""
-
-
-timeDifferenceNum : Date -> Date -> ( Unit, Int )
-timeDifferenceNum date1 date2 =
-    let
-        years =
-            Date.diff Years date1 date2
-
-        months =
-            Date.diff Months date1 date2
-
-        weeks =
-            Date.diff Weeks date1 date2
-
-        days =
-            Date.diff Days date1 date2
-    in
-    if weeks < 1 then
-        ( Days, days )
-
-    else if months < 1 then
-        ( Weeks, weeks )
-
-    else if years < 1 then
-        ( Months, months )
-
-    else
-        ( Years, years )
-
-
-timeDifference : Date -> Date -> String
-timeDifference date1 date2 =
-    let
-        ( unit, num ) =
-            timeDifferenceNum date1 date2
-
-        pluralS i =
-            if i == 1 then
-                ""
-
-            else
-                "s"
-    in
-    case unit of
-        Days ->
-            String.fromInt num ++ " day" ++ pluralS num
-
-        Weeks ->
-            String.fromInt num ++ " week" ++ pluralS num
-
-        Months ->
-            String.fromInt num ++ " month" ++ pluralS num
-
-        Years ->
-            String.fromInt num ++ " year" ++ pluralS num
+        (List.map
+            (\item -> li [] [ text item ])
+            items
+        )

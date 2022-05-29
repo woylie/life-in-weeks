@@ -8,6 +8,7 @@ module Components exposing
     , link
     , numberInput
     , select
+    , showIf
     , textInput
     )
 
@@ -296,3 +297,12 @@ footer =
         , link "https://github.com/woylie/life-in-weeks"
             "view source on Github"
         ]
+
+
+showIf : Bool -> Html msg -> Html msg
+showIf show content =
+    if show then
+        content
+
+    else
+        text ""
