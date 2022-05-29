@@ -465,12 +465,34 @@ detailsForDate model date =
 ageText : Date -> Date -> String
 ageText birthdate selectedDate =
     let
-        age =
+        years =
             Date.diff Years birthdate selectedDate
+
+        months =
+            Date.diff Months birthdate selectedDate
+
+        weeks =
+            Date.diff Weeks birthdate selectedDate
+
+        monthsAsString =
+            if months == 1 then
+                String.fromInt months ++ " month"
+
+            else
+                String.fromInt months ++ " months"
+
+        weeksAsString =
+            if weeks == 1 then
+                String.fromInt weeks ++ " week"
+
+            else
+                String.fromInt weeks ++ " weeks"
     in
-    if age < 1 then
-        (selectedDate |> Date.diff Months birthdate |> String.fromInt)
-            ++ " months old"
+    if months < 1 then
+        "age: " ++ weeksAsString
+
+    else if years < 1 then
+        "age: " ++ monthsAsString
 
     else
-        String.fromInt age ++ " years old"
+        "age: " ++ String.fromInt years ++ " years"
