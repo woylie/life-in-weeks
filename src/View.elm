@@ -1,6 +1,7 @@
 module View exposing (view)
 
 import Color
+import Color.Blending
 import Colors
 import Components exposing (defaultFieldOpts)
 import Css
@@ -427,11 +428,7 @@ column model dates periods startOfUnit =
             Colors.getColor state phase
 
         dotColor =
-            if state == Selected then
-                Color.white
-
-            else
-                Colors.selectedColor
+            Color.Blending.exclusion boxColor Color.white
     in
     div
         [ css
@@ -450,8 +447,8 @@ column model dates periods startOfUnit =
             ]
         , onClick (SelectDate (Just startOfUnit))
         ]
-        [ if events /= [] then
-            div
+        [ Components.showIf (events /= [])
+            (div
                 [ css
                     [ width (px dotSize)
                     , height (px dotSize)
@@ -460,9 +457,7 @@ column model dates periods startOfUnit =
                     ]
                 ]
                 []
-
-          else
-            text ""
+            )
         ]
 
 
