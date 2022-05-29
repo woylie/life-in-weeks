@@ -514,25 +514,18 @@ timeDifference date1 date2 =
         weeks =
             Date.diff Weeks date1 date2
 
-        monthsAsString =
-            if months == 1 then
-                String.fromInt months ++ " month"
+        pluralS i =
+            if i == 1 then
+                ""
 
             else
-                String.fromInt months ++ " months"
-
-        weeksAsString =
-            if weeks == 1 then
-                String.fromInt weeks ++ " week"
-
-            else
-                String.fromInt weeks ++ " weeks"
+                "s"
     in
     if months < 1 then
-        weeksAsString
+        String.fromInt weeks ++ " week" ++ pluralS weeks
 
     else if years < 1 then
-        monthsAsString
+        String.fromInt months ++ " month" ++ pluralS months
 
     else
-        String.fromInt years ++ " years"
+        String.fromInt years ++ " year" ++ pluralS years
