@@ -77,11 +77,18 @@ squareSize =
 
 view : Model -> Html Msg
 view model =
+    let
+        unitsPerYear =
+            numberOfUnitsPerYear model.unit
+
+        dates =
+            getDates model unitsPerYear
+    in
     Components.container
         [ div
             []
-            [ grid model
-            , details model
+            [ grid model dates unitsPerYear
+            , details model dates
             , settings model
             ]
         ]
@@ -240,15 +247,9 @@ periodFields period =
     ]
 
 
-grid : Model -> Html Msg
-grid model =
+grid : Model -> Dates -> Int -> Html Msg
+grid model dates unitsPerYear =
     let
-        unitsPerYear =
-            numberOfUnitsPerYear model.unit
-
-        dates =
-            getDates model unitsPerYear
-
         years =
             dateRange
                 model.unit
@@ -447,8 +448,8 @@ filterMatchingPeriods startOfUnit endOfUnit periods =
     List.filter filterCondition periods
 
 
-details : Model -> Html Msg
-details model =
+details : Model -> Dates -> Html Msg
+details model dates =
     let
         unitToString : Unit -> String
         unitToString unit =
@@ -467,7 +468,7 @@ details model =
     in
     case model.selectedDate of
         Just date ->
-            detailsForDate model date
+            detailsForDate model dates date
 
         Nothing ->
             div
@@ -479,8 +480,8 @@ details model =
                 ]
 
 
-detailsForDate : Model -> Date -> Html Msg
-detailsForDate model date =
+detailsForDate : Model -> Dates -> Date -> Html Msg
+detailsForDate model dates date =
     let
         endOfUnit =
             date
@@ -494,11 +495,19 @@ detailsForDate model date =
             Date.format dateFormat date
                 ++ " - "
                 ++ Date.format dateFormat endOfUnit
+
+        pastLifeExpectancy =
+            Date.compare date dates.death == GT
     in
     ul
         []
         [ li [] [ text <| "selected period: " ++ periodText ]
         , li [] [ text <| "age: " ++ timeDifference model.birthdate date ]
+        , if pastLifeExpectancy then
+            li [] [ text <| timeDifference dates.death date ++ " past life expectancy" ]
+
+          else
+            text ""
         ]
 
 
