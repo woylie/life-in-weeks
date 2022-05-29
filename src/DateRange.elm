@@ -3,6 +3,7 @@ module DateRange exposing
     , numberOfUnitsPerYear
     , stringToUnit
     , unitToString
+    , unitToStringSingular
     )
 
 import Date exposing (Date, Interval(..), Unit(..))
@@ -54,6 +55,22 @@ unitToString unit =
 
         Days ->
             "days"
+
+
+unitToStringSingular : Unit -> String
+unitToStringSingular unit =
+    case unit of
+        Years ->
+            "year"
+
+        Months ->
+            "month"
+
+        Weeks ->
+            "week"
+
+        Days ->
+            "day"
 
 
 stringToUnit : String -> Maybe Unit

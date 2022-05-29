@@ -450,22 +450,6 @@ filterMatchingPeriods startOfUnit endOfUnit periods =
 
 details : Model -> Dates -> Html Msg
 details model dates =
-    let
-        unitToString : Unit -> String
-        unitToString unit =
-            case unit of
-                Days ->
-                    "day"
-
-                Weeks ->
-                    "week"
-
-                Months ->
-                    "month"
-
-                Years ->
-                    "year"
-    in
     case model.selectedDate of
         Just date ->
             detailsForDate model dates date
@@ -475,7 +459,7 @@ details model dates =
                 []
                 [ text <|
                     "Select "
-                        ++ unitToString model.unit
+                        ++ DateRange.unitToStringSingular model.unit
                         ++ " to show details"
                 ]
 
@@ -498,21 +482,71 @@ detailsForDate model dates date =
 
         pastLifeExpectancy =
             Date.compare date dates.death == GT
+
+        pastRetirement =
+            Date.compare endOfUnit dates.retirement == GT
     in
     ul
         []
         [ li [] [ text <| "selected period: " ++ periodText ]
         , li [] [ text <| "age: " ++ timeDifference model.birthdate endOfUnit ]
-        , if pastLifeExpectancy then
-            li [] [ text <| timeDifference dates.death endOfUnit ++ " past life expectancy" ]
-
-          else
-            text ""
+        , showIf pastLifeExpectancy <|
+            li
+                []
+                [ text <|
+                    timeDifference dates.death endOfUnit
+                        ++ " past life expectancy"
+                ]
+        , showIf pastRetirement <|
+            li [] [ text <| retirementText dates.retirement date ]
         ]
 
 
-timeDifference : Date -> Date -> String
-timeDifference date1 date2 =
+retirementText : Date -> Date -> String
+retirementText retirementDate date =
+    let
+        ( unit, num ) =
+            timeDifferenceNum retirementDate date
+
+        numAsString =
+            String.fromInt (num + 1)
+
+        ordinal =
+            if String.endsWith "11" numAsString then
+                numAsString ++ "th"
+
+            else if String.endsWith "12" numAsString then
+                numAsString ++ "th"
+
+            else if String.endsWith "13" numAsString then
+                numAsString ++ "th"
+
+            else if String.endsWith "1" numAsString then
+                numAsString ++ "st"
+
+            else if String.endsWith "2" numAsString then
+                numAsString ++ "nd"
+
+            else if String.endsWith "3" numAsString then
+                numAsString ++ "rd"
+
+            else
+                numAsString ++ "th"
+    in
+    ordinal ++ " " ++ DateRange.unitToStringSingular unit ++ " of retirement"
+
+
+showIf : Bool -> Html Msg -> Html Msg
+showIf show content =
+    if show then
+        content
+
+    else
+        text ""
+
+
+timeDifferenceNum : Date -> Date -> ( Unit, Int )
+timeDifferenceNum date1 date2 =
     let
         years =
             Date.diff Years date1 date2
@@ -525,6 +559,25 @@ timeDifference date1 date2 =
 
         days =
             Date.diff Days date1 date2
+    in
+    if weeks < 1 then
+        ( Days, days )
+
+    else if months < 1 then
+        ( Weeks, weeks )
+
+    else if years < 1 then
+        ( Months, months )
+
+    else
+        ( Years, years )
+
+
+timeDifference : Date -> Date -> String
+timeDifference date1 date2 =
+    let
+        ( unit, num ) =
+            timeDifferenceNum date1 date2
 
         pluralS i =
             if i == 1 then
@@ -533,14 +586,15 @@ timeDifference date1 date2 =
             else
                 "s"
     in
-    if weeks < 1 then
-        String.fromInt days ++ " day" ++ pluralS days
+    case unit of
+        Days ->
+            String.fromInt num ++ " day" ++ pluralS num
 
-    else if months < 1 then
-        String.fromInt weeks ++ " week" ++ pluralS weeks
+        Weeks ->
+            String.fromInt num ++ " week" ++ pluralS num
 
-    else if years < 1 then
-        String.fromInt months ++ " month" ++ pluralS months
+        Months ->
+            String.fromInt num ++ " month" ++ pluralS num
 
-    else
-        String.fromInt years ++ " year" ++ pluralS years
+        Years ->
+            String.fromInt num ++ " year" ++ pluralS num
