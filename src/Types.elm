@@ -144,6 +144,7 @@ type Msg
     | SetLifeExpectancy String
     | SetRetirementAge String
     | SetUnit String
+    | SortEvents
     | SortPeriods
     | UpdateEvent Int EventField String
     | UpdatePeriod Int PeriodField String

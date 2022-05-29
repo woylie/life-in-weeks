@@ -329,7 +329,10 @@ eventFields event =
             (inputIdPrefix ++ "date")
             (Just event.date)
             (UpdateEvent event.id EventDate)
-            { defaultFieldOpts | required = True }
+            { defaultFieldOpts
+                | required = True
+                , onBlur = Just SortEvents
+            }
         ]
     , Components.button "remove" (RemoveEvent event.id)
     ]
