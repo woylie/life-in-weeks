@@ -11007,6 +11007,50 @@ var $rtfeldman$elm_css$Css$borderWidth = $rtfeldman$elm_css$Css$prop1('border-wi
 var $rtfeldman$elm_css$Css$cursor = $rtfeldman$elm_css$Css$prop1('cursor');
 var $rtfeldman$elm_css$Css$display = $rtfeldman$elm_css$Css$prop1('display');
 var $author$project$View$dotSize = 4;
+var $noahzgordon$elm_color_extra$Color$Blending$clampChannel = A2($elm$core$Basics$clamp, 0, 1);
+var $noahzgordon$elm_color_extra$Color$Blending$calcChanel = F6(
+	function (fn, aB, aS, ar, cB, cS) {
+		var cS_ = cS;
+		var cB_ = cB;
+		var cr = A2(fn, cB_, cS_);
+		var cr_ = (!ar) ? cr : (((aS * cS_) + (aB * (cB_ - (aS * ((cB_ + cS_) - cr))))) / ar);
+		return $noahzgordon$elm_color_extra$Color$Blending$clampChannel(cr_);
+	});
+var $avh4$elm_color$Color$rgba = F4(
+	function (r, g, b, a) {
+		return A4($avh4$elm_color$Color$RgbaSpace, r, g, b, a);
+	});
+var $avh4$elm_color$Color$toRgba = function (_v0) {
+	var r = _v0.a;
+	var g = _v0.b;
+	var b = _v0.c;
+	var a = _v0.d;
+	return {af: a, a8: b, bf: g, bq: r};
+};
+var $noahzgordon$elm_color_extra$Color$Blending$colorBlend = F3(
+	function (fn, clB, clS) {
+		var rgba2 = $avh4$elm_color$Color$toRgba(clS);
+		var rgba1 = $avh4$elm_color$Color$toRgba(clB);
+		var ar = rgba2.af + (rgba1.af * (1 - rgba2.af));
+		var calc = A4($noahzgordon$elm_color_extra$Color$Blending$calcChanel, fn, rgba1.af, rgba2.af, ar);
+		return A4(
+			$avh4$elm_color$Color$rgba,
+			A2(calc, rgba1.bq, rgba2.bq),
+			A2(calc, rgba1.bf, rgba2.bf),
+			A2(calc, rgba1.a8, rgba2.a8),
+			ar);
+	});
+var $noahzgordon$elm_color_extra$Color$Blending$exclusion = F2(
+	function (clB, clS) {
+		return A3(
+			$noahzgordon$elm_color_extra$Color$Blending$colorBlend,
+			F2(
+				function (cB, cS) {
+					return (cB + cS) - ((2 * cB) * cS);
+				}),
+			clB,
+			clS);
+	});
 var $rtfeldman$elm_css$Css$prop3 = F4(
 	function (key, argA, argB, argC) {
 		return A2($rtfeldman$elm_css$Css$property, key, argA.D + (' ' + (argB.D + (' ' + argC.D))));
@@ -11137,52 +11181,6 @@ var $rtfeldman$elm_css$Html$Styled$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
-var $noahzgordon$elm_color_extra$Color$Blending$clampChannel = A2($elm$core$Basics$clamp, 0, 1);
-var $noahzgordon$elm_color_extra$Color$Blending$calcChanel = F6(
-	function (fn, aB, aS, ar, cB, cS) {
-		var cS_ = cS;
-		var cB_ = cB;
-		var cr = A2(fn, cB_, cS_);
-		var cr_ = (!ar) ? cr : (((aS * cS_) + (aB * (cB_ - (aS * ((cB_ + cS_) - cr))))) / ar);
-		return $noahzgordon$elm_color_extra$Color$Blending$clampChannel(cr_);
-	});
-var $avh4$elm_color$Color$rgba = F4(
-	function (r, g, b, a) {
-		return A4($avh4$elm_color$Color$RgbaSpace, r, g, b, a);
-	});
-var $avh4$elm_color$Color$toRgba = function (_v0) {
-	var r = _v0.a;
-	var g = _v0.b;
-	var b = _v0.c;
-	var a = _v0.d;
-	return {af: a, a8: b, bf: g, bq: r};
-};
-var $noahzgordon$elm_color_extra$Color$Blending$colorBlend = F3(
-	function (fn, clB, clS) {
-		var rgba2 = $avh4$elm_color$Color$toRgba(clS);
-		var rgba1 = $avh4$elm_color$Color$toRgba(clB);
-		var ar = rgba2.af + (rgba1.af * (1 - rgba2.af));
-		var calc = A4($noahzgordon$elm_color_extra$Color$Blending$calcChanel, fn, rgba1.af, rgba2.af, ar);
-		return A4(
-			$avh4$elm_color$Color$rgba,
-			A2(calc, rgba1.bq, rgba2.bq),
-			A2(calc, rgba1.bf, rgba2.bf),
-			A2(calc, rgba1.a8, rgba2.a8),
-			ar);
-	});
-var $noahzgordon$elm_color_extra$Color$Blending$screen_ = F2(
-	function (cB, cS) {
-		return (cB + cS) - (cB * cS);
-	});
-var $noahzgordon$elm_color_extra$Color$Blending$overlay_ = F2(
-	function (cB, cS) {
-		var cB_ = cB * 2;
-		return (cB_ <= 1) ? (cB_ * cS) : A2($noahzgordon$elm_color_extra$Color$Blending$screen_, cB_ - 1, cS);
-	});
-var $noahzgordon$elm_color_extra$Color$Blending$overlay = F2(
-	function (clB, clS) {
-		return A3($noahzgordon$elm_color_extra$Color$Blending$colorBlend, $noahzgordon$elm_color_extra$Color$Blending$overlay_, clB, clS);
-	});
 var $rtfeldman$elm_css$Css$PercentageUnits = 0;
 var $rtfeldman$elm_css$Css$pct = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, 0, '%');
 var $rtfeldman$elm_css$Css$pointer = {c: 0, D: 'pointer'};
@@ -11202,7 +11200,7 @@ var $author$project$View$column = F4(
 		var _v0 = A2($author$project$Colors$getColor, state, phase);
 		var boxColor = _v0.a;
 		var borderColor = _v0.b;
-		var dotColor = A2($noahzgordon$elm_color_extra$Color$Blending$overlay, boxColor, $avh4$elm_color$Color$white);
+		var dotColor = A2($noahzgordon$elm_color_extra$Color$Blending$exclusion, boxColor, $avh4$elm_color$Color$white);
 		return A2(
 			$rtfeldman$elm_css$Html$Styled$div,
 			_List_fromArray(
