@@ -514,6 +514,9 @@ timeDifference date1 date2 =
         weeks =
             Date.diff Weeks date1 date2
 
+        days =
+            Date.diff Days date1 date2
+
         pluralS i =
             if i == 1 then
                 ""
@@ -521,7 +524,10 @@ timeDifference date1 date2 =
             else
                 "s"
     in
-    if months < 1 then
+    if weeks < 1 then
+        String.fromInt days ++ " day" ++ pluralS days
+
+    else if months < 1 then
         String.fromInt weeks ++ " week" ++ pluralS weeks
 
     else if years < 1 then
