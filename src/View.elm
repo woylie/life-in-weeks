@@ -79,6 +79,7 @@ view model =
         [ div
             []
             [ grid model
+            , details model
             , settings model
             ]
         ]
@@ -442,3 +443,34 @@ filterMatchingPeriods startOfUnit endOfUnit periods =
                     Date.compare p.startDate endOfUnit /= GT
     in
     List.filter filterCondition periods
+
+
+details : Model -> Html Msg
+details model =
+    case model.selectedDate of
+        Just date ->
+            detailsForDate model date
+
+        Nothing ->
+            div [] [ text "Select box to show details" ]
+
+
+detailsForDate : Model -> Date -> Html Msg
+detailsForDate model date =
+    div
+        []
+        [ text <| ageText model.birthdate date ]
+
+
+ageText : Date -> Date -> String
+ageText birthdate selectedDate =
+    let
+        age =
+            Date.diff Years birthdate selectedDate
+    in
+    if age < 1 then
+        (selectedDate |> Date.diff Months birthdate |> String.fromInt)
+            ++ " months old"
+
+    else
+        String.fromInt age ++ " years old"
