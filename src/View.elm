@@ -4,7 +4,6 @@ import Components
 import Css
     exposing
         ( alignItems
-        , auto
         , backgroundColor
         , block
         , border
@@ -12,7 +11,6 @@ import Css
         , borderRadius
         , display
         , displayFlex
-        , flex
         , flex3
         , flexBasis
         , flexDirection
@@ -27,10 +25,10 @@ import Css
         , margin
         , padding
         , pct
+        , property
         , px
         , rem
         , solid
-        , width
         , wrap
         )
 import Date exposing (Date, Interval(..), Unit(..))
@@ -38,13 +36,12 @@ import DateRange exposing (dateRange, numberOfUnitsPerYear)
 import Html.Styled
     exposing
         ( Html
-        , a
         , div
         , fieldset
         , p
         , text
         )
-import Html.Styled.Attributes exposing (css, href, style, target)
+import Html.Styled.Attributes exposing (css)
 import Time exposing (Month(..))
 import Types
     exposing
@@ -172,8 +169,8 @@ periodFieldset category periods =
                 , alignItems flexStart
                 , flexWrap wrap
                 , padding (rem 0)
+                , property "gap" "0.375rem 0.75rem"
                 ]
-            , style "gap" "0.375rem 0.75rem"
             ]
             (List.concatMap periodFields periods)
         , div
@@ -233,7 +230,7 @@ grid model =
                 (Date.max dates.death model.today)
     in
     div
-        [ css [ displayFlex, flexDirection Css.column ], style "gap" gapSize ]
+        [ css [ displayFlex, flexDirection Css.column, property "gap" gapSize ] ]
     <|
         List.indexedMap
             (\_ startOfYear -> row model dates unitsPerYear startOfYear)
@@ -250,7 +247,7 @@ row model dates unitsPerYear startOfYear =
             dateRange model.unit 1 startOfYear oneYearLater
     in
     div
-        [ css [ displayFlex ], style "gap" gapSize ]
+        [ css [ displayFlex, property "gap" gapSize ] ]
     <|
         List.indexedMap
             (\_ startOfUnit -> column model dates startOfUnit)
@@ -276,7 +273,7 @@ column model dates startOfUnit =
     in
     div
         [ css
-            [ width (px squareSize)
+            [ flex3 (int 1) (int 1) (pct 100)
             , height (px squareSize)
             , backgroundColor (hex boxColor)
             , border3 (px 1) solid (hex borderColor)
@@ -315,7 +312,7 @@ getState today startOfUnit endOfUnit =
 
 
 getPhase : Dates -> Date -> Date -> Phase
-getPhase dates startOfUnit endOfUnit =
+getPhase dates startOfUnit _ =
     if Date.compare startOfUnit dates.retirement /= LT then
         Retirement
 

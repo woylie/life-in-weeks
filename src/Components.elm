@@ -19,7 +19,6 @@ import Css
         , block
         , border3
         , borderRadius
-        , center
         , ch
         , color
         , cursor
@@ -35,11 +34,11 @@ import Css
         , hover
         , int
         , lineHeight
-        , margin
         , margin2
         , maxWidth
         , padding
         , pointer
+        , property
         , px
         , rem
         , right
@@ -67,7 +66,6 @@ import Html.Styled.Attributes as Attr
         , href
         , id
         , selected
-        , style
         , target
         , type_
         , value
@@ -116,8 +114,8 @@ fieldset legendText content =
             , padding (rem 0.75)
             , borderRadius (px 4)
             , margin2 (rem 0.375) (rem 0)
+            , property "gap" "0.375rem 0.75rem"
             ]
-        , style "gap" "0.375rem 0.75rem"
         ]
     <|
         [ legend
@@ -214,10 +212,12 @@ select inputId currentValue msg options =
     Html.select
         [ id inputId
         , onInput msg
-        , css inputCss
-        , style "-webkit-appearance" "none"
-        , style "-moz-appearance" "none"
-        , style "appearance" "none"
+        , css <|
+            inputCss
+                ++ [ property "-webkit-appearance" "none"
+                   , property "-moz-appearance" "none"
+                   , property "appearance" "none"
+                   ]
         ]
     <|
         Html.option [] []
