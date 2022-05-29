@@ -4,4 +4,4 @@ life-in-weeks.js
 yarn-error.log
 
 public/*.*
-!public/index.html
+!public/life-in-weeks-embed.js
