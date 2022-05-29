@@ -5,9 +5,13 @@ import Color.Manipulate exposing (lighten)
 import Colors
 import Date exposing (Interval(..), Unit(..))
 import DateRange
+import Decoder
 import Encoder
+import File
 import File.Download
+import File.Select
 import Html.Styled exposing (toUnstyled)
+import Json.Decode
 import Json.Encode
 import Task
 import Time exposing (Month(..))
@@ -78,6 +82,20 @@ update msg model =
                 "application/json"
                 (Json.Encode.encode 2 (Encoder.encode model))
             )
+
+        JsonRequested ->
+            ( model, File.Select.file [ "application/json" ] JsonSelected )
+
+        JsonSelected file ->
+            ( model, Task.perform JsonLoaded (File.toString file) )
+
+        JsonLoaded content ->
+            case Json.Decode.decodeString Decoder.decoder content of
+                Ok importedModel ->
+                    ( { importedModel | today = model.today }, Cmd.none )
+
+                Err _ ->
+                    ( model, Cmd.none )
 
         ReceiveDate date ->
             ( { model | today = date }, Cmd.none )

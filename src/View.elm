@@ -200,6 +200,7 @@ actionButtons : Html Msg
 actionButtons =
     Components.fieldset "Import/Export"
         [ Components.button "export JSON" Export
+        , Components.button "import JSON" JsonRequested
         ]
 
 

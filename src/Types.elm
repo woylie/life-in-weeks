@@ -17,6 +17,7 @@ module Types exposing
 
 import Color exposing (Color)
 import Date exposing (Date, Unit)
+import File exposing (File)
 
 
 type alias Model =
@@ -135,6 +136,9 @@ type Msg
     | ReceiveDate Date
     | RemoveEvent Int
     | RemovePeriod Int
+    | JsonLoaded String
+    | JsonRequested
+    | JsonSelected File
     | SelectDate (Maybe Date)
     | SetBirthdate String
     | SetLifeExpectancy String
