@@ -7,6 +7,7 @@ import Css
         , backgroundColor
         , block
         , border3
+        , borderRadius
         , display
         , displayFlex
         , flex
@@ -38,7 +39,7 @@ import Html.Styled
         )
 import Html.Styled.Attributes exposing (css, href, style, target)
 import Time exposing (Month(..))
-import Types exposing (Model, Msg(..), State(..))
+import Types exposing (Dates, Model, Msg(..), Phase(..), State(..))
 
 
 gapSize : String
@@ -46,25 +47,17 @@ gapSize =
     "2px"
 
 
+squareSize : Float
+squareSize =
+    6
+
+
 view : Model -> Html Msg
 view model =
-    let
-        unitsPerYear =
-            numberOfUnitsPerYear model.unit
-
-        deathdate =
-            Date.add
-                model.unit
-                (unitsPerYear * model.lifeExpectancy)
-                model.birthdate
-
-        years =
-            dateRange model.unit unitsPerYear model.birthdate deathdate
-    in
     Components.container
         [ div
             []
-            [ grid model.today model.unit unitsPerYear years
+            [ grid model
             , settings model
             ]
         ]
@@ -102,6 +95,16 @@ settings model =
                     (Just 0)
                     (Just 150)
                 ]
+            , Components.field
+                "liw-field-retirement-age"
+                "Retirement age"
+                [ Components.numberInput
+                    "liw-field-retirement-age"
+                    model.retirementAge
+                    SetRetirementAge
+                    (Just 0)
+                    (Just 100)
+                ]
             , p
                 [ css
                     [ fontSize (rem 0.75)
@@ -121,73 +124,121 @@ settings model =
         ]
 
 
-grid : Date -> Unit -> Int -> List Date -> Html msg
-grid today unit unitsPerYear years =
+grid : Model -> Html msg
+grid model =
+    let
+        unitsPerYear =
+            numberOfUnitsPerYear model.unit
+
+        dates =
+            getDates model unitsPerYear
+
+        years =
+            dateRange model.unit unitsPerYear model.birthdate dates.death
+    in
     div
         [ css [ displayFlex, flexDirection Css.column ], style "gap" gapSize ]
     <|
         List.indexedMap
-            (\_ startOfYear ->
-                let
-                    oneYearLater =
-                        Date.add unit unitsPerYear startOfYear
-
-                    units =
-                        dateRange unit 1 startOfYear oneYearLater
-                in
-                row <|
-                    List.indexedMap
-                        (\_ startOfUnit ->
-                            let
-                                endOfUnit =
-                                    Date.add unit 1 startOfUnit
-                                        |> Date.add Days -1
-
-                                state =
-                                    if Date.isBetween startOfUnit endOfUnit today then
-                                        Present
-
-                                    else if Date.compare startOfUnit today == LT then
-                                        Past
-
-                                    else
-                                        Future
-                            in
-                            column state
-                        )
-                        units
-            )
+            (\_ startOfYear -> row model dates unitsPerYear startOfYear)
             years
 
 
-row : List (Html msg) -> Html msg
-row content =
+row : Model -> Dates -> Int -> Date -> Html msg
+row model dates unitsPerYear startOfYear =
+    let
+        oneYearLater =
+            Date.add model.unit unitsPerYear startOfYear
+
+        units =
+            dateRange model.unit 1 startOfYear oneYearLater
+    in
     div
         [ css [ displayFlex ], style "gap" gapSize ]
-        content
+    <|
+        List.indexedMap
+            (\_ startOfUnit -> column model dates startOfUnit)
+            units
 
 
-column : State -> Html msg
-column state =
+column : Model -> Dates -> Date -> Html msg
+column model dates startOfUnit =
     let
+        endOfUnit =
+            startOfUnit
+                |> Date.add model.unit 1
+                |> Date.add Days -1
+
+        state =
+            getState model.today startOfUnit endOfUnit
+
+        phase =
+            getPhase dates startOfUnit endOfUnit
+
         ( boxColor, borderColor ) =
-            case state of
-                Past ->
-                    ( "BBBBBB", "BBBBBB" )
-
-                Present ->
-                    ( "24b373", "24b373" )
-
-                Future ->
-                    ( "FFFFFF", "BBBBBB" )
+            getColor state phase
     in
     div
         [ css
-            [ width (px 6)
-            , height (px 6)
+            [ width (px squareSize)
+            , height (px squareSize)
             , backgroundColor (hex boxColor)
             , border3 (px 1) solid (hex borderColor)
+            , borderRadius (px 2)
             , display block
             ]
         ]
         []
+
+
+getDates : Model -> Int -> Dates
+getDates model unitsPerYear =
+    { death =
+        Date.add
+            model.unit
+            (unitsPerYear * model.lifeExpectancy)
+            model.birthdate
+    , retirement =
+        Date.add
+            model.unit
+            (unitsPerYear * model.retirementAge)
+            model.birthdate
+    }
+
+
+getState : Date -> Date -> Date -> State
+getState today startOfUnit endOfUnit =
+    if Date.isBetween startOfUnit endOfUnit today then
+        Present
+
+    else if Date.compare startOfUnit today == LT then
+        Past
+
+    else
+        Future
+
+
+getPhase : Dates -> Date -> Date -> Phase
+getPhase dates startOfUnit endOfUnit =
+    if Date.compare startOfUnit dates.retirement /= LT then
+        Retirement
+
+    else
+        Default
+
+
+getColor : State -> Phase -> ( String, String )
+getColor state phase =
+    -- (boxColor, borderColor)
+    case ( state, phase ) of
+        ( Past, _ ) ->
+            ( "54DEFD", "54DEFD" )
+
+        ( Present, _ ) ->
+            ( "49C6E5", "49C6E5" )
+
+        ( Future, Default ) ->
+            ( "FFFBFA", "8BD7D2" )
+
+        ( Future, Retirement ) ->
+            ( "8BD7D2", "8BD7D2" )

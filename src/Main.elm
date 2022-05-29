@@ -24,6 +24,7 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     ( { birthdate = Date.fromCalendarDate 1990 Jan 1
       , lifeExpectancy = 73
+      , retirementAge = 65
       , today = Date.fromCalendarDate 2000 Jan 1
       , unit = Weeks
       }
@@ -38,28 +39,31 @@ update msg model =
             ( { model | today = date }, Cmd.none )
 
         SetBirthdate s ->
-            case Date.fromIsoString s of
-                Ok date ->
-                    ( { model | birthdate = date }, Cmd.none )
-
-                Err _ ->
-                    ( model, Cmd.none )
+            ( { model | birthdate = s |> Date.fromIsoString |> Result.withDefault model.birthdate }
+            , Cmd.none
+            )
 
         SetLifeExpectancy s ->
-            case String.toInt s of
-                Just i ->
-                    ( { model | lifeExpectancy = i }, Cmd.none )
+            ( { model | lifeExpectancy = toIntWithDefault model.lifeExpectancy s }
+            , Cmd.none
+            )
 
-                Nothing ->
-                    ( model, Cmd.none )
+        SetRetirementAge s ->
+            ( { model | retirementAge = toIntWithDefault model.retirementAge s }
+            , Cmd.none
+            )
 
         SetUnit s ->
-            case DateRange.stringToUnit s of
-                Just unit ->
-                    ( { model | unit = unit }, Cmd.none )
+            ( { model | unit = s |> DateRange.stringToUnit |> Maybe.withDefault model.unit }
+            , Cmd.none
+            )
 
-                Nothing ->
-                    ( model, Cmd.none )
+
+toIntWithDefault : Int -> String -> Int
+toIntWithDefault default s =
+    s
+        |> String.toInt
+        |> Maybe.withDefault default
 
 
 subscriptions : Model -> Sub Msg
