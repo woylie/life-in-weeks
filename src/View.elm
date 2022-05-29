@@ -134,7 +134,11 @@ grid model =
             getDates model unitsPerYear
 
         years =
-            dateRange model.unit unitsPerYear model.birthdate dates.death
+            dateRange
+                model.unit
+                unitsPerYear
+                model.birthdate
+                (Date.max dates.death model.today)
     in
     div
         [ css [ displayFlex, flexDirection Css.column ], style "gap" gapSize ]
