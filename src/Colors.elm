@@ -1,4 +1,4 @@
-module Colors exposing (categoryColor, getColor)
+module Colors exposing (categoryColor, getColor, invertColor)
 
 import Color exposing (Color, rgb255)
 import Types exposing (Category(..), Phase(..), State(..))
@@ -27,6 +27,11 @@ todayColor =
 selectedColor : Color
 selectedColor =
     rgb255 60 73 63
+
+
+invertColor : Color
+invertColor =
+    rgb255 141 107 148
 
 
 categoryColor : Category -> Color

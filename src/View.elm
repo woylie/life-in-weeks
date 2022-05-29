@@ -7,12 +7,15 @@ import Css
     exposing
         ( alignItems
         , alignSelf
+        , backgroundColor
         , block
         , border
+        , border3
         , borderRadius
         , borderStyle
         , borderWidth
         , center
+        , color
         , cursor
         , display
         , displayFlex
@@ -25,8 +28,13 @@ import Css
         , flexWrap
         , fontSize
         , height
+        , hex
         , int
+        , listStyleType
         , margin
+        , margin2
+        , margin4
+        , none
         , padding
         , pct
         , pointer
@@ -450,18 +458,28 @@ filterMatchingPeriods startOfUnit endOfUnit periods =
 
 details : Model -> Dates -> Html Msg
 details model dates =
-    case model.selectedDate of
-        Just date ->
-            detailsForDate model dates date
+    div
+        [ css
+            [ padding (rem 0.75)
+            , borderRadius (px 4)
+            , margin4 (rem 0.75) (rem 0) (rem 0.375) (rem 0)
+            , property
+                "background-color"
+                (Color.toCssString Colors.invertColor)
+            , color (hex "FFFFFF")
+            , fontSize (rem 0.75)
+            ]
+        ]
+        [ case model.selectedDate of
+            Just date ->
+                detailsForDate model dates date
 
-        Nothing ->
-            div
-                []
-                [ text <|
+            Nothing ->
+                text <|
                     "Select "
                         ++ DateRange.unitToStringSingular model.unit
                         ++ " to show details"
-                ]
+        ]
 
 
 detailsForDate : Model -> Dates -> Date -> Html Msg
@@ -516,7 +534,7 @@ detailsForDate model dates date =
                 ]
     in
     ul
-        []
+        [ css [ margin (rem 0), padding (rem 0), listStyleType none ] ]
         (List.map
             (\item -> li [] [ text item ])
             items
