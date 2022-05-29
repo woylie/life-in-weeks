@@ -1,6 +1,7 @@
 module Colors exposing (categoryColor, getColor, invertColor, selectedColor)
 
 import Color exposing (Color, rgb255)
+import Color.Manipulate exposing (lighten)
 import Types exposing (Category(..), Phase(..), State(..))
 
 
@@ -92,7 +93,7 @@ getColor state phase =
             ( todayColor, todayColor )
 
         Future ->
-            ( Color.white, phaseColor )
+            ( lighten 0.3 phaseColor, phaseColor )
 
         Selected ->
             ( selectedColor, selectedColor )
