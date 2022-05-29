@@ -11841,7 +11841,6 @@ var $author$project$Colors$pastLifeExpectancyColor = A3($avh4$elm_color$Color$rg
 var $author$project$Colors$retirementColor = A3($avh4$elm_color$Color$rgb255, 210, 198, 207);
 var $author$project$Colors$selectedColor = A3($avh4$elm_color$Color$rgb255, 60, 73, 63);
 var $author$project$Colors$todayColor = A3($avh4$elm_color$Color$rgb255, 73, 198, 229);
-var $avh4$elm_color$Color$white = A4($avh4$elm_color$Color$RgbaSpace, 255 / 255, 255 / 255, 255 / 255, 1.0);
 var $author$project$Colors$getColor = F2(
 	function (state, phase) {
 		var phaseColor = function () {
@@ -11863,7 +11862,9 @@ var $author$project$Colors$getColor = F2(
 			case 1:
 				return _Utils_Tuple2($author$project$Colors$todayColor, $author$project$Colors$todayColor);
 			case 2:
-				return _Utils_Tuple2($avh4$elm_color$Color$white, phaseColor);
+				return _Utils_Tuple2(
+					A2($noahzgordon$elm_color_extra$Color$Manipulate$lighten, 0.3, phaseColor),
+					phaseColor);
 			default:
 				return _Utils_Tuple2($author$project$Colors$selectedColor, $author$project$Colors$selectedColor);
 		}
@@ -11928,6 +11929,7 @@ var $author$project$Components$showIf = F2(
 		return show ? content : $rtfeldman$elm_css$Html$Styled$text('');
 	});
 var $author$project$View$squareSize = 6;
+var $avh4$elm_color$Color$white = A4($avh4$elm_color$Color$RgbaSpace, 255 / 255, 255 / 255, 255 / 255, 1.0);
 var $rtfeldman$elm_css$Css$width = $rtfeldman$elm_css$Css$prop1('width');
 var $author$project$View$column = F4(
 	function (model, dates, periods, startOfUnit) {
