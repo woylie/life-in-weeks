@@ -4,7 +4,7 @@
   "main": "index.js",
   "repository": "https://github.com/woylie/life-in-weeks",
   "author": "Mathias Polligkeit",
-  "license": "Apache-2.0",
+  "license": "AGPL-3.0-or-later",
   "scripts": {
     "analyse": "elm-analyse -s",
     "build": "elm make src/Main.elm --optimize --output=./public/life-in-weeks.js",
