@@ -1,5 +1,6 @@
 module Types exposing
     ( Category(..)
+    , ColorMap
     , Dates
     , Event
     , EventField(..)
@@ -160,4 +161,12 @@ type alias FieldOpts =
     { min : Maybe Int
     , max : Maybe Int
     , required : Bool
+    }
+
+
+type alias ColorMap =
+    { red : Float
+    , green : Float
+    , blue : Float
+    , alpha : Float
     }

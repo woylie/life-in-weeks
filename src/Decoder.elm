@@ -18,7 +18,15 @@ import Json.Decode as Decode
 import Json.Decode.Extra exposing (fromMaybe, fromResult)
 import Json.Decode.Pipeline exposing (hardcoded, optional, required)
 import Time exposing (Month(..))
-import Types exposing (Category, Event, Model, Period, categoryFromString)
+import Types
+    exposing
+        ( Category
+        , ColorMap
+        , Event
+        , Model
+        , Period
+        , categoryFromString
+        )
 
 
 decoder : Decoder Model
@@ -66,10 +74,6 @@ category =
 color : Decoder Color
 color =
     colorMap |> map Color.fromRgba
-
-
-type alias ColorMap =
-    { red : Float, green : Float, blue : Float, alpha : Float }
 
 
 colorMap : Decoder ColorMap

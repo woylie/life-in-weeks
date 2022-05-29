@@ -6,6 +6,7 @@ import Colors
 import Date exposing (Interval(..), Unit(..))
 import DateRange
 import Decoder
+import Encoder
 import Html.Styled exposing (toUnstyled)
 import Task
 import Time exposing (Month(..))
