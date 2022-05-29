@@ -610,7 +610,10 @@ detailsForDate model dates date =
                 ++ Date.format dateFormat endOfUnit
 
         selectedPeriod =
-            "Selected period: " ++ periodText
+            "Selected "
+                ++ DateRange.unitToStringSingular model.unit
+                ++ ": "
+                ++ periodText
 
         age =
             "Age: "
