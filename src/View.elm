@@ -502,9 +502,9 @@ detailsForDate model dates date =
     ul
         []
         [ li [] [ text <| "selected period: " ++ periodText ]
-        , li [] [ text <| "age: " ++ timeDifference model.birthdate date ]
+        , li [] [ text <| "age: " ++ timeDifference model.birthdate endOfUnit ]
         , if pastLifeExpectancy then
-            li [] [ text <| timeDifference dates.death date ++ " past life expectancy" ]
+            li [] [ text <| timeDifference dates.death endOfUnit ++ " past life expectancy" ]
 
           else
             text ""
