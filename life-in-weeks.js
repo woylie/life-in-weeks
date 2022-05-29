@@ -10994,7 +10994,6 @@ var $justinmimbs$date$Date$max = F2(
 var $author$project$Types$SelectDate = function (a) {
 	return {$: 5, a: a};
 };
-var $author$project$Types$Selected = 3;
 var $rtfeldman$elm_css$Css$alignItems = function (fn) {
 	return A3(
 		$rtfeldman$elm_css$Css$Internal$getOverloadedProperty,
@@ -11076,6 +11075,7 @@ var $author$project$View$getPhase = F4(
 var $author$project$Types$Future = 2;
 var $author$project$Types$Past = 0;
 var $author$project$Types$Present = 1;
+var $author$project$Types$Selected = 3;
 var $justinmimbs$date$Date$isBetween = F3(
 	function (_v0, _v1, _v2) {
 		var a = _v0;
@@ -11137,9 +11137,59 @@ var $rtfeldman$elm_css$Html$Styled$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
+var $noahzgordon$elm_color_extra$Color$Blending$clampChannel = A2($elm$core$Basics$clamp, 0, 1);
+var $noahzgordon$elm_color_extra$Color$Blending$calcChanel = F6(
+	function (fn, aB, aS, ar, cB, cS) {
+		var cS_ = cS;
+		var cB_ = cB;
+		var cr = A2(fn, cB_, cS_);
+		var cr_ = (!ar) ? cr : (((aS * cS_) + (aB * (cB_ - (aS * ((cB_ + cS_) - cr))))) / ar);
+		return $noahzgordon$elm_color_extra$Color$Blending$clampChannel(cr_);
+	});
+var $avh4$elm_color$Color$rgba = F4(
+	function (r, g, b, a) {
+		return A4($avh4$elm_color$Color$RgbaSpace, r, g, b, a);
+	});
+var $avh4$elm_color$Color$toRgba = function (_v0) {
+	var r = _v0.a;
+	var g = _v0.b;
+	var b = _v0.c;
+	var a = _v0.d;
+	return {af: a, a8: b, bf: g, bq: r};
+};
+var $noahzgordon$elm_color_extra$Color$Blending$colorBlend = F3(
+	function (fn, clB, clS) {
+		var rgba2 = $avh4$elm_color$Color$toRgba(clS);
+		var rgba1 = $avh4$elm_color$Color$toRgba(clB);
+		var ar = rgba2.af + (rgba1.af * (1 - rgba2.af));
+		var calc = A4($noahzgordon$elm_color_extra$Color$Blending$calcChanel, fn, rgba1.af, rgba2.af, ar);
+		return A4(
+			$avh4$elm_color$Color$rgba,
+			A2(calc, rgba1.bq, rgba2.bq),
+			A2(calc, rgba1.bf, rgba2.bf),
+			A2(calc, rgba1.a8, rgba2.a8),
+			ar);
+	});
+var $noahzgordon$elm_color_extra$Color$Blending$screen_ = F2(
+	function (cB, cS) {
+		return (cB + cS) - (cB * cS);
+	});
+var $noahzgordon$elm_color_extra$Color$Blending$overlay_ = F2(
+	function (cB, cS) {
+		var cB_ = cB * 2;
+		return (cB_ <= 1) ? (cB_ * cS) : A2($noahzgordon$elm_color_extra$Color$Blending$screen_, cB_ - 1, cS);
+	});
+var $noahzgordon$elm_color_extra$Color$Blending$overlay = F2(
+	function (clB, clS) {
+		return A3($noahzgordon$elm_color_extra$Color$Blending$colorBlend, $noahzgordon$elm_color_extra$Color$Blending$overlay_, clB, clS);
+	});
 var $rtfeldman$elm_css$Css$PercentageUnits = 0;
 var $rtfeldman$elm_css$Css$pct = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, 0, '%');
 var $rtfeldman$elm_css$Css$pointer = {c: 0, D: 'pointer'};
+var $author$project$Components$showIf = F2(
+	function (show, content) {
+		return show ? content : $rtfeldman$elm_css$Html$Styled$text('');
+	});
 var $rtfeldman$elm_css$Css$solid = {r: 0, ab: 0, D: 'solid'};
 var $author$project$View$squareSize = 6;
 var $rtfeldman$elm_css$Css$width = $rtfeldman$elm_css$Css$prop1('width');
@@ -11149,10 +11199,10 @@ var $author$project$View$column = F4(
 		var events = A3($author$project$View$filterMatchingEvents, startOfUnit, endOfUnit, model.Q);
 		var phase = A4($author$project$View$getPhase, dates, periods, startOfUnit, endOfUnit);
 		var state = A4($author$project$View$getState, model.cw, model.bs, startOfUnit, endOfUnit);
-		var dotColor = (state === 3) ? $avh4$elm_color$Color$white : $author$project$Colors$selectedColor;
 		var _v0 = A2($author$project$Colors$getColor, state, phase);
 		var boxColor = _v0.a;
 		var borderColor = _v0.b;
+		var dotColor = A2($noahzgordon$elm_color_extra$Color$Blending$overlay, boxColor, $avh4$elm_color$Color$white);
 		return A2(
 			$rtfeldman$elm_css$Html$Styled$div,
 			_List_fromArray(
@@ -11192,26 +11242,29 @@ var $author$project$View$column = F4(
 				]),
 			_List_fromArray(
 				[
-					(!_Utils_eq(events, _List_Nil)) ? A2(
-					$rtfeldman$elm_css$Html$Styled$div,
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Html$Styled$Attributes$css(
-							_List_fromArray(
-								[
-									$rtfeldman$elm_css$Css$width(
-									$rtfeldman$elm_css$Css$px($author$project$View$dotSize)),
-									$rtfeldman$elm_css$Css$height(
-									$rtfeldman$elm_css$Css$px($author$project$View$dotSize)),
-									$rtfeldman$elm_css$Css$borderRadius(
-									$rtfeldman$elm_css$Css$px(142191)),
-									A2(
-									$rtfeldman$elm_css$Css$property,
-									'background-color',
-									$avh4$elm_color$Color$toCssString(dotColor))
-								]))
-						]),
-					_List_Nil) : $rtfeldman$elm_css$Html$Styled$text('')
+					A2(
+					$author$project$Components$showIf,
+					!_Utils_eq(events, _List_Nil),
+					A2(
+						$rtfeldman$elm_css$Html$Styled$div,
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Html$Styled$Attributes$css(
+								_List_fromArray(
+									[
+										$rtfeldman$elm_css$Css$width(
+										$rtfeldman$elm_css$Css$px($author$project$View$dotSize)),
+										$rtfeldman$elm_css$Css$height(
+										$rtfeldman$elm_css$Css$px($author$project$View$dotSize)),
+										$rtfeldman$elm_css$Css$borderRadius(
+										$rtfeldman$elm_css$Css$px(142191)),
+										A2(
+										$rtfeldman$elm_css$Css$property,
+										'background-color',
+										$avh4$elm_color$Color$toCssString(dotColor))
+									]))
+							]),
+						_List_Nil))
 				]));
 	});
 var $author$project$View$row = F5(
