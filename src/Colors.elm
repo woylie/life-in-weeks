@@ -93,7 +93,7 @@ getColor state phase =
             ( todayColor, todayColor )
 
         Future ->
-            ( lighten 0.3 phaseColor, phaseColor )
+            ( lighten 0.5 phaseColor, phaseColor )
 
         Selected ->
             ( selectedColor, selectedColor )

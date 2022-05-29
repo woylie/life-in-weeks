@@ -13,6 +13,7 @@ import File.Select
 import Html.Styled exposing (toUnstyled)
 import Json.Decode
 import Json.Encode
+import Ports
 import Task
 import Time exposing (Month(..))
 import Types
@@ -28,7 +29,7 @@ import Types
 import View exposing (view)
 
 
-main : Program () Model Msg
+main : Program (Maybe String) Model Msg
 main =
     Browser.element
         { init = init
@@ -38,42 +39,43 @@ main =
         }
 
 
-init : () -> ( Model, Cmd Msg )
-init _ =
-    ( { birthdate = Date.fromCalendarDate 1990 Jan 1
-      , events =
-            [ { id = 0
-              , name = "Graduation"
-              , date = Date.fromCalendarDate 2014 Jun 30
-              }
-            ]
-      , lifeExpectancy = 73
-      , periods =
-            [ { id = 0
-              , name = "University of Oxford"
-              , startDate = Date.fromCalendarDate 2008 Sep 1
-              , endDate = Just <| Date.fromCalendarDate 2014 Jun 30
-              , category = Education
-              , color = Colors.categoryColor Education
-              }
-            ]
-      , retirementAge = 65
-      , selectedDate = Nothing
-      , today = Date.fromCalendarDate 2000 Jan 1
-      , unit = Weeks
-      }
+init : Maybe String -> ( Model, Cmd Msg )
+init maybeStoredState =
+    let
+        model =
+            maybeStoredState
+                |> Maybe.andThen
+                    (Json.Decode.decodeString Decoder.decoder
+                        >> Result.toMaybe
+                    )
+                |> Maybe.withDefault initialModel
+    in
+    ( model
     , Date.today |> Task.perform ReceiveDate
     )
+
+
+initialModel : Model
+initialModel =
+    { birthdate = Date.fromCalendarDate 1990 Jan 1
+    , events = []
+    , lifeExpectancy = 73
+    , periods = []
+    , retirementAge = 65
+    , selectedDate = Nothing
+    , today = Date.fromCalendarDate 2000 Jan 1
+    , unit = Weeks
+    }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         AddEvent ->
-            ( { model | events = addEvent model.events }, Cmd.none )
+            { model | events = addEvent model.events } |> save
 
         AddPeriod category ->
-            ( { model | periods = addPeriod category model.periods }, Cmd.none )
+            { model | periods = addPeriod category model.periods } |> save
 
         Export ->
             ( model
@@ -101,56 +103,66 @@ update msg model =
             ( { model | today = date }, Cmd.none )
 
         RemoveEvent id ->
-            ( { model
+            { model
                 | events =
                     List.filter (\event -> event.id /= id) model.events
-              }
-            , Cmd.none
-            )
+            }
+                |> save
 
         RemovePeriod id ->
-            ( { model
+            { model
                 | periods =
                     List.filter (\period -> period.id /= id) model.periods
-              }
-            , Cmd.none
-            )
+            }
+                |> save
 
         SelectDate date ->
             ( { model | selectedDate = date }, Cmd.none )
 
         SetBirthdate s ->
-            ( { model | birthdate = s |> Date.fromIsoString |> Result.withDefault model.birthdate }
-            , Cmd.none
-            )
+            { model
+                | birthdate =
+                    s
+                        |> Date.fromIsoString
+                        |> Result.withDefault model.birthdate
+            }
+                |> save
 
         SetLifeExpectancy s ->
-            ( { model | lifeExpectancy = toIntWithDefault model.lifeExpectancy s }
-            , Cmd.none
-            )
+            { model | lifeExpectancy = toIntWithDefault model.lifeExpectancy s }
+                |> save
 
         SetRetirementAge s ->
-            ( { model | retirementAge = toIntWithDefault model.retirementAge s }
-            , Cmd.none
-            )
+            { model | retirementAge = toIntWithDefault model.retirementAge s }
+                |> save
 
         SetUnit s ->
-            ( { model
+            { model
                 | selectedDate = Nothing
                 , unit = s |> DateRange.unitFromString |> Maybe.withDefault model.unit
-              }
-            , Cmd.none
-            )
+            }
+                |> save
 
         UpdateEvent id field value ->
-            ( { model | events = updateEvents id field value model.events }
-            , Cmd.none
-            )
+            { model | events = updateEvents id field value model.events }
+                |> save
 
         UpdatePeriod id field value ->
-            ( { model | periods = updatePeriods id field value model.periods }
-            , Cmd.none
-            )
+            { model | periods = updatePeriods id field value model.periods }
+                |> save
+
+
+save : Model -> ( Model, Cmd Msg )
+save model =
+    ( model, sendModelToPort model )
+
+
+sendModelToPort : Model -> Cmd msg
+sendModelToPort model =
+    model
+        |> Encoder.encode
+        |> Json.Encode.encode 0
+        |> Ports.storeModel
 
 
 addEvent : List Event -> List Event
