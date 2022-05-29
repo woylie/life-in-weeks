@@ -57,7 +57,7 @@ import Html.Styled
         , text
         , ul
         )
-import Html.Styled.Attributes exposing (css)
+import Html.Styled.Attributes exposing (css, title)
 import Html.Styled.Events exposing (onClick)
 import List.Extra as List
 import Time exposing (Month(..))
@@ -427,6 +427,14 @@ column model dates periods startOfUnit =
         endOfUnit =
             DateRange.endOfUnit model.unit startOfUnit
 
+        dateFormat =
+            "MMMM ddd, y"
+
+        titleText =
+            Date.format dateFormat startOfUnit
+                ++ " - "
+                ++ Date.format dateFormat endOfUnit
+
         state =
             getState model.today model.selectedDate startOfUnit endOfUnit
 
@@ -458,6 +466,7 @@ column model dates periods startOfUnit =
             , justifyContent center
             ]
         , onClick (SelectDate (Just startOfUnit))
+        , title titleText
         ]
         [ Components.showIf (events /= [])
             (div
