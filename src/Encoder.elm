@@ -3,12 +3,11 @@ module Encoder exposing (encode)
 import Color exposing (Color)
 import Date exposing (Date)
 import DateRange
-import Json.Encode as Encode exposing (Value, float, int, list, object, string)
+import Json.Encode exposing (Value, float, int, list, object, string)
 import Json.Encode.Extra exposing (maybe)
 import Types
     exposing
         ( Category
-        , ColorMap
         , Event
         , Model
         , Period

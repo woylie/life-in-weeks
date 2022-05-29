@@ -8,10 +8,8 @@ import Css
     exposing
         ( alignItems
         , alignSelf
-        , backgroundColor
         , block
         , border
-        , border3
         , borderRadius
         , borderStyle
         , borderWidth
@@ -34,7 +32,6 @@ import Css
         , justifyContent
         , listStyleType
         , margin
-        , margin2
         , margin4
         , none
         , padding

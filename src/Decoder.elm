@@ -7,12 +7,10 @@ import Json.Decode as Decode
     exposing
         ( Decoder
         , andThen
-        , decodeString
         , float
         , int
         , list
         , map
-        , nullable
         , string
         )
 import Json.Decode.Extra exposing (fromMaybe, fromResult)
