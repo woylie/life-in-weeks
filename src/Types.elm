@@ -1,6 +1,8 @@
 module Types exposing
     ( Category(..)
     , Dates
+    , Event
+    , EventField(..)
     , FieldOpts
     , Model
     , Msg(..)
@@ -17,6 +19,7 @@ import Date exposing (Date, Unit)
 
 type alias Model =
     { birthdate : Date
+    , events : List Event
     , lifeExpectancy : Int
     , periods : List Period
     , retirementAge : Int
@@ -43,9 +46,21 @@ type alias Period =
 
 
 type PeriodField
-    = Name
-    | StartDate
-    | EndDate
+    = PeriodName
+    | PeriodStartDate
+    | PeriodEndDate
+
+
+type alias Event =
+    { id : Int
+    , name : String
+    , date : Date
+    }
+
+
+type EventField
+    = EventName
+    | EventDate
 
 
 type Category
@@ -84,14 +99,17 @@ categoryToString category =
 
 
 type Msg
-    = AddPeriod Category
+    = AddEvent
+    | AddPeriod Category
     | ReceiveDate Date
+    | RemoveEvent Int
     | RemovePeriod Int
     | SelectDate (Maybe Date)
     | SetBirthdate String
     | SetLifeExpectancy String
     | SetRetirementAge String
     | SetUnit String
+    | UpdateEvent Int EventField String
     | UpdatePeriod Int PeriodField String
 
 

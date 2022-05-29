@@ -65,6 +65,8 @@ import Types
     exposing
         ( Category(..)
         , Dates
+        , Event
+        , EventField(..)
         , Model
         , Msg(..)
         , Period
@@ -183,6 +185,8 @@ settings model =
             [ periodFieldsets Residence (filterPeriods Residence model.periods) ]
         , Components.fieldset "Other periods"
             [ periodFieldsets Other (filterPeriods Other model.periods) ]
+        , Components.fieldset "Singular events"
+            [ eventFieldsets model.events ]
         ]
 
 
@@ -232,7 +236,7 @@ periodFields period =
         [ Components.textInput
             (inputIdPrefix ++ "name")
             period.name
-            (UpdatePeriod period.id Name)
+            (UpdatePeriod period.id PeriodName)
             { defaultFieldOpts | required = True }
         ]
     , Components.field
@@ -241,7 +245,7 @@ periodFields period =
         [ Components.dateInput
             (inputIdPrefix ++ "startDate")
             (Just period.startDate)
-            (UpdatePeriod period.id StartDate)
+            (UpdatePeriod period.id PeriodStartDate)
             { defaultFieldOpts | required = True }
         ]
     , Components.field
@@ -250,10 +254,67 @@ periodFields period =
         [ Components.dateInput
             (inputIdPrefix ++ "endDate")
             period.endDate
-            (UpdatePeriod period.id EndDate)
+            (UpdatePeriod period.id PeriodEndDate)
             { defaultFieldOpts | required = False }
         ]
     , Components.button "remove" (RemovePeriod period.id)
+    ]
+
+
+eventFieldsets : List Event -> Html Msg
+eventFieldsets events =
+    div [] <|
+        List.map eventFieldset events
+            ++ [ div
+                    [ css [ flexBasis (pct 100), flexShrink (int 0) ] ]
+                    [ Components.button "add" AddEvent ]
+               ]
+
+
+eventFieldset : Event -> Html Msg
+eventFieldset event =
+    fieldset
+        [ css
+            [ border (px 0)
+            , margin (px 0)
+            , padding (px 0)
+            , displayFlex
+            , alignItems flexStart
+            , flexWrap wrap
+            , flexBasis (pct 100)
+            , flexShrink (int 0)
+            , padding (rem 0)
+            , property "gap" "0.375rem 0.75rem"
+            ]
+        ]
+        (eventFields event)
+
+
+eventFields : Event -> List (Html Msg)
+eventFields event =
+    let
+        inputIdPrefix =
+            "liw-field-event-" ++ String.fromInt event.id ++ "-"
+    in
+    [ Components.field
+        (inputIdPrefix ++ "name")
+        "Name"
+        [ Components.textInput
+            (inputIdPrefix ++ "name")
+            event.name
+            (UpdateEvent event.id EventName)
+            { defaultFieldOpts | required = True }
+        ]
+    , Components.field
+        (inputIdPrefix ++ "date")
+        "Date"
+        [ Components.dateInput
+            (inputIdPrefix ++ "date")
+            (Just event.date)
+            (UpdateEvent event.id EventDate)
+            { defaultFieldOpts | required = True }
+        ]
+    , Components.button "remove" (RemoveEvent event.id)
     ]
 
 
