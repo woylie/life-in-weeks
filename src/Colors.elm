@@ -14,6 +14,11 @@ retirementColor =
     rgb255 210 198 207
 
 
+pastLifeExpectancyColor : Color
+pastLifeExpectancyColor =
+    rgb255 20 149 204
+
+
 todayColor : Color
 todayColor =
     rgb255 73 198 229
@@ -61,6 +66,9 @@ getColor state phase =
 
                 Retirement ->
                     retirementColor
+
+                PastLifeExpectancy ->
+                    pastLifeExpectancyColor
 
                 Phase period ->
                     period.color

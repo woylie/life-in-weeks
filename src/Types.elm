@@ -75,4 +75,5 @@ type State
 type Phase
     = Default
     | Retirement
+    | PastLifeExpectancy
     | Phase Period

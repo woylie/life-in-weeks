@@ -382,12 +382,18 @@ getPhase dates periods startOfUnit endOfUnit =
 
         retirement =
             Date.compare startOfUnit dates.retirement /= LT
+
+        pastLifeExpectancy =
+            Date.compare startOfUnit dates.death /= LT
     in
     case matchingPeriod of
         Just period ->
             case period.category of
                 Work ->
-                    if retirement then
+                    if pastLifeExpectancy then
+                        PastLifeExpectancy
+
+                    else if retirement then
                         Retirement
 
                     else
@@ -397,7 +403,10 @@ getPhase dates periods startOfUnit endOfUnit =
                     Phase period
 
         Nothing ->
-            if retirement then
+            if pastLifeExpectancy then
+                PastLifeExpectancy
+
+            else if retirement then
                 Retirement
 
             else
