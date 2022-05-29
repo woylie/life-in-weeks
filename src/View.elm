@@ -233,16 +233,22 @@ getPhase dates startOfUnit endOfUnit =
 
 getColor : State -> Phase -> ( String, String )
 getColor state phase =
-    -- (boxColor, borderColor)
-    case ( state, phase ) of
-        ( Past, _ ) ->
-            ( "54DEFD", "54DEFD" )
+    let
+        phaseColor =
+            case phase of
+                Default ->
+                    "54DEFD"
 
-        ( Present, _ ) ->
+                Retirement ->
+                    "8BD7D2"
+    in
+    -- (backgroundColor, borderColor)
+    case state of
+        Past ->
+            ( phaseColor, phaseColor )
+
+        Present ->
             ( "49C6E5", "49C6E5" )
 
-        ( Future, Default ) ->
-            ( "FFFBFA", "8BD7D2" )
-
-        ( Future, Retirement ) ->
-            ( "8BD7D2", "8BD7D2" )
+        Future ->
+            ( "FFFFFF", phaseColor )
