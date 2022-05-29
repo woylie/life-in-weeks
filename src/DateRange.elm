@@ -3,10 +3,10 @@ module DateRange exposing
     , endOfUnit
     , intToOrdinal
     , numberOfUnitsPerYear
-    , stringToUnit
     , timeDifference
     , timeDifferenceAsOrdinal
     , timeDifferenceAsString
+    , unitFromString
     , unitToString
     , unitToStringSingular
     )
@@ -78,8 +78,8 @@ unitToStringSingular unit =
             "day"
 
 
-stringToUnit : String -> Maybe Unit
-stringToUnit s =
+unitFromString : String -> Maybe Unit
+unitFromString s =
     case s of
         "years" ->
             Just Years

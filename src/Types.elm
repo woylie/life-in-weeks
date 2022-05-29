@@ -10,6 +10,7 @@ module Types exposing
     , PeriodField(..)
     , Phase(..)
     , State(..)
+    , categoryFromString
     , categoryToString
     )
 
@@ -76,11 +77,11 @@ type Category
 categoryToString : Category -> String
 categoryToString category =
     case category of
-        Education ->
-            "Education"
-
         Activity ->
             "Activity"
+
+        Education ->
+            "Education"
 
         Membership ->
             "Membership"
@@ -96,6 +97,34 @@ categoryToString category =
 
         Work ->
             "Work"
+
+
+categoryFromString : String -> Maybe Category
+categoryFromString s =
+    case s of
+        "Activity" ->
+            Just Activity
+
+        "Education" ->
+            Just Education
+
+        "Membership" ->
+            Just Membership
+
+        "Other" ->
+            Just Other
+
+        "Relationship" ->
+            Just Relationship
+
+        "Residence" ->
+            Just Residence
+
+        "Work" ->
+            Just Work
+
+        _ ->
+            Nothing
 
 
 type Msg

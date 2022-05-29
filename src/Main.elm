@@ -5,6 +5,7 @@ import Color.Manipulate exposing (lighten)
 import Colors
 import Date exposing (Interval(..), Unit(..))
 import DateRange
+import Decoder
 import Html.Styled exposing (toUnstyled)
 import Task
 import Time exposing (Month(..))
@@ -108,7 +109,7 @@ update msg model =
         SetUnit s ->
             ( { model
                 | selectedDate = Nothing
-                , unit = s |> DateRange.stringToUnit |> Maybe.withDefault model.unit
+                , unit = s |> DateRange.unitFromString |> Maybe.withDefault model.unit
               }
             , Cmd.none
             )
