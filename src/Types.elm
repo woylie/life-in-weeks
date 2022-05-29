@@ -73,3 +73,4 @@ type State
 type Phase
     = Default
     | Retirement
+    | Phase Period

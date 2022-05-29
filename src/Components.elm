@@ -251,7 +251,7 @@ container content =
             , padding (rem 0)
             , lineHeight (rem 1.5)
             , color (hex "202c31")
-            , maxWidth (ch 65)
+            , maxWidth (ch 80)
             ]
         ]
     <|

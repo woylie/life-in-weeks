@@ -1,5 +1,7 @@
 module View exposing (view)
 
+import Color exposing (Color)
+import Colors
 import Components
 import Css
     exposing
@@ -9,6 +11,8 @@ import Css
         , border
         , border3
         , borderRadius
+        , borderStyle
+        , borderWidth
         , display
         , displayFlex
         , flex3
@@ -228,17 +232,22 @@ grid model =
                 unitsPerYear
                 model.birthdate
                 (Date.max dates.death model.today)
+
+        periods =
+            List.sortWith
+                (\p1 p2 -> Date.compare p1.startDate p2.startDate)
+                model.periods
     in
     div
         [ css [ displayFlex, flexDirection Css.column, property "gap" gapSize ] ]
     <|
         List.indexedMap
-            (\_ startOfYear -> row model dates unitsPerYear startOfYear)
+            (\_ startOfYear -> row model dates periods unitsPerYear startOfYear)
             years
 
 
-row : Model -> Dates -> Int -> Date -> Html msg
-row model dates unitsPerYear startOfYear =
+row : Model -> Dates -> List Period -> Int -> Date -> Html msg
+row model dates periods unitsPerYear startOfYear =
     let
         oneYearLater =
             Date.add model.unit unitsPerYear startOfYear
@@ -250,12 +259,12 @@ row model dates unitsPerYear startOfYear =
         [ css [ displayFlex, property "gap" gapSize ] ]
     <|
         List.indexedMap
-            (\_ startOfUnit -> column model dates startOfUnit)
+            (\_ startOfUnit -> column model dates periods startOfUnit)
             units
 
 
-column : Model -> Dates -> Date -> Html msg
-column model dates startOfUnit =
+column : Model -> Dates -> List Period -> Date -> Html msg
+column model dates periods startOfUnit =
     let
         endOfUnit =
             startOfUnit
@@ -266,19 +275,21 @@ column model dates startOfUnit =
             getState model.today startOfUnit endOfUnit
 
         phase =
-            getPhase dates startOfUnit endOfUnit
+            getPhase dates periods startOfUnit endOfUnit
 
         ( boxColor, borderColor ) =
-            getColor state phase
+            Colors.getColor state phase
     in
     div
         [ css
             [ flex3 (int 1) (int 1) (pct 100)
             , height (px squareSize)
-            , backgroundColor (hex boxColor)
-            , border3 (px 1) solid (hex borderColor)
+            , borderWidth (px 1)
+            , borderStyle solid
             , borderRadius (px 2)
             , display block
+            , property "background-color" (Color.toCssString boxColor)
+            , property "border-color" (Color.toCssString borderColor)
             ]
         ]
         []
@@ -311,33 +322,38 @@ getState today startOfUnit endOfUnit =
         Future
 
 
-getPhase : Dates -> Date -> Date -> Phase
-getPhase dates startOfUnit _ =
-    if Date.compare startOfUnit dates.retirement /= LT then
-        Retirement
-
-    else
-        Default
-
-
-getColor : State -> Phase -> ( String, String )
-getColor state phase =
+getPhase : Dates -> List Period -> Date -> Date -> Phase
+getPhase dates periods startOfUnit endOfUnit =
     let
-        phaseColor =
-            case phase of
-                Default ->
-                    "54DEFD"
-
-                Retirement ->
-                    "8BD7D2"
+        matchingPeriod =
+            periods
+                |> filterMatchingPeriods startOfUnit endOfUnit
+                |> List.head
     in
-    -- (backgroundColor, borderColor)
-    case state of
-        Past ->
-            ( phaseColor, phaseColor )
+    case matchingPeriod of
+        Just period ->
+            Phase period
 
-        Present ->
-            ( "49C6E5", "49C6E5" )
+        Nothing ->
+            if Date.compare startOfUnit dates.retirement /= LT then
+                Retirement
 
-        Future ->
-            ( "FFFFFF", phaseColor )
+            else
+                Default
+
+
+filterMatchingPeriods : Date -> Date -> List Period -> List Period
+filterMatchingPeriods startOfUnit endOfUnit periods =
+    let
+        filterCondition p =
+            case p.endDate of
+                Just endDate ->
+                    Date.compare p.startDate endOfUnit
+                        /= GT
+                        && Date.compare endDate startOfUnit
+                        /= LT
+
+                Nothing ->
+                    Date.compare p.startDate endOfUnit /= GT
+    in
+    List.filter filterCondition periods
