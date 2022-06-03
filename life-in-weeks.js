@@ -5567,8 +5567,52 @@ var $author$project$Types$Model = F9(
 	function (birthdate, categories, events, lifeExpectancy, periods, retirementAge, selectedDate, today, unit) {
 		return {cC: birthdate, cH: categories, cT: events, c3: lifeExpectancy, dc: periods, di: retirementAge, bg: selectedDate, a_: today, dq: unit};
 	});
-var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $elm$json$Json$Decode$andThen = _Json_andThen;
+var $author$project$Types$Activity = 1;
+var $author$project$Types$Education = 0;
+var $author$project$Types$Membership = 2;
+var $author$project$Types$Other = 3;
+var $author$project$Types$Relationship = 4;
+var $author$project$Types$Residence = 5;
+var $author$project$Types$Work = 6;
+var $author$project$Types$categoryFromString = function (s) {
+	switch (s) {
+		case 'Activity':
+			return $elm$core$Maybe$Just(1);
+		case 'Education':
+			return $elm$core$Maybe$Just(0);
+		case 'Membership':
+			return $elm$core$Maybe$Just(2);
+		case 'Other':
+			return $elm$core$Maybe$Just(3);
+		case 'Relationship':
+			return $elm$core$Maybe$Just(4);
+		case 'Residence':
+			return $elm$core$Maybe$Just(5);
+		case 'Work':
+			return $elm$core$Maybe$Just(6);
+		default:
+			return $elm$core$Maybe$Nothing;
+	}
+};
+var $elm$json$Json$Decode$fail = _Json_fail;
+var $elm_community$json_extra$Json$Decode$Extra$fromMaybe = F2(
+	function (error, val) {
+		if (!val.$) {
+			var v = val.a;
+			return $elm$json$Json$Decode$succeed(v);
+		} else {
+			return $elm$json$Json$Decode$fail(error);
+		}
+	});
+var $elm$json$Json$Decode$string = _Json_decodeString;
+var $author$project$Decoder$category = A2(
+	$elm$json$Json$Decode$andThen,
+	A2(
+		$elm$core$Basics$composeR,
+		$author$project$Types$categoryFromString,
+		$elm_community$json_extra$Json$Decode$Extra$fromMaybe('invalid category')),
+	$elm$json$Json$Decode$string);
 var $elm$core$Basics$always = F2(
 	function (a, _v0) {
 		return a;
@@ -6443,7 +6487,6 @@ var $justinmimbs$date$Date$fromIsoString = A2(
 				$elm$core$Basics$composeR,
 				$elm$core$Maybe$map($justinmimbs$date$Date$deadEndToString),
 				$elm$core$Maybe$withDefault('')))));
-var $elm$json$Json$Decode$fail = _Json_fail;
 var $elm_community$json_extra$Json$Decode$Extra$fromResult = function (result) {
 	if (!result.$) {
 		var successValue = result.a;
@@ -6453,141 +6496,10 @@ var $elm_community$json_extra$Json$Decode$Extra$fromResult = function (result) {
 		return $elm$json$Json$Decode$fail(errorMessage);
 	}
 };
-var $elm$json$Json$Decode$string = _Json_decodeString;
 var $author$project$Decoder$date = A2(
 	$elm$json$Json$Decode$andThen,
 	A2($elm$core$Basics$composeR, $justinmimbs$date$Date$fromIsoString, $elm_community$json_extra$Json$Decode$Extra$fromResult),
 	$elm$json$Json$Decode$string);
-var $elm$core$Dict$RBEmpty_elm_builtin = {$: -2};
-var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
-var $elm$core$Dict$Black = 1;
-var $elm$core$Dict$RBNode_elm_builtin = F5(
-	function (a, b, c, d, e) {
-		return {$: -1, a: a, b: b, c: c, d: d, e: e};
-	});
-var $elm$core$Dict$Red = 0;
-var $elm$core$Dict$balance = F5(
-	function (color, key, value, left, right) {
-		if ((right.$ === -1) && (!right.a)) {
-			var _v1 = right.a;
-			var rK = right.b;
-			var rV = right.c;
-			var rLeft = right.d;
-			var rRight = right.e;
-			if ((left.$ === -1) && (!left.a)) {
-				var _v3 = left.a;
-				var lK = left.b;
-				var lV = left.c;
-				var lLeft = left.d;
-				var lRight = left.e;
-				return A5(
-					$elm$core$Dict$RBNode_elm_builtin,
-					0,
-					key,
-					value,
-					A5($elm$core$Dict$RBNode_elm_builtin, 1, lK, lV, lLeft, lRight),
-					A5($elm$core$Dict$RBNode_elm_builtin, 1, rK, rV, rLeft, rRight));
-			} else {
-				return A5(
-					$elm$core$Dict$RBNode_elm_builtin,
-					color,
-					rK,
-					rV,
-					A5($elm$core$Dict$RBNode_elm_builtin, 0, key, value, left, rLeft),
-					rRight);
-			}
-		} else {
-			if ((((left.$ === -1) && (!left.a)) && (left.d.$ === -1)) && (!left.d.a)) {
-				var _v5 = left.a;
-				var lK = left.b;
-				var lV = left.c;
-				var _v6 = left.d;
-				var _v7 = _v6.a;
-				var llK = _v6.b;
-				var llV = _v6.c;
-				var llLeft = _v6.d;
-				var llRight = _v6.e;
-				var lRight = left.e;
-				return A5(
-					$elm$core$Dict$RBNode_elm_builtin,
-					0,
-					lK,
-					lV,
-					A5($elm$core$Dict$RBNode_elm_builtin, 1, llK, llV, llLeft, llRight),
-					A5($elm$core$Dict$RBNode_elm_builtin, 1, key, value, lRight, right));
-			} else {
-				return A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, left, right);
-			}
-		}
-	});
-var $elm$core$Basics$compare = _Utils_compare;
-var $elm$core$Dict$insertHelp = F3(
-	function (key, value, dict) {
-		if (dict.$ === -2) {
-			return A5($elm$core$Dict$RBNode_elm_builtin, 0, key, value, $elm$core$Dict$RBEmpty_elm_builtin, $elm$core$Dict$RBEmpty_elm_builtin);
-		} else {
-			var nColor = dict.a;
-			var nKey = dict.b;
-			var nValue = dict.c;
-			var nLeft = dict.d;
-			var nRight = dict.e;
-			var _v1 = A2($elm$core$Basics$compare, key, nKey);
-			switch (_v1) {
-				case 0:
-					return A5(
-						$elm$core$Dict$balance,
-						nColor,
-						nKey,
-						nValue,
-						A3($elm$core$Dict$insertHelp, key, value, nLeft),
-						nRight);
-				case 1:
-					return A5($elm$core$Dict$RBNode_elm_builtin, nColor, nKey, value, nLeft, nRight);
-				default:
-					return A5(
-						$elm$core$Dict$balance,
-						nColor,
-						nKey,
-						nValue,
-						nLeft,
-						A3($elm$core$Dict$insertHelp, key, value, nRight));
-			}
-		}
-	});
-var $elm$core$Dict$insert = F3(
-	function (key, value, dict) {
-		var _v0 = A3($elm$core$Dict$insertHelp, key, value, dict);
-		if ((_v0.$ === -1) && (!_v0.a)) {
-			var _v1 = _v0.a;
-			var k = _v0.b;
-			var v = _v0.c;
-			var l = _v0.d;
-			var r = _v0.e;
-			return A5($elm$core$Dict$RBNode_elm_builtin, 1, k, v, l, r);
-		} else {
-			var x = _v0;
-			return x;
-		}
-	});
-var $elm$core$Dict$fromList = function (assocs) {
-	return A3(
-		$elm$core$List$foldl,
-		F2(
-			function (_v0, dict) {
-				var key = _v0.a;
-				var value = _v0.b;
-				return A3($elm$core$Dict$insert, key, value, dict);
-			}),
-		$elm$core$Dict$empty,
-		assocs);
-};
-var $elm$json$Json$Decode$keyValuePairs = _Json_decodeKeyValuePairs;
-var $elm$json$Json$Decode$dict = function (decoder) {
-	return A2(
-		$elm$json$Json$Decode$map,
-		$elm$core$Dict$fromList,
-		$elm$json$Json$Decode$keyValuePairs(decoder));
-};
 var $author$project$Types$Event = F3(
 	function (id, name, date) {
 		return {cM: date, bO: id, b_: name};
@@ -6689,49 +6601,6 @@ var $author$project$Types$Period = F6(
 	function (id, name, startDate, endDate, category, color) {
 		return {cI: category, cK: color, cS: endDate, bO: id, b_: name, dm: startDate};
 	});
-var $author$project$Types$Activity = 1;
-var $author$project$Types$Education = 0;
-var $author$project$Types$Membership = 2;
-var $author$project$Types$Other = 3;
-var $author$project$Types$Relationship = 4;
-var $author$project$Types$Residence = 5;
-var $author$project$Types$Work = 6;
-var $author$project$Types$categoryFromString = function (s) {
-	switch (s) {
-		case 'Activity':
-			return $elm$core$Maybe$Just(1);
-		case 'Education':
-			return $elm$core$Maybe$Just(0);
-		case 'Membership':
-			return $elm$core$Maybe$Just(2);
-		case 'Other':
-			return $elm$core$Maybe$Just(3);
-		case 'Relationship':
-			return $elm$core$Maybe$Just(4);
-		case 'Residence':
-			return $elm$core$Maybe$Just(5);
-		case 'Work':
-			return $elm$core$Maybe$Just(6);
-		default:
-			return $elm$core$Maybe$Nothing;
-	}
-};
-var $elm_community$json_extra$Json$Decode$Extra$fromMaybe = F2(
-	function (error, val) {
-		if (!val.$) {
-			var v = val.a;
-			return $elm$json$Json$Decode$succeed(v);
-		} else {
-			return $elm$json$Json$Decode$fail(error);
-		}
-	});
-var $author$project$Decoder$category = A2(
-	$elm$json$Json$Decode$andThen,
-	A2(
-		$elm$core$Basics$composeR,
-		$author$project$Types$categoryFromString,
-		$elm_community$json_extra$Json$Decode$Extra$fromMaybe('invalid category')),
-	$elm$json$Json$Decode$string);
 var $author$project$Types$ColorMap = F4(
 	function (red, green, blue, alpha) {
 		return {cz: alpha, cD: blue, cV: green, de: red};
@@ -6842,8 +6711,8 @@ var $author$project$Decoder$decoder = A3(
 							A4(
 								$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$optional,
 								'categories',
-								$elm$json$Json$Decode$dict($elm$json$Json$Decode$bool),
-								$elm$core$Dict$empty,
+								$elm$json$Json$Decode$list($author$project$Decoder$category),
+								_List_Nil,
 								A3(
 									$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
 									'birthdate',
@@ -6851,35 +6720,9 @@ var $author$project$Decoder$decoder = A3(
 									$elm$json$Json$Decode$succeed($author$project$Types$Model))))))))));
 var $author$project$Types$categories = _List_fromArray(
 	[1, 0, 2, 3, 4, 5, 6]);
-var $author$project$Types$categoryToString = function (category) {
-	switch (category) {
-		case 1:
-			return 'Activity';
-		case 0:
-			return 'Education';
-		case 2:
-			return 'Membership';
-		case 3:
-			return 'Other';
-		case 4:
-			return 'Relationship';
-		case 5:
-			return 'Residence';
-		default:
-			return 'Work';
-	}
-};
 var $author$project$Main$initialModel = {
 	cC: A3($justinmimbs$date$Date$fromCalendarDate, 1990, 0, 1),
-	cH: $elm$core$Dict$fromList(
-		A2(
-			$elm$core$List$map,
-			function (c) {
-				return _Utils_Tuple2(
-					$author$project$Types$categoryToString(c),
-					true);
-			},
-			$author$project$Types$categories)),
+	cH: $author$project$Types$categories,
 	cT: _List_Nil,
 	c3: 73,
 	dc: _List_Nil,
@@ -7196,6 +7039,7 @@ var $rtfeldman$elm_css$Hash$fromString = function (str) {
 		$rtfeldman$elm_hex$Hex$toString(
 			A2($robinheghan$murmur3$Murmur3$hashString, $rtfeldman$elm_css$Hash$initialSeed, str)));
 };
+var $elm$core$Basics$compare = _Utils_compare;
 var $elm$core$Dict$get = F2(
 	function (targetKey, dict) {
 		get:
@@ -7225,6 +7069,115 @@ var $elm$core$Dict$get = F2(
 						continue get;
 				}
 			}
+		}
+	});
+var $elm$core$Dict$Black = 1;
+var $elm$core$Dict$RBNode_elm_builtin = F5(
+	function (a, b, c, d, e) {
+		return {$: -1, a: a, b: b, c: c, d: d, e: e};
+	});
+var $elm$core$Dict$RBEmpty_elm_builtin = {$: -2};
+var $elm$core$Dict$Red = 0;
+var $elm$core$Dict$balance = F5(
+	function (color, key, value, left, right) {
+		if ((right.$ === -1) && (!right.a)) {
+			var _v1 = right.a;
+			var rK = right.b;
+			var rV = right.c;
+			var rLeft = right.d;
+			var rRight = right.e;
+			if ((left.$ === -1) && (!left.a)) {
+				var _v3 = left.a;
+				var lK = left.b;
+				var lV = left.c;
+				var lLeft = left.d;
+				var lRight = left.e;
+				return A5(
+					$elm$core$Dict$RBNode_elm_builtin,
+					0,
+					key,
+					value,
+					A5($elm$core$Dict$RBNode_elm_builtin, 1, lK, lV, lLeft, lRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, 1, rK, rV, rLeft, rRight));
+			} else {
+				return A5(
+					$elm$core$Dict$RBNode_elm_builtin,
+					color,
+					rK,
+					rV,
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, key, value, left, rLeft),
+					rRight);
+			}
+		} else {
+			if ((((left.$ === -1) && (!left.a)) && (left.d.$ === -1)) && (!left.d.a)) {
+				var _v5 = left.a;
+				var lK = left.b;
+				var lV = left.c;
+				var _v6 = left.d;
+				var _v7 = _v6.a;
+				var llK = _v6.b;
+				var llV = _v6.c;
+				var llLeft = _v6.d;
+				var llRight = _v6.e;
+				var lRight = left.e;
+				return A5(
+					$elm$core$Dict$RBNode_elm_builtin,
+					0,
+					lK,
+					lV,
+					A5($elm$core$Dict$RBNode_elm_builtin, 1, llK, llV, llLeft, llRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, 1, key, value, lRight, right));
+			} else {
+				return A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, left, right);
+			}
+		}
+	});
+var $elm$core$Dict$insertHelp = F3(
+	function (key, value, dict) {
+		if (dict.$ === -2) {
+			return A5($elm$core$Dict$RBNode_elm_builtin, 0, key, value, $elm$core$Dict$RBEmpty_elm_builtin, $elm$core$Dict$RBEmpty_elm_builtin);
+		} else {
+			var nColor = dict.a;
+			var nKey = dict.b;
+			var nValue = dict.c;
+			var nLeft = dict.d;
+			var nRight = dict.e;
+			var _v1 = A2($elm$core$Basics$compare, key, nKey);
+			switch (_v1) {
+				case 0:
+					return A5(
+						$elm$core$Dict$balance,
+						nColor,
+						nKey,
+						nValue,
+						A3($elm$core$Dict$insertHelp, key, value, nLeft),
+						nRight);
+				case 1:
+					return A5($elm$core$Dict$RBNode_elm_builtin, nColor, nKey, value, nLeft, nRight);
+				default:
+					return A5(
+						$elm$core$Dict$balance,
+						nColor,
+						nKey,
+						nValue,
+						nLeft,
+						A3($elm$core$Dict$insertHelp, key, value, nRight));
+			}
+		}
+	});
+var $elm$core$Dict$insert = F3(
+	function (key, value, dict) {
+		var _v0 = A3($elm$core$Dict$insertHelp, key, value, dict);
+		if ((_v0.$ === -1) && (!_v0.a)) {
+			var _v1 = _v0.a;
+			var k = _v0.b;
+			var v = _v0.c;
+			var l = _v0.d;
+			var r = _v0.e;
+			return A5($elm$core$Dict$RBNode_elm_builtin, 1, k, v, l, r);
+		} else {
+			var x = _v0;
+			return x;
 		}
 	});
 var $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles = F2(
@@ -7556,6 +7509,7 @@ var $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyledHtml = F2(
 					finalStyles);
 		}
 	});
+var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
 var $elm$core$List$singleton = function (value) {
 	return _List_fromArray(
 		[value]);
@@ -8021,7 +7975,28 @@ var $author$project$Main$addPeriod = F2(
 				},
 				$elm$core$List$reverse(periods)));
 	});
-var $elm$json$Json$Encode$bool = _Json_wrap;
+var $author$project$Types$categoryToString = function (category) {
+	switch (category) {
+		case 1:
+			return 'Activity';
+		case 0:
+			return 'Education';
+		case 2:
+			return 'Membership';
+		case 3:
+			return 'Other';
+		case 4:
+			return 'Relationship';
+		case 5:
+			return 'Residence';
+		default:
+			return 'Work';
+	}
+};
+var $author$project$Encoder$category = function (c) {
+	return $elm$json$Json$Encode$string(
+		$author$project$Types$categoryToString(c));
+};
 var $justinmimbs$date$Date$monthToNumber = function (m) {
 	switch (m) {
 		case 0:
@@ -8722,22 +8697,6 @@ var $author$project$Encoder$date = function (d) {
 	return $elm$json$Json$Encode$string(
 		$justinmimbs$date$Date$toIsoString(d));
 };
-var $elm$json$Json$Encode$dict = F3(
-	function (toKey, toValue, dictionary) {
-		return _Json_wrap(
-			A3(
-				$elm$core$Dict$foldl,
-				F3(
-					function (key, value, obj) {
-						return A3(
-							_Json_addField,
-							toKey(key),
-							toValue(value),
-							obj);
-					}),
-				_Json_emptyObject(0),
-				dictionary));
-	});
 var $elm$json$Json$Encode$int = _Json_wrap;
 var $elm$json$Json$Encode$object = function (pairs) {
 	return _Json_wrap(
@@ -8776,10 +8735,6 @@ var $elm$json$Json$Encode$list = F2(
 				_Json_emptyArray(0),
 				entries));
 	});
-var $author$project$Encoder$category = function (c) {
-	return $elm$json$Json$Encode$string(
-		$author$project$Types$categoryToString(c));
-};
 var $elm$json$Json$Encode$float = _Json_wrap;
 var $avh4$elm_color$Color$toRgba = function (_v0) {
 	var r = _v0.a;
@@ -8859,7 +8814,7 @@ var $author$project$Encoder$encode = function (model) {
 				$author$project$Encoder$date(model.cC)),
 				_Utils_Tuple2(
 				'categories',
-				A3($elm$json$Json$Encode$dict, $elm$core$Basics$identity, $elm$json$Json$Encode$bool, model.cH)),
+				A2($elm$json$Json$Encode$list, $author$project$Encoder$category, model.cH)),
 				_Utils_Tuple2(
 				'events',
 				A2($elm$json$Json$Encode$list, $author$project$Encoder$event, model.cT)),
@@ -8884,6 +8839,36 @@ var $elm$file$File$Select$file = F2(
 			$elm$core$Task$perform,
 			toMsg,
 			_File_uploadOne(mimes));
+	});
+var $elm$core$List$any = F2(
+	function (isOkay, list) {
+		any:
+		while (true) {
+			if (!list.b) {
+				return false;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				if (isOkay(x)) {
+					return true;
+				} else {
+					var $temp$isOkay = isOkay,
+						$temp$list = xs;
+					isOkay = $temp$isOkay;
+					list = $temp$list;
+					continue any;
+				}
+			}
+		}
+	});
+var $elm$core$List$member = F2(
+	function (x, xs) {
+		return A2(
+			$elm$core$List$any,
+			function (a) {
+				return _Utils_eq(a, x);
+			},
+			xs);
 	});
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
@@ -9153,11 +9138,21 @@ var $author$project$Main$update = F2(
 						}));
 			case 16:
 				var s = msg.a;
-				var currentValue = A2(
+				var toggleCategory = function (category) {
+					return A2($elm$core$List$member, category, model.cH) ? A2(
+						$elm$core$List$filter,
+						function (c) {
+							return !_Utils_eq(category, c);
+						},
+						model.cH) : A2($elm$core$List$cons, category, $author$project$Types$categories);
+				};
+				var newCategories = A2(
 					$elm$core$Maybe$withDefault,
-					false,
-					A2($elm$core$Dict$get, s, model.cH));
-				var newCategories = A3($elm$core$Dict$insert, s, !currentValue, model.cH);
+					model.cH,
+					A2(
+						$elm$core$Maybe$map,
+						toggleCategory,
+						$author$project$Types$categoryFromString(s)));
 				return $author$project$Main$save(
 					_Utils_update(
 						model,
@@ -9315,27 +9310,6 @@ var $rtfeldman$elm_css$Html$Styled$button = $rtfeldman$elm_css$Html$Styled$node(
 var $rtfeldman$elm_css$VirtualDom$Styled$Attribute = F3(
 	function (a, b, c) {
 		return {$: 0, a: a, b: b, c: c};
-	});
-var $elm$core$List$any = F2(
-	function (isOkay, list) {
-		any:
-		while (true) {
-			if (!list.b) {
-				return false;
-			} else {
-				var x = list.a;
-				var xs = list.b;
-				if (isOkay(x)) {
-					return true;
-				} else {
-					var $temp$isOkay = isOkay,
-						$temp$list = xs;
-					isOkay = $temp$isOkay;
-					list = $temp$list;
-					continue any;
-				}
-			}
-		}
 	});
 var $elm$core$Basics$composeL = F3(
 	function (g, f, x) {
@@ -11872,17 +11846,6 @@ var $author$project$DateRange$dateRange = F4(
 		return $elm$core$List$reverse(
 			A2(buildRange, startDate, _List_Nil));
 	});
-var $elm$core$Dict$filter = F2(
-	function (isGood, dict) {
-		return A3(
-			$elm$core$Dict$foldl,
-			F3(
-				function (k, v, d) {
-					return A2(isGood, k, v) ? A3($elm$core$Dict$insert, k, v, d) : d;
-				}),
-			$elm$core$Dict$empty,
-			dict);
-	});
 var $rtfeldman$elm_css$Css$flexDirection = $rtfeldman$elm_css$Css$prop1('flex-direction');
 var $author$project$View$gapSize = '2px';
 var $author$project$View$horizontalAxis = function (unit) {
@@ -11902,15 +11865,6 @@ var $justinmimbs$date$Date$max = F2(
 		var a = dateA;
 		var b = dateB;
 		return (_Utils_cmp(a, b) < 0) ? dateB : dateA;
-	});
-var $elm$core$List$member = F2(
-	function (x, xs) {
-		return A2(
-			$elm$core$List$any,
-			function (a) {
-				return _Utils_eq(a, x);
-			},
-			xs);
 	});
 var $author$project$Types$SelectDate = function (a) {
 	return {$: 9, a: a};
@@ -12067,7 +12021,6 @@ var $author$project$View$column = function (_v0) {
 	var matchingEvents = A3($author$project$View$filterMatchingEvents, startOfUnit, endOfUnit, events);
 	var dateFormat = 'MMMM ddd, y';
 	var titleText = A2($justinmimbs$date$Date$format, dateFormat, startOfUnit) + (' - ' + A2($justinmimbs$date$Date$format, dateFormat, endOfUnit));
-	var columnPeriods = A3($author$project$View$filterMatchingPeriods, startOfUnit, endOfUnit, periods);
 	var _v1 = A2($author$project$Colors$getColor, state, phase);
 	var boxColor = _v1.a;
 	var borderColor = _v1.b;
@@ -12194,21 +12147,10 @@ var $author$project$View$grid = F3(
 			unitsPerYear,
 			model.cC,
 			A2($justinmimbs$date$Date$max, dates.cN, model.a_));
-		var displayCategories = A2(
-			$elm$core$List$filterMap,
-			$author$project$Types$categoryFromString,
-			$elm$core$Dict$keys(
-				A2(
-					$elm$core$Dict$filter,
-					F2(
-						function (c, enabled) {
-							return enabled;
-						}),
-					model.cH)));
 		var periods = A2(
 			$elm$core$List$filter,
 			function (p) {
-				return A2($elm$core$List$member, p.cI, displayCategories);
+				return A2($elm$core$List$member, p.cI, model.cH);
 			},
 			model.dc);
 		return A2(
@@ -12344,6 +12286,7 @@ var $author$project$Types$SetUnit = function (a) {
 var $author$project$Types$ToggleCategory = function (a) {
 	return {$: 16, a: a};
 };
+var $elm$json$Json$Encode$bool = _Json_wrap;
 var $rtfeldman$elm_css$Html$Styled$Attributes$boolProperty = F2(
 	function (key, bool) {
 		return A2(
@@ -12384,8 +12327,8 @@ var $rtfeldman$elm_css$Html$Styled$Events$onInput = function (tagger) {
 var $rtfeldman$elm_css$Html$Styled$span = $rtfeldman$elm_css$Html$Styled$node('span');
 var $rtfeldman$elm_css$Html$Styled$Attributes$type_ = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('type');
 var $rtfeldman$elm_css$Html$Styled$Attributes$value = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('value');
-var $author$project$Components$checkbox = F3(
-	function (idPrefix, msg, _v0) {
+var $author$project$Components$checkbox = F2(
+	function (msg, _v0) {
 		var option = _v0.a;
 		var isChecked = _v0.b;
 		return A2(
@@ -12421,8 +12364,8 @@ var $author$project$Components$checkbox = F3(
 						]))
 				]));
 	});
-var $author$project$Components$checkboxes = F4(
-	function (idPrefix, labelText, msg, options) {
+var $author$project$Components$checkboxes = F3(
+	function (labelText, msg, options) {
 		return A2(
 			$rtfeldman$elm_css$Html$Styled$div,
 			_List_Nil,
@@ -12462,7 +12405,7 @@ var $author$project$Components$checkboxes = F4(
 						]),
 					A2(
 						$elm$core$List$map,
-						A2($author$project$Components$checkbox, idPrefix, msg),
+						$author$project$Components$checkbox(msg),
 						options))
 				]));
 	});
@@ -12907,10 +12850,7 @@ var $author$project$View$settings = function (model) {
 		var categoryAsString = $author$project$Types$categoryToString(category);
 		return _Utils_Tuple2(
 			categoryAsString,
-			A2(
-				$elm$core$Maybe$withDefault,
-				false,
-				A2($elm$core$Dict$get, categoryAsString, model.cH)));
+			A2($elm$core$List$member, category, model.cH));
 	};
 	return A2(
 		$rtfeldman$elm_css$Html$Styled$div,
@@ -12939,9 +12879,8 @@ var $author$project$View$settings = function (model) {
 										_Utils_Tuple2('months', 'months')
 									]))
 							])),
-						A4(
+						A3(
 						$author$project$Components$checkboxes,
-						'liw-field-categories',
 						'Show or hide categories',
 						$author$project$Types$ToggleCategory,
 						A2($elm$core$List$map, categoryToCheckboxOption, $author$project$Types$categories))
