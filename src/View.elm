@@ -60,6 +60,7 @@ import Html.Styled
         )
 import Html.Styled.Attributes exposing (css, title)
 import Html.Styled.Events exposing (onClick)
+import Html.Styled.Lazy exposing (lazy, lazy2, lazy3)
 import List.Extra as List
 import Time exposing (Month(..))
 import Types
@@ -102,14 +103,20 @@ view model =
             numberOfUnitsPerYear model.unit
 
         dates =
-            getDates model unitsPerYear
+            getDates
+                { birthdate = model.birthdate
+                , lifeExpectancy = model.lifeExpectancy
+                , retirementAge = model.retirementAge
+                , unit = model.unit
+                , unitsPerYear = unitsPerYear
+                }
     in
     Components.container
         [ div
             []
-            [ grid model dates unitsPerYear
-            , details model dates
-            , settings model
+            [ lazy3 grid model dates unitsPerYear
+            , lazy2 details model dates
+            , lazy settings model
             , actionButtons
             ]
         ]
@@ -404,9 +411,16 @@ grid model dates unitsPerYear =
                 , property "gap" gapSize
                 ]
             ]
-            (List.indexedMap
-                (\_ startOfYear ->
-                    row model dates periods unitsPerYear startOfYear
+            (List.map
+                (row
+                    { dates = dates
+                    , events = model.events
+                    , periods = periods
+                    , selectedDate = model.selectedDate
+                    , today = model.today
+                    , unit = model.unit
+                    , unitsPerYear = unitsPerYear
+                    }
                 )
                 years
             )
@@ -429,29 +443,59 @@ horizontalAxis unit =
             "Years →"
 
 
-row : Model -> Dates -> List Period -> Int -> Date -> Html Msg
-row model dates periods unitsPerYear startOfYear =
+row :
+    { dates : Dates
+    , events : List Event
+    , periods : List Period
+    , selectedDate : Maybe Date
+    , today : Date
+    , unit : Unit
+    , unitsPerYear : Int
+    }
+    -> Date
+    -> Html Msg
+row { dates, events, periods, selectedDate, today, unit, unitsPerYear } startOfYear =
     let
         oneYearLater =
-            Date.add model.unit unitsPerYear startOfYear
+            Date.add unit unitsPerYear startOfYear
 
         units =
-            dateRange model.unit 1 startOfYear oneYearLater
+            dateRange unit 1 startOfYear oneYearLater
+
+        rowPeriods =
+            filterMatchingPeriods startOfYear oneYearLater periods
+
+        rowEvents =
+            filterMatchingEvents startOfYear oneYearLater events
+
+        renderColumn startOfUnit =
+            column
+                { dates = dates
+                , endOfUnit = DateRange.endOfUnit unit startOfUnit
+                , events = rowEvents
+                , periods = rowPeriods
+                , selectedDate = selectedDate
+                , startOfUnit = startOfUnit
+                , today = today
+                }
     in
     div
         [ css [ displayFlex, property "gap" gapSize ] ]
-    <|
-        List.indexedMap
-            (\_ startOfUnit -> column model dates periods startOfUnit)
-            units
+        (List.map renderColumn units)
 
 
-column : Model -> Dates -> List Period -> Date -> Html Msg
-column model dates periods startOfUnit =
+column :
+    { dates : Dates
+    , endOfUnit : Date
+    , events : List Event
+    , periods : List Period
+    , selectedDate : Maybe Date
+    , startOfUnit : Date
+    , today : Date
+    }
+    -> Html Msg
+column { dates, endOfUnit, events, periods, selectedDate, startOfUnit, today } =
     let
-        endOfUnit =
-            DateRange.endOfUnit model.unit startOfUnit
-
         dateFormat =
             "MMMM ddd, y"
 
@@ -461,13 +505,13 @@ column model dates periods startOfUnit =
                 ++ Date.format dateFormat endOfUnit
 
         state =
-            getState model.today model.selectedDate startOfUnit endOfUnit
+            getState today selectedDate startOfUnit endOfUnit
 
         phase =
             getPhase dates periods startOfUnit endOfUnit
 
-        events =
-            filterMatchingEvents startOfUnit endOfUnit model.events
+        matchingEvents =
+            filterMatchingEvents startOfUnit endOfUnit events
 
         ( boxColor, borderColor ) =
             Colors.getColor state phase
@@ -493,7 +537,7 @@ column model dates periods startOfUnit =
         , onClick (SelectDate (Just startOfUnit))
         , title titleText
         ]
-        [ Components.showIf (events /= [])
+        [ Components.showIf (matchingEvents /= [])
             (div
                 [ css
                     [ width (px dotSize)
@@ -507,18 +551,17 @@ column model dates periods startOfUnit =
         ]
 
 
-getDates : Model -> Int -> Dates
-getDates model unitsPerYear =
-    { death =
-        Date.add
-            model.unit
-            (unitsPerYear * model.lifeExpectancy)
-            model.birthdate
-    , retirement =
-        Date.add
-            model.unit
-            (unitsPerYear * model.retirementAge)
-            model.birthdate
+getDates :
+    { birthdate : Date
+    , lifeExpectancy : Int
+    , retirementAge : Int
+    , unit : Unit
+    , unitsPerYear : Int
+    }
+    -> Dates
+getDates { birthdate, lifeExpectancy, retirementAge, unit, unitsPerYear } =
+    { death = Date.add unit (unitsPerYear * lifeExpectancy) birthdate
+    , retirement = Date.add unit (unitsPerYear * retirementAge) birthdate
     }
 
 
