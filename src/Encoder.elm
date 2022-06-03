@@ -3,7 +3,7 @@ module Encoder exposing (encode)
 import Color exposing (Color)
 import Date exposing (Date)
 import DateRange
-import Json.Encode exposing (Value, bool, dict, float, int, list, object, string)
+import Json.Encode exposing (Value, float, int, list, object, string)
 import Json.Encode.Extra exposing (maybe)
 import Types
     exposing
@@ -19,7 +19,7 @@ encode : Model -> Value
 encode model =
     object
         [ ( "birthdate", date model.birthdate )
-        , ( "categories", dict identity bool model.categories )
+        , ( "categories", list category model.categories )
         , ( "events", list event model.events )
         , ( "lifeExpectancy", int model.lifeExpectancy )
         , ( "periods", list period model.periods )

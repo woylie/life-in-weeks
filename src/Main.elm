@@ -6,7 +6,6 @@ import Colors
 import Date exposing (Interval(..), Unit(..))
 import DateRange
 import Decoder
-import Dict
 import Encoder
 import File
 import File.Download
@@ -27,7 +26,7 @@ import Types
         , Period
         , PeriodField(..)
         , categories
-        , categoryToString
+        , categoryFromString
         )
 import View exposing (view)
 
@@ -61,9 +60,7 @@ init maybeStoredState =
 initialModel : Model
 initialModel =
     { birthdate = Date.fromCalendarDate 1990 Jan 1
-    , categories =
-        Dict.fromList <|
-            List.map (\c -> ( categoryToString c, True )) categories
+    , categories = categories
     , events = []
     , lifeExpectancy = 73
     , periods = []
@@ -159,12 +156,19 @@ update msg model =
 
         ToggleCategory s ->
             let
-                currentValue =
-                    Dict.get s model.categories
-                        |> Maybe.withDefault False
+                toggleCategory : Category -> List Category
+                toggleCategory category =
+                    if List.member category model.categories then
+                        List.filter (\c -> category /= c) model.categories
+
+                    else
+                        category :: categories
 
                 newCategories =
-                    Dict.insert s (not currentValue) model.categories
+                    s
+                        |> categoryFromString
+                        |> Maybe.map toggleCategory
+                        |> Maybe.withDefault model.categories
             in
             { model | categories = newCategories } |> save
 

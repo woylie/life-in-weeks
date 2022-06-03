@@ -18,13 +18,12 @@ module Types exposing
 
 import Color exposing (Color)
 import Date exposing (Date, Unit)
-import Dict exposing (Dict)
 import File exposing (File)
 
 
 type alias Model =
     { birthdate : Date
-    , categories : Dict String Bool
+    , categories : List Category
     , events : List Event
     , lifeExpectancy : Int
     , periods : List Period

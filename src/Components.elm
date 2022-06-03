@@ -151,11 +151,10 @@ label inputId labelText =
 
 checkboxes :
     String
-    -> String
     -> (String -> msg)
     -> List ( String, Bool )
     -> Html msg
-checkboxes idPrefix labelText msg options =
+checkboxes labelText msg options =
     div
         []
     <|
@@ -170,12 +169,12 @@ checkboxes idPrefix labelText msg options =
             [ text labelText ]
         , div
             [ css [ displayFlex, flexWrap wrap, property "gap" "0.5rem" ] ]
-            (List.map (checkbox idPrefix msg) options)
+            (List.map (checkbox msg) options)
         ]
 
 
-checkbox : String -> (String -> msg) -> ( String, Bool ) -> Html msg
-checkbox idPrefix msg ( option, isChecked ) =
+checkbox : (String -> msg) -> ( String, Bool ) -> Html msg
+checkbox msg ( option, isChecked ) =
     Html.label
         [ css
             [ fontSize (rem 0.75)

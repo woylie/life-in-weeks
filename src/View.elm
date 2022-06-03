@@ -47,7 +47,6 @@ import Css
         )
 import Date exposing (Date, Interval(..), Unit(..))
 import DateRange exposing (dateRange, numberOfUnitsPerYear)
-import Dict
 import Html.Styled
     exposing
         ( Html
@@ -76,7 +75,6 @@ import Types
         , Phase(..)
         , State(..)
         , categories
-        , categoryFromString
         , categoryToString
         )
 
@@ -131,10 +129,7 @@ settings model =
                 categoryAsString =
                     categoryToString category
             in
-            ( categoryAsString
-            , Dict.get categoryAsString model.categories
-                |> Maybe.withDefault False
-            )
+            ( categoryAsString, List.member category model.categories )
     in
     div
         []
@@ -146,8 +141,7 @@ settings model =
                     SetUnit
                     [ ( "weeks", "weeks" ), ( "months", "months" ) ]
                 ]
-            , Components.checkboxes "liw-field-categories"
-                "Show or hide categories"
+            , Components.checkboxes "Show or hide categories"
                 ToggleCategory
                 (List.map categoryToCheckboxOption categories)
             ]
@@ -374,15 +368,9 @@ grid model dates unitsPerYear =
                 model.birthdate
                 (Date.max dates.death model.today)
 
-        displayCategories =
-            model.categories
-                |> Dict.filter (\c enabled -> enabled)
-                |> Dict.keys
-                |> List.filterMap categoryFromString
-
         periods =
             List.filter
-                (\p -> List.member p.category displayCategories)
+                (\p -> List.member p.category model.categories)
                 model.periods
     in
     div
@@ -519,9 +507,6 @@ column { dates, endOfUnit, events, periods, selectedDate, startOfUnit, today } =
 
         state =
             getState today selectedDate startOfUnit endOfUnit
-
-        columnPeriods =
-            filterMatchingPeriods startOfUnit endOfUnit periods
 
         phase =
             getPhase dates periods startOfUnit endOfUnit
