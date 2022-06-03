@@ -9,7 +9,7 @@
     "analyse": "elm-analyse -s",
     "build": "elm make src/Main.elm --optimize --output=./public/life-in-weeks.js",
     "format": "elm-format src/",
-    "watch": "elm-live src/Main.elm --start-page=./index.html -- --output=life-in-weeks.js"
+    "watch": "elm-live src/Main.elm --start-page=./index.html -- --output=life-in-weeks.js --debug"
   },
   "devDependencies": {
     "elm": "^0.19.1-5",
