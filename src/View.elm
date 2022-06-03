@@ -411,6 +411,7 @@ grid model dates unitsPerYear =
                 , property "gap" gapSize
                 , listStyleType none
                 , padding (px 0)
+                , margin (px 0)
                 ]
             ]
             (List.map
@@ -489,6 +490,7 @@ row { dates, events, periods, selectedDate, today, unit, unitsPerYear } startOfY
                 , property "gap" gapSize
                 , listStyleType none
                 , padding (px 0)
+                , margin (px 0)
                 ]
             ]
             (List.map renderColumn units)
