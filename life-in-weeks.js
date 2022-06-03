@@ -11874,6 +11874,17 @@ var $author$project$DateRange$dateRange = F4(
 		return $elm$core$List$reverse(
 			A2(buildRange, startDate, _List_Nil));
 	});
+var $elm$core$Dict$filter = F2(
+	function (isGood, dict) {
+		return A3(
+			$elm$core$Dict$foldl,
+			F3(
+				function (k, v, d) {
+					return A2(isGood, k, v) ? A3($elm$core$Dict$insert, k, v, d) : d;
+				}),
+			$elm$core$Dict$empty,
+			dict);
+	});
 var $rtfeldman$elm_css$Css$flexDirection = $rtfeldman$elm_css$Css$prop1('flex-direction');
 var $author$project$View$gapSize = '2px';
 var $author$project$View$horizontalAxis = function (unit) {
@@ -11893,6 +11904,15 @@ var $justinmimbs$date$Date$max = F2(
 		var a = dateA;
 		var b = dateB;
 		return (_Utils_cmp(a, b) < 0) ? dateB : dateA;
+	});
+var $elm$core$List$member = F2(
+	function (x, xs) {
+		return A2(
+			$elm$core$List$any,
+			function (a) {
+				return _Utils_eq(a, x);
+			},
+			xs);
 	});
 var $author$project$Types$SelectDate = function (a) {
 	return {$: 9, a: a};
@@ -12144,13 +12164,29 @@ var $author$project$View$grid = F3(
 			unitsPerYear,
 			model.cy,
 			A2($justinmimbs$date$Date$max, dates.cJ, model.aZ));
+		var displayCategories = A2(
+			$elm$core$List$filterMap,
+			$author$project$Types$categoryFromString,
+			$elm$core$Dict$keys(
+				A2(
+					$elm$core$Dict$filter,
+					F2(
+						function (c, enabled) {
+							return enabled;
+						}),
+					model.cD)));
 		var periods = A2(
 			$elm$core$List$sortWith,
 			F2(
 				function (p1, p2) {
 					return A2($justinmimbs$date$Date$compare, p1.di, p2.di);
 				}),
-			model.c8);
+			A2(
+				$elm$core$List$filter,
+				function (p) {
+					return A2($elm$core$List$member, p.cE, displayCategories);
+				},
+				model.c8));
 		return A2(
 			$rtfeldman$elm_css$Html$Styled$div,
 			_List_fromArray(
