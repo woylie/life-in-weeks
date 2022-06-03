@@ -11866,6 +11866,12 @@ var $justinmimbs$date$Date$max = F2(
 		var b = dateB;
 		return (_Utils_cmp(a, b) < 0) ? dateB : dateA;
 	});
+var $rtfeldman$elm_css$VirtualDom$Styled$KeyedNode = F3(
+	function (a, b, c) {
+		return {$: 2, a: a, b: b, c: c};
+	});
+var $rtfeldman$elm_css$VirtualDom$Styled$keyedNode = $rtfeldman$elm_css$VirtualDom$Styled$KeyedNode;
+var $rtfeldman$elm_css$Html$Styled$Keyed$node = $rtfeldman$elm_css$VirtualDom$Styled$keyedNode;
 var $author$project$Types$SelectDate = function (a) {
 	return {$: 9, a: a};
 };
@@ -12103,16 +12109,18 @@ var $author$project$View$row = F2(
 		var rowEvents = A3($author$project$View$filterMatchingEvents, startOfYear, oneYearLater, events);
 		var rowPeriods = A3($author$project$View$filterMatchingPeriods, startOfYear, oneYearLater, periods);
 		var renderColumn = function (startOfUnit) {
-			return $author$project$View$column(
-				{
-					aL: dates,
-					bF: A2($author$project$DateRange$endOfUnit, unit, startOfUnit),
-					cT: rowEvents,
-					dc: rowPeriods,
-					bg: selectedDate,
-					ck: startOfUnit,
-					a_: today
-				});
+			return _Utils_Tuple2(
+				'col-' + $justinmimbs$date$Date$toIsoString(startOfUnit),
+				$author$project$View$column(
+					{
+						aL: dates,
+						bF: A2($author$project$DateRange$endOfUnit, unit, startOfUnit),
+						cT: rowEvents,
+						dc: rowPeriods,
+						bg: selectedDate,
+						ck: startOfUnit,
+						a_: today
+					}));
 		};
 		var units = A4($author$project$DateRange$dateRange, unit, 1, startOfYear, oneYearLater);
 		return A2(
@@ -12120,8 +12128,9 @@ var $author$project$View$row = F2(
 			_List_Nil,
 			_List_fromArray(
 				[
-					A2(
-					$rtfeldman$elm_css$Html$Styled$ul,
+					A3(
+					$rtfeldman$elm_css$Html$Styled$Keyed$node,
+					'ul',
 					_List_fromArray(
 						[
 							$rtfeldman$elm_css$Html$Styled$Attributes$css(
@@ -12199,8 +12208,9 @@ var $author$project$View$grid = F3(
 						[
 							$rtfeldman$elm_css$Html$Styled$text('Years →')
 						])),
-					A2(
-					$rtfeldman$elm_css$Html$Styled$ul,
+					A3(
+					$rtfeldman$elm_css$Html$Styled$Keyed$node,
+					'ul',
 					_List_fromArray(
 						[
 							$rtfeldman$elm_css$Html$Styled$Attributes$css(
@@ -12218,8 +12228,14 @@ var $author$project$View$grid = F3(
 						]),
 					A2(
 						$elm$core$List$map,
-						$author$project$View$row(
-							{aL: dates, cT: model.cT, dc: periods, bg: model.bg, a_: model.a_, dq: model.dq, a$: unitsPerYear}),
+						function (year) {
+							return _Utils_Tuple2(
+								'row-' + $justinmimbs$date$Date$toIsoString(year),
+								A2(
+									$author$project$View$row,
+									{aL: dates, cT: model.cT, dc: periods, bg: model.bg, a_: model.a_, dq: model.dq, a$: unitsPerYear},
+									year));
+						},
 						years))
 				]));
 	});
