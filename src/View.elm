@@ -381,9 +381,9 @@ grid model dates unitsPerYear =
                 |> List.filterMap categoryFromString
 
         periods =
-            model.periods
-                |> List.filter (\p -> List.member p.category displayCategories)
-                |> List.sortWith (\p1 p2 -> Date.compare p1.startDate p2.startDate)
+            List.filter
+                (\p -> List.member p.category displayCategories)
+                model.periods
     in
     div
         [ css
@@ -753,7 +753,6 @@ detailsForDate model dates date =
         eventItems =
             model.events
                 |> filterMatchingEvents date endOfUnit
-                |> List.sortWith (\e1 e2 -> Date.compare e1.date e2.date)
                 |> List.map
                     (\event ->
                         Date.format "MMMM ddd" event.date ++ ": " ++ event.name
