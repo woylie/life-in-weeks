@@ -404,11 +404,13 @@ grid model dates unitsPerYear =
                 ]
             ]
             [ text "Years →" ]
-        , div
+        , ul
             [ css
                 [ displayFlex
                 , flexDirection Css.column
                 , property "gap" gapSize
+                , listStyleType none
+                , padding (px 0)
                 ]
             ]
             (List.map
@@ -479,9 +481,18 @@ row { dates, events, periods, selectedDate, today, unit, unitsPerYear } startOfY
                 , today = today
                 }
     in
-    div
-        [ css [ displayFlex, property "gap" gapSize ] ]
-        (List.map renderColumn units)
+    li
+        []
+        [ ul
+            [ css
+                [ displayFlex
+                , property "gap" gapSize
+                , listStyleType none
+                , padding (px 0)
+                ]
+            ]
+            (List.map renderColumn units)
+        ]
 
 
 column :
@@ -507,6 +518,9 @@ column { dates, endOfUnit, events, periods, selectedDate, startOfUnit, today } =
         state =
             getState today selectedDate startOfUnit endOfUnit
 
+        columnPeriods =
+            filterMatchingPeriods startOfUnit endOfUnit periods
+
         phase =
             getPhase dates periods startOfUnit endOfUnit
 
@@ -519,7 +533,7 @@ column { dates, endOfUnit, events, periods, selectedDate, startOfUnit, today } =
         dotColor =
             Color.Blending.exclusion boxColor Color.white
     in
-    div
+    li
         [ css
             [ flex3 (int 1) (int 1) (pct 100)
             , height (px squareSize)
