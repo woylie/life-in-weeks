@@ -59,6 +59,7 @@ import Html.Styled
         )
 import Html.Styled.Attributes exposing (css, title)
 import Html.Styled.Events exposing (onClick)
+import Html.Styled.Keyed exposing (node)
 import Html.Styled.Lazy exposing (lazy, lazy2, lazy3)
 import List.Extra as List
 import Time exposing (Month(..))
@@ -392,7 +393,7 @@ grid model dates unitsPerYear =
                 ]
             ]
             [ text "Years →" ]
-        , ul
+        , node "ul"
             [ css
                 [ displayFlex
                 , flexDirection Css.column
@@ -403,15 +404,19 @@ grid model dates unitsPerYear =
                 ]
             ]
             (List.map
-                (row
-                    { dates = dates
-                    , events = model.events
-                    , periods = periods
-                    , selectedDate = model.selectedDate
-                    , today = model.today
-                    , unit = model.unit
-                    , unitsPerYear = unitsPerYear
-                    }
+                (\year ->
+                    ( "row-" ++ Date.toIsoString year
+                    , row
+                        { dates = dates
+                        , events = model.events
+                        , periods = periods
+                        , selectedDate = model.selectedDate
+                        , today = model.today
+                        , unit = model.unit
+                        , unitsPerYear = unitsPerYear
+                        }
+                        year
+                    )
                 )
                 years
             )
@@ -460,7 +465,8 @@ row { dates, events, periods, selectedDate, today, unit, unitsPerYear } startOfY
             filterMatchingEvents startOfYear oneYearLater events
 
         renderColumn startOfUnit =
-            column
+            ( "col-" ++ Date.toIsoString startOfUnit
+            , column
                 { dates = dates
                 , endOfUnit = DateRange.endOfUnit unit startOfUnit
                 , events = rowEvents
@@ -469,10 +475,11 @@ row { dates, events, periods, selectedDate, today, unit, unitsPerYear } startOfY
                 , startOfUnit = startOfUnit
                 , today = today
                 }
+            )
     in
     li
         []
-        [ ul
+        [ node "ul"
             [ css
                 [ displayFlex
                 , property "gap" gapSize
