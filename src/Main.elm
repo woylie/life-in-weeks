@@ -6,6 +6,7 @@ import Colors
 import Date exposing (Interval(..), Unit(..))
 import DateRange
 import Decoder
+import Dict
 import Encoder
 import File
 import File.Download
@@ -25,6 +26,8 @@ import Types
         , Msg(..)
         , Period
         , PeriodField(..)
+        , categories
+        , categoryToString
         )
 import View exposing (view)
 
@@ -58,6 +61,9 @@ init maybeStoredState =
 initialModel : Model
 initialModel =
     { birthdate = Date.fromCalendarDate 1990 Jan 1
+    , categories =
+        Dict.fromList <|
+            List.map (\c -> ( categoryToString c, True )) categories
     , events = []
     , lifeExpectancy = 73
     , periods = []
@@ -150,6 +156,17 @@ update msg model =
         SortPeriods ->
             { model | periods = sortPeriods model.periods }
                 |> save
+
+        ToggleCategory s ->
+            let
+                currentValue =
+                    Dict.get s model.categories
+                        |> Maybe.withDefault False
+
+                newCategories =
+                    Dict.insert s (not currentValue) model.categories
+            in
+            { model | categories = newCategories } |> save
 
         UpdateEvent id field value ->
             { model | events = updateEvents id field value model.events }

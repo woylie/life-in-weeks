@@ -3,10 +3,13 @@ module Decoder exposing (decoder)
 import Color exposing (Color)
 import Date exposing (Date, Interval(..), Unit(..))
 import DateRange
+import Dict exposing (Dict)
 import Json.Decode as Decode
     exposing
         ( Decoder
         , andThen
+        , bool
+        , dict
         , float
         , int
         , list
@@ -31,6 +34,7 @@ decoder : Decoder Model
 decoder =
     Decode.succeed Model
         |> required "birthdate" date
+        |> optional "categories" (dict bool) Dict.empty
         |> required "events" (list event)
         |> required "lifeExpectancy" int
         |> required "periods" (list period)

@@ -47,6 +47,7 @@ import Css
         )
 import Date exposing (Date, Interval(..), Unit(..))
 import DateRange exposing (dateRange, numberOfUnitsPerYear)
+import Dict
 import Html.Styled
     exposing
         ( Html
@@ -73,6 +74,8 @@ import Types
         , PeriodField(..)
         , Phase(..)
         , State(..)
+        , categories
+        , categoryFromString
         , categoryToString
         )
 
@@ -114,6 +117,18 @@ view model =
 
 settings : Model -> Html Msg
 settings model =
+    let
+        categoryToCheckboxOption : Category -> ( String, Bool )
+        categoryToCheckboxOption category =
+            let
+                categoryAsString =
+                    categoryToString category
+            in
+            ( categoryAsString
+            , Dict.get categoryAsString model.categories
+                |> Maybe.withDefault False
+            )
+    in
     div
         []
         [ Components.fieldset "Display"
@@ -124,6 +139,10 @@ settings model =
                     SetUnit
                     [ ( "weeks", "weeks" ), ( "months", "months" ) ]
                 ]
+            , Components.checkboxes "liw-field-categories"
+                "Show or hide categories"
+                ToggleCategory
+                (List.map categoryToCheckboxOption categories)
             ]
         , Components.fieldset "Base variables"
             [ Components.field
@@ -348,10 +367,16 @@ grid model dates unitsPerYear =
                 model.birthdate
                 (Date.max dates.death model.today)
 
+        displayCategories =
+            model.categories
+                |> Dict.filter (\c enabled -> enabled)
+                |> Dict.keys
+                |> List.filterMap categoryFromString
+
         periods =
-            List.sortWith
-                (\p1 p2 -> Date.compare p1.startDate p2.startDate)
-                model.periods
+            model.periods
+                |> List.filter (\p -> List.member p.category displayCategories)
+                |> List.sortWith (\p1 p2 -> Date.compare p1.startDate p2.startDate)
     in
     div
         [ css

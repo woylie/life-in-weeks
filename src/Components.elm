@@ -1,5 +1,6 @@
 module Components exposing
     ( button
+    , checkboxes
     , container
     , dateInput
     , defaultFieldOpts
@@ -103,7 +104,7 @@ inputCss =
 
 field : String -> String -> List (Html msg) -> Html msg
 field inputId labelText content =
-    div [ css [] ] <| label inputId labelText :: content
+    div [] <| label inputId labelText :: content
 
 
 fieldset : String -> List (Html msg) -> Html msg
@@ -146,6 +147,50 @@ label inputId labelText =
             ]
         ]
         [ text labelText ]
+
+
+checkboxes :
+    String
+    -> String
+    -> (String -> msg)
+    -> List ( String, Bool )
+    -> Html msg
+checkboxes idPrefix labelText msg options =
+    div
+        []
+    <|
+        [ Html.label
+            [ css
+                [ fontWeight (int 400)
+                , fontSize (rem 0.875)
+                , lineHeight (rem 1)
+                , display block
+                ]
+            ]
+            [ text labelText ]
+        , div
+            [ css [ displayFlex, flexWrap wrap, property "gap" "0.5rem" ] ]
+            (List.map (checkbox idPrefix msg) options)
+        ]
+
+
+checkbox : String -> (String -> msg) -> ( String, Bool ) -> Html msg
+checkbox idPrefix msg ( option, isChecked ) =
+    Html.label
+        [ css
+            [ fontSize (rem 0.75)
+            , fontFamilies defaultFontFamily
+            ]
+        ]
+        [ Html.input
+            [ type_ "checkbox"
+            , Attr.checked isChecked
+            , value option
+            , onInput msg
+            ]
+            []
+        , Html.span [] [ text option ]
+        ]
 
 
 dateInput : String -> Maybe Date -> (String -> msg) -> FieldOpts msg -> Html msg

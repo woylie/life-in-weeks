@@ -11,17 +11,20 @@ module Types exposing
     , PeriodField(..)
     , Phase(..)
     , State(..)
+    , categories
     , categoryFromString
     , categoryToString
     )
 
 import Color exposing (Color)
 import Date exposing (Date, Unit)
+import Dict exposing (Dict)
 import File exposing (File)
 
 
 type alias Model =
     { birthdate : Date
+    , categories : Dict String Bool
     , events : List Event
     , lifeExpectancy : Int
     , periods : List Period
@@ -129,6 +132,18 @@ categoryFromString s =
             Nothing
 
 
+categories : List Category
+categories =
+    [ Activity
+    , Education
+    , Membership
+    , Other
+    , Relationship
+    , Residence
+    , Work
+    ]
+
+
 type Msg
     = AddEvent
     | AddPeriod Category
@@ -146,6 +161,7 @@ type Msg
     | SetUnit String
     | SortEvents
     | SortPeriods
+    | ToggleCategory String
     | UpdateEvent Int EventField String
     | UpdatePeriod Int PeriodField String
 
