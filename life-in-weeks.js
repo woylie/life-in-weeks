@@ -11904,6 +11904,7 @@ var $author$project$View$horizontalAxisTitle = function (unit) {
 var $author$project$Types$SelectDate = function (a) {
 	return {$: 9, a: a};
 };
+var $author$project$Types$Selected = 3;
 var $rtfeldman$elm_css$Css$absolute = {aB: 0, B: 'absolute'};
 var $rtfeldman$elm_css$Css$block = {j: 0, B: 'block'};
 var $rtfeldman$elm_css$Css$borderStyle = $rtfeldman$elm_css$Css$prop1('border-style');
@@ -12055,6 +12056,7 @@ var $author$project$View$column = function (_v0) {
 				]),
 			_List_Nil);
 	};
+	var periodOverlays = (state === 3) ? _List_Nil : A2($elm$core$List$map, periodDiv, periodColors);
 	var _v1 = A2($author$project$Colors$getColor, state, phase);
 	var boxColor = _v1.a;
 	var borderColor = _v1.b;
@@ -12134,7 +12136,7 @@ var $author$project$View$column = function (_v0) {
 		A2(
 			$elm$core$List$cons,
 			A2($author$project$Components$showIf, showEventDot, eventDot),
-			A2($elm$core$List$map, periodDiv, periodColors)));
+			periodOverlays));
 };
 var $author$project$View$getPeriodColors = F3(
 	function (startDate, endDate, periods) {
@@ -12155,7 +12157,6 @@ var $author$project$View$getPhase = F2(
 var $author$project$Types$Future = 2;
 var $author$project$Types$Past = 0;
 var $author$project$Types$Present = 1;
-var $author$project$Types$Selected = 3;
 var $justinmimbs$date$Date$isBetween = F3(
 	function (_v0, _v1, _v2) {
 		var a = _v0;
