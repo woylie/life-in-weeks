@@ -162,7 +162,7 @@ update msg model =
                         List.filter (\c -> category /= c) model.categories
 
                     else
-                        category :: categories
+                        category :: model.categories
 
                 newCategories =
                     s
