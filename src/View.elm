@@ -1,18 +1,20 @@
 module View exposing (view)
 
-import Color
+import Color exposing (Color)
 import Color.Blending
 import Colors
 import Components exposing (defaultFieldOpts)
 import Css
     exposing
-        ( alignItems
+        ( absolute
+        , alignItems
         , alignSelf
         , block
         , border
         , borderRadius
         , borderStyle
         , borderWidth
+        , calc
         , center
         , color
         , cursor
@@ -29,19 +31,23 @@ import Css
         , height
         , hex
         , int
-        , justifyContent
+        , left
         , listStyleType
         , margin
         , margin4
+        , minus
         , none
         , padding
         , pct
         , pointer
+        , position
         , property
         , px
+        , relative
         , rem
         , solid
         , textAlign
+        , top
         , width
         , wrap
         )
@@ -60,7 +66,7 @@ import Html.Styled
 import Html.Styled.Attributes exposing (css, title)
 import Html.Styled.Events exposing (onClick)
 import Html.Styled.Keyed exposing (node)
-import Html.Styled.Lazy exposing (lazy, lazy2, lazy3)
+import Html.Styled.Lazy exposing (lazy)
 import List.Extra as List
 import Time exposing (Month(..))
 import Types
@@ -548,19 +554,28 @@ column :
     -> Html Msg
 column { dates, endOfUnit, events, periods, selectedDate, startOfUnit, today } =
     let
+        periodColors : List Color
+        periodColors =
+            periods
+                |> filterMatchingPeriods startOfUnit endOfUnit
+                |> List.map .color
+
+        state : State
         state =
             getState today selectedDate startOfUnit endOfUnit
 
+        phase : Phase
         phase =
-            getPhase dates periods startOfUnit endOfUnit
+            getPhase dates startOfUnit
+
+        ( boxColor, borderColor ) =
+            Colors.getColor state phase
 
         showEventDot : Bool
         showEventDot =
             hasEvents startOfUnit endOfUnit events
 
-        ( boxColor, borderColor ) =
-            Colors.getColor state phase
-
+        dotColor : Color
         dotColor =
             Color.Blending.exclusion boxColor Color.white
     in
@@ -576,24 +591,40 @@ column { dates, endOfUnit, events, periods, selectedDate, startOfUnit, today } =
             , property "border-color" (Color.toCssString borderColor)
             , cursor pointer
             , displayFlex
-            , alignItems center
-            , justifyContent center
+            , flexDirection Css.column
+            , position relative
             ]
         , onClick <| SelectDate (Just startOfUnit)
         , title <| DateRange.format startOfUnit endOfUnit
         ]
-        [ Components.showIf showEventDot
+        (Components.showIf showEventDot
             (div
                 [ css
                     [ width (px dotSize)
                     , height (px dotSize)
                     , borderRadius (px 142191)
                     , property "background-color" (Color.toCssString dotColor)
+                    , position absolute
+                    , left (calc (pct 50) minus (px (dotSize / 2)))
+                    , top (calc (pct 50) minus (px (dotSize / 2)))
                     ]
                 ]
                 []
             )
-        ]
+            :: List.map
+                (\color ->
+                    div
+                        [ css
+                            [ property
+                                "background-color"
+                                (Color.toCssString color)
+                            , flex3 (int 1) (int 1) (pct 100)
+                            ]
+                        ]
+                        []
+                )
+                periodColors
+        )
 
 
 getDates :
@@ -625,35 +656,16 @@ getState today selectedDate startOfUnit endOfUnit =
         Future
 
 
-getPhase : Dates -> List Period -> Date -> Date -> Phase
-getPhase dates periods startOfUnit endOfUnit =
-    let
-        matchingPeriod =
-            periods
-                |> filterMatchingPeriods startOfUnit endOfUnit
-                |> List.head
+getPhase : Dates -> Date -> Phase
+getPhase dates startOfUnit =
+    if Date.compare startOfUnit dates.death /= LT then
+        PastLifeExpectancy
 
-        phaseWithDefault default =
-            if Date.compare startOfUnit dates.death /= LT then
-                PastLifeExpectancy
+    else if Date.compare startOfUnit dates.retirement /= LT then
+        Retirement
 
-            else if Date.compare startOfUnit dates.retirement /= LT then
-                Retirement
-
-            else
-                default
-    in
-    case matchingPeriod of
-        Just period ->
-            case period.category of
-                Work ->
-                    phaseWithDefault (Phase period)
-
-                _ ->
-                    Phase period
-
-        Nothing ->
-            phaseWithDefault Default
+    else
+        Default
 
 
 filterMatchingPeriods : Date -> Date -> List Period -> List Period
