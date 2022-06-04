@@ -11463,6 +11463,33 @@ var $author$project$Components$container = function (content) {
 			_List_fromArray(
 				[$author$project$Components$footer])));
 };
+var $author$project$View$cutOffWorkAtRetirement = F2(
+	function (retirementDate, periods) {
+		var maybeSetEndDate = function (period) {
+			var _v1 = period.cW;
+			if (!_v1.$) {
+				return period;
+			} else {
+				return _Utils_update(
+					period,
+					{
+						cW: $elm$core$Maybe$Just(
+							A3($justinmimbs$date$Date$add, 3, -1, retirementDate))
+					});
+			}
+		};
+		return A2(
+			$elm$core$List$map,
+			function (period) {
+				var _v0 = period.cM;
+				if (_v0 === 6) {
+					return maybeSetEndDate(period);
+				} else {
+					return period;
+				}
+			},
+			periods);
+	});
 var $author$project$DateRange$dateRange = F4(
 	function (unit, count, startDate, endDate) {
 		var buildRange = F2(
@@ -13101,17 +13128,6 @@ var $author$project$View$settings = function (model) {
 };
 var $author$project$View$view = function (model) {
 	var unitsPerYear = $author$project$DateRange$numberOfUnitsPerYear(model.du);
-	var periodsForGrid = A2(
-		$elm$core$List$map,
-		function (period) {
-			return {cO: period.cO, cW: period.cW, dq: period.dq};
-		},
-		A2(
-			$elm$core$List$filter,
-			function (p) {
-				return A2($elm$core$List$member, p.cM, model.cL);
-			},
-			model.dg));
 	var maxYear = A3($justinmimbs$date$Date$add, 0, 150, model.cG);
 	var dates = $author$project$View$getDates(
 		{cG: model.cG, c7: model.c7, dm: model.dm, du: model.du, aZ: unitsPerYear});
@@ -13120,6 +13136,20 @@ var $author$project$View$view = function (model) {
 		maxYear,
 		A2($justinmimbs$date$Date$max, dates.cR, model.aY));
 	var years = A4($author$project$DateRange$dateRange, model.du, unitsPerYear, model.cG, lastYear);
+	var periodsForGrid = A2(
+		$elm$core$List$map,
+		function (period) {
+			return {cO: period.cO, cW: period.cW, dq: period.dq};
+		},
+		A2(
+			$author$project$View$cutOffWorkAtRetirement,
+			dates.dl,
+			A2(
+				$elm$core$List$filter,
+				function (p) {
+					return A2($elm$core$List$member, p.cM, model.cL);
+				},
+				model.dg)));
 	return $author$project$Components$container(
 		_List_fromArray(
 			[
