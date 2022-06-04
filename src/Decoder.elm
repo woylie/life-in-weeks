@@ -23,6 +23,7 @@ import Types
         , Event
         , Model
         , Period
+        , Settings
         , categoryFromString
         )
 
@@ -30,15 +31,21 @@ import Types
 decoder : Decoder Model
 decoder =
     Decode.succeed Model
+        |> required "categories" (list category)
+        |> hardcoded Nothing
+        |> hardcoded (Date.fromCalendarDate 2000 Jan 1)
+        |> required "unit" unit
+        |> required "settings" settings
+
+
+settings : Decoder Settings
+settings =
+    Decode.succeed Settings
         |> required "birthdate" date
-        |> optional "categories" (list category) []
         |> required "events" (list event)
         |> required "lifeExpectancy" int
         |> required "periods" (list period)
         |> required "retirementAge" int
-        |> hardcoded Nothing
-        |> hardcoded (Date.fromCalendarDate 2000 Jan 1)
-        |> required "unit" unit
 
 
 date : Decoder Date

@@ -11,6 +11,7 @@ import Types
         , Event
         , Model
         , Period
+        , Settings
         , categoryToString
         )
 
@@ -18,13 +19,20 @@ import Types
 encode : Model -> Value
 encode model =
     object
-        [ ( "birthdate", date model.birthdate )
-        , ( "categories", list category model.categories )
-        , ( "events", list event model.events )
-        , ( "lifeExpectancy", int model.lifeExpectancy )
-        , ( "periods", list period model.periods )
-        , ( "retirementAge", int model.retirementAge )
+        [ ( "categories", list category model.categories )
         , ( "unit", string (DateRange.unitToString model.unit) )
+        , ( "settings", settings model.settings )
+        ]
+
+
+settings : Settings -> Value
+settings s =
+    object
+        [ ( "birthdate", date s.birthdate )
+        , ( "events", list event s.events )
+        , ( "lifeExpectancy", int s.lifeExpectancy )
+        , ( "periods", list period s.periods )
+        , ( "retirementAge", int s.retirementAge )
         ]
 
 

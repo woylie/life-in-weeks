@@ -26,6 +26,7 @@ import Types
         , Msg(..)
         , Period
         , PeriodField(..)
+        , Settings
         , categories
         , categoryFromString
         )
@@ -60,15 +61,21 @@ init maybeStoredState =
 
 initialModel : Model
 initialModel =
+    { categories = categories
+    , selectedDate = Nothing
+    , today = Date.fromCalendarDate 2000 Jan 1
+    , unit = Weeks
+    , settings = initialSettings
+    }
+
+
+initialSettings : Settings
+initialSettings =
     { birthdate = Date.fromCalendarDate 1990 Jan 1
-    , categories = categories
     , events = []
     , lifeExpectancy = 73
     , periods = []
     , retirementAge = 65
-    , selectedDate = Nothing
-    , today = Date.fromCalendarDate 2000 Jan 1
-    , unit = Weeks
     }
 
 
@@ -76,10 +83,10 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         AddEvent ->
-            { model | events = addEvent model.events } |> save
+            { model | settings = addEvent model.settings } |> save
 
         AddPeriod category ->
-            { model | periods = addPeriod category model.periods } |> save
+            { model | settings = addPeriod category model.settings } |> save
 
         Export ->
             ( model
@@ -107,33 +114,24 @@ update msg model =
             ( { model | today = date }, Cmd.none )
 
         RemoveEvent id ->
-            { model
-                | events =
-                    List.filter (\event -> event.id /= id) model.events
-            }
-                |> save
+            { model | settings = removeEvent id model.settings } |> save
 
         RemovePeriod id ->
-            { model | periods = removePeriod id model.periods } |> save
+            { model | settings = removePeriod id model.settings } |> save
 
         SelectDate date ->
             ( { model | selectedDate = date }, Cmd.none )
 
         SetBirthdate s ->
-            { model
-                | birthdate =
-                    s
-                        |> Date.fromIsoString
-                        |> Result.withDefault model.birthdate
-            }
+            { model | settings = setBirthdate s model.settings }
                 |> save
 
         SetLifeExpectancy s ->
-            { model | lifeExpectancy = toIntWithDefault model.lifeExpectancy s }
+            { model | settings = setLifeExpectancy s model.settings }
                 |> save
 
         SetRetirementAge s ->
-            { model | retirementAge = toIntWithDefault model.retirementAge s }
+            { model | settings = setRetirementAge s model.settings }
                 |> save
 
         SetUnit s ->
@@ -141,14 +139,6 @@ update msg model =
                 | selectedDate = Nothing
                 , unit = s |> DateRange.unitFromString |> Maybe.withDefault model.unit
             }
-                |> save
-
-        SortEvents ->
-            { model | events = sortEvents model.events }
-                |> save
-
-        SortPeriods ->
-            { model | periods = sortPeriods model.periods }
                 |> save
 
         ToggleCategory s ->
@@ -170,11 +160,11 @@ update msg model =
             { model | categories = newCategories } |> save
 
         UpdateEvent id field value ->
-            { model | events = updateEvents id field value model.events }
+            { model | settings = updateEvents id field value model.settings }
                 |> save
 
         UpdatePeriod id field value ->
-            { model | periods = updatePeriods id field value model.periods }
+            { model | settings = updatePeriods id field value model.settings }
                 |> save
 
 
@@ -191,28 +181,62 @@ sendModelToPort model =
         |> Ports.storeModel
 
 
-addEvent : List Event -> List Event
-addEvent events =
-    let
-        maxId =
-            events
-                |> List.map .id
-                |> List.maximum
-                |> Maybe.withDefault -1
-    in
-    { id = maxId + 1
-    , name = "Wedding"
-    , date = Date.fromCalendarDate 2000 Jan 1
+setBirthdate : String -> Settings -> Settings
+setBirthdate s settings =
+    { settings
+        | birthdate =
+            s
+                |> Date.fromIsoString
+                |> Result.withDefault settings.birthdate
     }
-        :: List.reverse events
-        |> List.reverse
 
 
-addPeriod : Category -> List Period -> List Period
-addPeriod category periods =
+setLifeExpectancy : String -> Settings -> Settings
+setLifeExpectancy s settings =
+    { settings | lifeExpectancy = toIntWithDefault settings.lifeExpectancy s }
+
+
+setRetirementAge : String -> Settings -> Settings
+setRetirementAge s settings =
+    { settings | retirementAge = toIntWithDefault settings.retirementAge s }
+
+
+addEvent : Settings -> Settings
+addEvent settings =
+    let
+        insertEvent : List Event -> List Event
+        insertEvent events =
+            let
+                maxId =
+                    events
+                        |> List.map .id
+                        |> List.maximum
+                        |> Maybe.withDefault -1
+            in
+            { id = maxId + 1
+            , name = "Wedding"
+            , date = Date.fromCalendarDate 2000 Jan 1
+            }
+                :: List.reverse events
+                |> List.reverse
+    in
+    { settings | events = insertEvent settings.events }
+
+
+removeEvent : Int -> Settings -> Settings
+removeEvent id settings =
+    let
+        events =
+            List.filter (\event -> event.id /= id) settings.events
+    in
+    { settings | events = events }
+
+
+addPeriod : Category -> Settings -> Settings
+addPeriod category settings =
     let
         maxId =
-            periods
+            settings.periods
                 |> List.map .id
                 |> List.maximum
                 |> Maybe.withDefault -1
@@ -226,26 +250,31 @@ addPeriod category periods =
             , category = category
             , color = Colors.categoryColor category
             }
+
+        newPeriods =
+            (newPeriod :: List.reverse settings.periods)
+                |> List.reverse
+                |> updateColors category
     in
-    newPeriod
-        :: List.reverse periods
-        |> List.reverse
-        |> updateColors category
+    { settings | periods = newPeriods }
 
 
-removePeriod : Int -> List Period -> List Period
-removePeriod id periods =
+removePeriod : Int -> Settings -> Settings
+removePeriod id settings =
     let
         category =
-            periods
+            settings.periods
                 |> List.filter (\period -> period.id == id)
                 |> List.head
                 |> Maybe.map .category
                 |> Maybe.withDefault Activity
+
+        periods =
+            settings.periods
+                |> List.filter (\period -> period.id /= id)
+                |> updateColors category
     in
-    periods
-        |> List.filter (\period -> period.id /= id)
-        |> updateColors category
+    { settings | periods = periods }
 
 
 updateColors : Category -> List Period -> List Period
@@ -292,17 +321,21 @@ defaultPeriodName category =
             "Acme Corporation"
 
 
-updateEvents : Int -> EventField -> String -> List Event -> List Event
-updateEvents id field value events =
-    List.map
-        (\event ->
-            if event.id == id then
-                updateEvent field value event
+updateEvents : Int -> EventField -> String -> Settings -> Settings
+updateEvents id field value settings =
+    let
+        events =
+            List.map
+                (\event ->
+                    if event.id == id then
+                        updateEvent field value event
 
-            else
-                event
-        )
-        events
+                    else
+                        event
+                )
+                settings.events
+    in
+    { settings | events = events }
 
 
 updateEvent : EventField -> String -> Event -> Event
@@ -320,17 +353,21 @@ updateEvent field value event =
             }
 
 
-updatePeriods : Int -> PeriodField -> String -> List Period -> List Period
-updatePeriods id field value periods =
-    List.map
-        (\period ->
-            if period.id == id then
-                updatePeriod field value period
+updatePeriods : Int -> PeriodField -> String -> Settings -> Settings
+updatePeriods id field value settings =
+    let
+        periods =
+            List.map
+                (\period ->
+                    if period.id == id then
+                        updatePeriod field value period
 
-            else
-                period
-        )
-        periods
+                    else
+                        period
+                )
+                settings.periods
+    in
+    { settings | periods = periods }
 
 
 updatePeriod : PeriodField -> String -> Period -> Period

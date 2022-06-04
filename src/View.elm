@@ -102,7 +102,7 @@ dotSize =
 
 
 view : Model -> Html Msg
-view model =
+view ({ settings } as model) =
     let
         unitsPerYear : Int
         unitsPerYear =
@@ -110,7 +110,7 @@ view model =
 
         maxYear : Date
         maxYear =
-            Date.add Years 150 model.birthdate
+            Date.add Years 150 settings.birthdate
 
         lastYear : Date
         lastYear =
@@ -123,22 +123,22 @@ view model =
             dateRange
                 model.unit
                 unitsPerYear
-                model.birthdate
+                settings.birthdate
                 lastYear
 
         dates : Dates
         dates =
             getDates
-                { birthdate = model.birthdate
-                , lifeExpectancy = model.lifeExpectancy
-                , retirementAge = model.retirementAge
+                { birthdate = settings.birthdate
+                , lifeExpectancy = settings.lifeExpectancy
+                , retirementAge = settings.retirementAge
                 , unit = model.unit
                 , unitsPerYear = unitsPerYear
                 }
 
         cutOffPeriods : List Period
         cutOffPeriods =
-            cutOffWorkAtRetirement dates.retirement model.periods
+            cutOffWorkAtRetirement dates.retirement settings.periods
 
         periodsForGrid : List PeriodColor
         periodsForGrid =
@@ -157,7 +157,7 @@ view model =
             []
             [ lazy grid
                 { dates = dates
-                , events = model.events
+                , events = settings.events
                 , periods = periodsForGrid
                 , selectedDate = model.selectedDate
                 , today = model.today
@@ -166,20 +166,20 @@ view model =
                 , years = years
                 }
             , lazy details
-                { birthdate = model.birthdate
+                { birthdate = settings.birthdate
                 , dates = dates
-                , events = model.events
+                , events = settings.events
                 , periods = cutOffPeriods
                 , selectedDate = model.selectedDate
                 , unit = model.unit
                 }
-            , lazy settings
-                { birthdate = model.birthdate
+            , lazy settingsForm
+                { birthdate = settings.birthdate
                 , categories = model.categories
-                , events = model.events
-                , lifeExpectancy = model.lifeExpectancy
-                , retirementAge = model.retirementAge
-                , periods = model.periods
+                , events = settings.events
+                , lifeExpectancy = settings.lifeExpectancy
+                , retirementAge = settings.retirementAge
+                , periods = settings.periods
                 , unit = model.unit
                 }
             , actionButtons
@@ -211,7 +211,7 @@ cutOffWorkAtRetirement retirementDate periods =
         periods
 
 
-settings :
+settingsForm :
     { birthdate : Date
     , categories : List Category
     , events : List Event
@@ -221,7 +221,7 @@ settings :
     , unit : Unit
     }
     -> Html Msg
-settings model =
+settingsForm model =
     let
         categoryToCheckboxOption : Category -> ( String, Bool )
         categoryToCheckboxOption category =
@@ -380,10 +380,7 @@ periodFields period =
             (inputIdPrefix ++ "startDate")
             (Just period.startDate)
             (UpdatePeriod period.id PeriodStartDate)
-            { defaultFieldOpts
-                | required = True
-                , onBlur = Just SortPeriods
-            }
+            { defaultFieldOpts | required = True }
         ]
     , Components.field
         (inputIdPrefix ++ "endDate")
@@ -449,10 +446,7 @@ eventFields event =
             (inputIdPrefix ++ "date")
             (Just event.date)
             (UpdateEvent event.id EventDate)
-            { defaultFieldOpts
-                | required = True
-                , onBlur = Just SortEvents
-            }
+            { defaultFieldOpts | required = True }
         ]
     , Components.button "remove" (RemoveEvent event.id)
     ]

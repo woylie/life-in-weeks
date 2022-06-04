@@ -11,6 +11,7 @@ module Types exposing
     , PeriodColor
     , PeriodField(..)
     , Phase(..)
+    , Settings
     , State(..)
     , categories
     , categoryFromString
@@ -23,15 +24,20 @@ import File exposing (File)
 
 
 type alias Model =
+    { categories : List Category
+    , selectedDate : Maybe Date
+    , today : Date
+    , unit : Unit
+    , settings : Settings
+    }
+
+
+type alias Settings =
     { birthdate : Date
-    , categories : List Category
     , events : List Event
     , lifeExpectancy : Int
     , periods : List Period
     , retirementAge : Int
-    , selectedDate : Maybe Date
-    , today : Date
-    , unit : Unit
     }
 
 
@@ -166,8 +172,6 @@ type Msg
     | SetLifeExpectancy String
     | SetRetirementAge String
     | SetUnit String
-    | SortEvents
-    | SortPeriods
     | ToggleCategory String
     | UpdateEvent Int EventField String
     | UpdatePeriod Int PeriodField String
