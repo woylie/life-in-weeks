@@ -9035,11 +9035,10 @@ var $author$project$Main$update = F2(
 				var _v1 = A2($elm$json$Json$Decode$decodeString, $author$project$Decoder$decoder, content);
 				if (!_v1.$) {
 					var importedModel = _v1.a;
-					return _Utils_Tuple2(
+					return $author$project$Main$save(
 						_Utils_update(
 							importedModel,
-							{aY: model.aY}),
-						$elm$core$Platform$Cmd$none);
+							{aY: model.aY}));
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
