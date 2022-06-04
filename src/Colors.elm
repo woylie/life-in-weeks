@@ -1,7 +1,7 @@
 module Colors exposing (categoryColor, getColor, invertColor, selectedColor)
 
 import Color exposing (Color, rgb255)
-import Color.Manipulate exposing (lighten)
+import Color.Manipulate exposing (darken, lighten)
 import Types exposing (Category(..), Phase(..), State(..))
 
 
@@ -39,31 +39,24 @@ categoryColor : Category -> Color
 categoryColor category =
     case category of
         Education ->
-            -- cyber yellow
             rgb255 255 207 0
 
         Activity ->
-            -- spanish-viridian
-            rgb255 12 124 89
+            rgb255 206 207 222
 
         Membership ->
-            -- burnt-orange
-            rgb255 214 81 8
+            rgb255 249 181 172
 
         Other ->
-            -- dark-sky-blue
             rgb255 131 181 209
 
         Relationship ->
-            -- red-purple
-            rgb255 220 0 115
+            rgb255 250 163 129
 
         Residence ->
-            -- orange-red-crayola
-            rgb255 254 95 85
+            rgb255 120 220 227
 
         Work ->
-            -- malachite
             rgb255 35 231 103
 
 
@@ -90,10 +83,10 @@ getColor state phase =
             ( phaseColor, phaseColor )
 
         Present ->
-            ( todayColor, todayColor )
+            ( todayColor, darken 0.15 todayColor )
 
         Future ->
-            ( lighten 0.5 phaseColor, phaseColor )
+            ( lighten 0.6 phaseColor, phaseColor )
 
         Selected ->
             ( selectedColor, selectedColor )

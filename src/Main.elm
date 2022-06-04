@@ -254,7 +254,7 @@ updateColors category periods =
         foldFunc : Period -> ( Color, List Period ) -> ( Color, List Period )
         foldFunc period ( color, accPeriods ) =
             if period.category == category then
-                ( lighten 0.12 color, { period | color = color } :: accPeriods )
+                ( lighten 0.06 color, { period | color = color } :: accPeriods )
 
             else
                 ( color, period :: accPeriods )
