@@ -144,6 +144,7 @@ view model =
         periodsForGrid =
             model.periods
                 |> List.filter (\p -> List.member p.category model.categories)
+                |> cutOffWorkAtRetirement dates.retirement
                 |> List.map
                     (\period ->
                         { color = period.color
@@ -185,6 +186,30 @@ view model =
             , actionButtons
             ]
         ]
+
+
+cutOffWorkAtRetirement : Date -> List Period -> List Period
+cutOffWorkAtRetirement retirementDate periods =
+    let
+        maybeSetEndDate : Period -> Period
+        maybeSetEndDate period =
+            case period.endDate of
+                Just _ ->
+                    period
+
+                Nothing ->
+                    { period | endDate = Just (Date.add Days -1 retirementDate) }
+    in
+    List.map
+        (\period ->
+            case period.category of
+                Work ->
+                    maybeSetEndDate period
+
+                _ ->
+                    period
+        )
+        periods
 
 
 settings :
