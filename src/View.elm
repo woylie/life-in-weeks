@@ -108,24 +108,6 @@ view ({ settings } as model) =
         unitsPerYear =
             numberOfUnitsPerYear model.unit
 
-        maxYear : Date
-        maxYear =
-            Date.add Years 150 settings.birthdate
-
-        lastYear : Date
-        lastYear =
-            model.today
-                |> Date.max dates.death
-                |> Date.min maxYear
-
-        years : List Date
-        years =
-            dateRange
-                model.unit
-                unitsPerYear
-                settings.birthdate
-                lastYear
-
         dates : Dates
         dates =
             getDates
@@ -139,18 +121,6 @@ view ({ settings } as model) =
         cutOffPeriods : List Period
         cutOffPeriods =
             cutOffWorkAtRetirement dates.retirement settings.periods
-
-        periodsForGrid : List PeriodColor
-        periodsForGrid =
-            cutOffPeriods
-                |> List.filter (\p -> List.member p.category model.categories)
-                |> List.map
-                    (\period ->
-                        { color = period.color
-                        , startDate = period.startDate
-                        , endDate = period.endDate
-                        }
-                    )
     in
     Components.container
         [ div
@@ -158,12 +128,18 @@ view ({ settings } as model) =
             [ lazy grid
                 { dates = dates
                 , events = settings.events
-                , periods = periodsForGrid
+                , periods = periodsForGrid model.categories cutOffPeriods
                 , selectedDate = model.selectedDate
                 , today = model.today
                 , unit = model.unit
                 , unitsPerYear = unitsPerYear
-                , years = years
+                , years =
+                    getYears
+                        model.unit
+                        unitsPerYear
+                        model.today
+                        settings.birthdate
+                        dates
                 }
             , lazy details
                 { birthdate = settings.birthdate
@@ -209,6 +185,38 @@ cutOffWorkAtRetirement retirementDate periods =
                     period
         )
         periods
+
+
+periodsForGrid : List Category -> List Period -> List PeriodColor
+periodsForGrid categories periods =
+    periods
+        |> List.filter (\p -> List.member p.category categories)
+        |> List.map
+            (\period ->
+                { color = period.color
+                , startDate = period.startDate
+                , endDate = period.endDate
+                }
+            )
+
+
+getYears : Unit -> Int -> Date -> Date -> Dates -> List Date
+getYears unit unitsPerYear today birthdate dates =
+    let
+        maxYear : Date
+        maxYear =
+            Date.add Years 150 birthdate
+
+        lastYear =
+            today
+                |> Date.max dates.death
+                |> Date.min maxYear
+    in
+    dateRange
+        unit
+        unitsPerYear
+        birthdate
+        lastYear
 
 
 settingsForm :

@@ -12,6 +12,7 @@ import File
 import File.Download
 import File.Select
 import Html.Styled exposing (toUnstyled)
+import Html.Styled.Lazy exposing (lazy)
 import Json.Decode
 import Json.Encode
 import Ports
@@ -39,7 +40,7 @@ main =
         { init = init
         , update = update
         , subscriptions = subscriptions
-        , view = view >> toUnstyled
+        , view = lazy view >> toUnstyled
         }
 
 
