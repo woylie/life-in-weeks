@@ -1,6 +1,7 @@
 module DateRange exposing
     ( dateRange
     , endOfUnit
+    , format
     , intToOrdinal
     , numberOfUnitsPerYear
     , timeDifference
@@ -186,3 +187,15 @@ endOfUnit unit startOfUnit =
     startOfUnit
         |> Date.add unit 1
         |> Date.add Days -1
+
+
+format : Date -> Date -> String
+format startDate endDate =
+    let
+        dateFormat : String
+        dateFormat =
+            "MMMM ddd, y"
+    in
+    Date.format dateFormat startDate
+        ++ " - "
+        ++ Date.format dateFormat endDate

@@ -111,16 +111,21 @@ view model =
                 , unit = model.unit
                 , unitsPerYear = unitsPerYear
                 }
+
+        periodsForGrid : List Period
+        periodsForGrid =
+            List.filter
+                (\p -> List.member p.category model.categories)
+                model.periods
     in
     Components.container
         [ div
             []
             [ lazy grid
                 { birthdate = model.birthdate
-                , categories = model.categories
                 , dates = dates
                 , events = model.events
-                , periods = model.periods
+                , periods = periodsForGrid
                 , selectedDate = model.selectedDate
                 , today = model.today
                 , unit = model.unit
@@ -397,7 +402,6 @@ eventFields event =
 
 grid :
     { birthdate : Date
-    , categories : List Category
     , dates : Dates
     , events : List Event
     , periods : List Period
@@ -407,7 +411,7 @@ grid :
     , unitsPerYear : Int
     }
     -> Html Msg
-grid ({ dates, unitsPerYear } as model) =
+grid ({ dates, periods, unitsPerYear } as model) =
     let
         years =
             dateRange
@@ -415,11 +419,6 @@ grid ({ dates, unitsPerYear } as model) =
                 unitsPerYear
                 model.birthdate
                 (Date.max dates.death model.today)
-
-        periods =
-            List.filter
-                (\p -> List.member p.category model.categories)
-                model.periods
     in
     div
         [ css
@@ -549,22 +548,15 @@ column :
     -> Html Msg
 column { dates, endOfUnit, events, periods, selectedDate, startOfUnit, today } =
     let
-        dateFormat =
-            "MMMM ddd, y"
-
-        titleText =
-            Date.format dateFormat startOfUnit
-                ++ " - "
-                ++ Date.format dateFormat endOfUnit
-
         state =
             getState today selectedDate startOfUnit endOfUnit
 
         phase =
             getPhase dates periods startOfUnit endOfUnit
 
-        matchingEvents =
-            filterMatchingEvents startOfUnit endOfUnit events
+        showEventDot : Bool
+        showEventDot =
+            hasEvents startOfUnit endOfUnit events
 
         ( boxColor, borderColor ) =
             Colors.getColor state phase
@@ -587,10 +579,10 @@ column { dates, endOfUnit, events, periods, selectedDate, startOfUnit, today } =
             , alignItems center
             , justifyContent center
             ]
-        , onClick (SelectDate (Just startOfUnit))
-        , title titleText
+        , onClick <| SelectDate (Just startOfUnit)
+        , title <| DateRange.format startOfUnit endOfUnit
         ]
-        [ Components.showIf (matchingEvents /= [])
+        [ Components.showIf showEventDot
             (div
                 [ css
                     [ width (px dotSize)
@@ -641,17 +633,11 @@ getPhase dates periods startOfUnit endOfUnit =
                 |> filterMatchingPeriods startOfUnit endOfUnit
                 |> List.head
 
-        retirement =
-            Date.compare startOfUnit dates.retirement /= LT
-
-        pastLifeExpectancy =
-            Date.compare startOfUnit dates.death /= LT
-
         phaseWithDefault default =
-            if pastLifeExpectancy then
+            if Date.compare startOfUnit dates.death /= LT then
                 PastLifeExpectancy
 
-            else if retirement then
+            else if Date.compare startOfUnit dates.retirement /= LT then
                 Retirement
 
             else
@@ -673,7 +659,8 @@ getPhase dates periods startOfUnit endOfUnit =
 filterMatchingPeriods : Date -> Date -> List Period -> List Period
 filterMatchingPeriods startOfUnit endOfUnit periods =
     let
-        filterCondition p =
+        periodFilter : Period -> Bool
+        periodFilter p =
             case p.endDate of
                 Just endDate ->
                     Date.compare p.startDate endOfUnit
@@ -684,19 +671,22 @@ filterMatchingPeriods startOfUnit endOfUnit periods =
                 Nothing ->
                     Date.compare p.startDate endOfUnit /= GT
     in
-    List.filter filterCondition periods
+    List.filter periodFilter periods
+
+
+eventFilter : Date -> Date -> Event -> Bool
+eventFilter startDate endDate { date } =
+    Date.compare date startDate /= LT && Date.compare date endDate /= GT
+
+
+hasEvents : Date -> Date -> List Event -> Bool
+hasEvents startDate endDate events =
+    List.any (eventFilter startDate endDate) events
 
 
 filterMatchingEvents : Date -> Date -> List Event -> List Event
-filterMatchingEvents startOfUnit endOfUnit events =
-    let
-        filterCondition e =
-            Date.compare e.date startOfUnit
-                /= LT
-                && Date.compare e.date endOfUnit
-                /= GT
-    in
-    List.filter filterCondition events
+filterMatchingEvents startDate endDate events =
+    List.filter (eventFilter startDate endDate) events
 
 
 details :
