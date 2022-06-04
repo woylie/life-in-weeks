@@ -7850,17 +7850,6 @@ var $author$project$Main$defaultPeriodName = function (category) {
 			return 'Acme Corporation';
 	}
 };
-var $elm$core$List$filter = F2(
-	function (isGood, list) {
-		return A3(
-			$elm$core$List$foldr,
-			F2(
-				function (x, xs) {
-					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
-				}),
-			_List_Nil,
-			list);
-	});
 var $avh4$elm_color$Color$hsla = F4(
 	function (hue, sat, light, alpha) {
 		var _v0 = _Utils_Tuple3(hue, sat, light);
@@ -7922,7 +7911,33 @@ var $noahzgordon$elm_color_extra$Color$Manipulate$lighten = F2(
 	function (offset, cl) {
 		return A2($noahzgordon$elm_color_extra$Color$Manipulate$darken, -offset, cl);
 	});
-var $elm$core$List$sortBy = _List_sortBy;
+var $author$project$Main$updateColors = F2(
+	function (category, periods) {
+		var foldFunc = F2(
+			function (period, _v1) {
+				var color = _v1.a;
+				var accPeriods = _v1.b;
+				return _Utils_eq(period.cM, category) ? _Utils_Tuple2(
+					A2($noahzgordon$elm_color_extra$Color$Manipulate$lighten, 0.12, color),
+					A2(
+						$elm$core$List$cons,
+						_Utils_update(
+							period,
+							{cO: color}),
+						accPeriods)) : _Utils_Tuple2(
+					color,
+					A2($elm$core$List$cons, period, accPeriods));
+			});
+		var _v0 = A3(
+			$elm$core$List$foldl,
+			foldFunc,
+			_Utils_Tuple2(
+				$author$project$Colors$categoryColor(category),
+				_List_Nil),
+			periods);
+		var updatedPeriods = _v0.b;
+		return $elm$core$List$reverse(updatedPeriods);
+	});
 var $author$project$Main$addPeriod = F2(
 	function (category, periods) {
 		var maxId = A2(
@@ -7935,45 +7950,23 @@ var $author$project$Main$addPeriod = F2(
 						return $.bM;
 					},
 					periods)));
-		var lastColor = A2(
-			$elm$core$Maybe$map,
-			function ($) {
-				return $.cO;
-			},
-			$elm$core$List$head(
-				$elm$core$List$reverse(
-					A2(
-						$elm$core$List$sortBy,
-						function ($) {
-							return $.bM;
-						},
-						A2(
-							$elm$core$List$filter,
-							function (p) {
-								return _Utils_eq(p.cM, category);
-							},
-							periods)))));
-		var color = function () {
-			if (!lastColor.$) {
-				var someColor = lastColor.a;
-				return A2($noahzgordon$elm_color_extra$Color$Manipulate$lighten, 0.15, someColor);
-			} else {
-				return $author$project$Colors$categoryColor(category);
-			}
-		}();
-		return $elm$core$List$reverse(
-			A2(
-				$elm$core$List$cons,
-				{
-					cM: category,
-					cO: color,
-					cW: $elm$core$Maybe$Just(
-						A3($justinmimbs$date$Date$fromCalendarDate, 2005, 0, 1)),
-					bM: maxId + 1,
-					bY: $author$project$Main$defaultPeriodName(category),
-					dq: A3($justinmimbs$date$Date$fromCalendarDate, 2000, 0, 1)
-				},
-				$elm$core$List$reverse(periods)));
+		var newPeriod = {
+			cM: category,
+			cO: $author$project$Colors$categoryColor(category),
+			cW: $elm$core$Maybe$Just(
+				A3($justinmimbs$date$Date$fromCalendarDate, 2005, 0, 1)),
+			bM: maxId + 1,
+			bY: $author$project$Main$defaultPeriodName(category),
+			dq: A3($justinmimbs$date$Date$fromCalendarDate, 2000, 0, 1)
+		};
+		return A2(
+			$author$project$Main$updateColors,
+			category,
+			$elm$core$List$reverse(
+				A2(
+					$elm$core$List$cons,
+					newPeriod,
+					$elm$core$List$reverse(periods))));
 	});
 var $author$project$Types$categoryToString = function (category) {
 	switch (category) {
@@ -8840,6 +8833,17 @@ var $elm$file$File$Select$file = F2(
 			toMsg,
 			_File_uploadOne(mimes));
 	});
+var $elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
+	});
 var $elm$core$List$any = F2(
 	function (isOkay, list) {
 		any:
@@ -8872,6 +8876,33 @@ var $elm$core$List$member = F2(
 	});
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $author$project$Main$removePeriod = F2(
+	function (id, periods) {
+		var category = A2(
+			$elm$core$Maybe$withDefault,
+			1,
+			A2(
+				$elm$core$Maybe$map,
+				function ($) {
+					return $.cM;
+				},
+				$elm$core$List$head(
+					A2(
+						$elm$core$List$filter,
+						function (period) {
+							return _Utils_eq(period.bM, id);
+						},
+						periods))));
+		return A2(
+			$author$project$Main$updateColors,
+			category,
+			A2(
+				$elm$core$List$filter,
+				function (period) {
+					return !_Utils_eq(period.bM, id);
+				},
+				periods));
+	});
 var $author$project$Ports$storeModel = _Platform_outgoingPort('storeModel', $elm$json$Json$Encode$string);
 var $author$project$Main$sendModelToPort = function (model) {
 	return $author$project$Ports$storeModel(
@@ -9068,12 +9099,7 @@ var $author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{
-							dg: A2(
-								$elm$core$List$filter,
-								function (period) {
-									return !_Utils_eq(period.bM, id);
-								},
-								model.dg)
+							dg: A2($author$project$Main$removePeriod, id, model.dg)
 						}));
 			case 9:
 				var date = msg.a;
