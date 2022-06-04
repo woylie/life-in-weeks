@@ -7819,7 +7819,7 @@ var $author$project$Colors$categoryColor = function (category) {
 		case 0:
 			return A3($avh4$elm_color$Color$rgb255, 255, 207, 0);
 		case 1:
-			return A3($avh4$elm_color$Color$rgb255, 247, 161, 192);
+			return A3($avh4$elm_color$Color$rgb255, 206, 207, 222);
 		case 2:
 			return A3($avh4$elm_color$Color$rgb255, 249, 181, 172);
 		case 3:
@@ -12031,7 +12031,7 @@ var $author$project$Colors$getColor = F2(
 			case 1:
 				return _Utils_Tuple2(
 					$author$project$Colors$todayColor,
-					A2($noahzgordon$elm_color_extra$Color$Manipulate$darken, 0.2, $author$project$Colors$todayColor));
+					A2($noahzgordon$elm_color_extra$Color$Manipulate$darken, 0.15, $author$project$Colors$todayColor));
 			case 2:
 				return _Utils_Tuple2(
 					A2($noahzgordon$elm_color_extra$Color$Manipulate$lighten, 0.6, phaseColor),
