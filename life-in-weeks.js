@@ -7819,15 +7819,15 @@ var $author$project$Colors$categoryColor = function (category) {
 		case 0:
 			return A3($avh4$elm_color$Color$rgb255, 255, 207, 0);
 		case 1:
-			return A3($avh4$elm_color$Color$rgb255, 12, 124, 89);
+			return A3($avh4$elm_color$Color$rgb255, 247, 161, 192);
 		case 2:
-			return A3($avh4$elm_color$Color$rgb255, 214, 81, 8);
+			return A3($avh4$elm_color$Color$rgb255, 249, 181, 172);
 		case 3:
 			return A3($avh4$elm_color$Color$rgb255, 131, 181, 209);
 		case 4:
-			return A3($avh4$elm_color$Color$rgb255, 220, 0, 115);
+			return A3($avh4$elm_color$Color$rgb255, 250, 163, 129);
 		case 5:
-			return A3($avh4$elm_color$Color$rgb255, 254, 95, 85);
+			return A3($avh4$elm_color$Color$rgb255, 120, 220, 227);
 		default:
 			return A3($avh4$elm_color$Color$rgb255, 35, 231, 103);
 	}
@@ -7918,7 +7918,7 @@ var $author$project$Main$updateColors = F2(
 				var color = _v1.a;
 				var accPeriods = _v1.b;
 				return _Utils_eq(period.cM, category) ? _Utils_Tuple2(
-					A2($noahzgordon$elm_color_extra$Color$Manipulate$lighten, 0.12, color),
+					A2($noahzgordon$elm_color_extra$Color$Manipulate$lighten, 0.06, color),
 					A2(
 						$elm$core$List$cons,
 						_Utils_update(
@@ -11927,6 +11927,7 @@ var $author$project$View$horizontalAxisTitle = function (unit) {
 			return 'Years →';
 	}
 };
+var $author$project$Types$Present = 1;
 var $author$project$Types$SelectDate = function (a) {
 	return {$: 9, a: a};
 };
@@ -12028,10 +12029,12 @@ var $author$project$Colors$getColor = F2(
 			case 0:
 				return _Utils_Tuple2(phaseColor, phaseColor);
 			case 1:
-				return _Utils_Tuple2($author$project$Colors$todayColor, $author$project$Colors$todayColor);
+				return _Utils_Tuple2(
+					$author$project$Colors$todayColor,
+					A2($noahzgordon$elm_color_extra$Color$Manipulate$darken, 0.2, $author$project$Colors$todayColor));
 			case 2:
 				return _Utils_Tuple2(
-					A2($noahzgordon$elm_color_extra$Color$Manipulate$lighten, 0.5, phaseColor),
+					A2($noahzgordon$elm_color_extra$Color$Manipulate$lighten, 0.6, phaseColor),
 					phaseColor);
 			default:
 				return _Utils_Tuple2($author$project$Colors$selectedColor, $author$project$Colors$selectedColor);
@@ -12082,7 +12085,7 @@ var $author$project$View$column = function (_v0) {
 				]),
 			_List_Nil);
 	};
-	var periodOverlays = (state === 3) ? _List_Nil : A2($elm$core$List$map, periodDiv, periodColors);
+	var periodOverlays = ((state === 3) || (state === 1)) ? _List_Nil : A2($elm$core$List$map, periodDiv, periodColors);
 	var _v1 = A2($author$project$Colors$getColor, state, phase);
 	var boxColor = _v1.a;
 	var borderColor = _v1.b;
@@ -12182,7 +12185,6 @@ var $author$project$View$getPhase = F2(
 	});
 var $author$project$Types$Future = 2;
 var $author$project$Types$Past = 0;
-var $author$project$Types$Present = 1;
 var $justinmimbs$date$Date$isBetween = F3(
 	function (_v0, _v1, _v2) {
 		var a = _v0;
@@ -13162,20 +13164,18 @@ var $author$project$View$view = function (model) {
 		maxYear,
 		A2($justinmimbs$date$Date$max, dates.cR, model.aY));
 	var years = A4($author$project$DateRange$dateRange, model.du, unitsPerYear, model.cG, lastYear);
+	var cutOffPeriods = A2($author$project$View$cutOffWorkAtRetirement, dates.dl, model.dg);
 	var periodsForGrid = A2(
 		$elm$core$List$map,
 		function (period) {
 			return {cO: period.cO, cW: period.cW, dq: period.dq};
 		},
 		A2(
-			$author$project$View$cutOffWorkAtRetirement,
-			dates.dl,
-			A2(
-				$elm$core$List$filter,
-				function (p) {
-					return A2($elm$core$List$member, p.cM, model.cL);
-				},
-				model.dg)));
+			$elm$core$List$filter,
+			function (p) {
+				return A2($elm$core$List$member, p.cM, model.cL);
+			},
+			cutOffPeriods));
 	return $author$project$Components$container(
 		_List_fromArray(
 			[
@@ -13191,7 +13191,7 @@ var $author$project$View$view = function (model) {
 						A2(
 						$rtfeldman$elm_css$Html$Styled$Lazy$lazy,
 						$author$project$View$details,
-						{cG: model.cG, E: dates, cX: model.cX, dg: model.dg, be: model.be, du: model.du}),
+						{cG: model.cG, E: dates, cX: model.cX, dg: cutOffPeriods, be: model.be, du: model.du}),
 						A2(
 						$rtfeldman$elm_css$Html$Styled$Lazy$lazy,
 						$author$project$View$settings,
