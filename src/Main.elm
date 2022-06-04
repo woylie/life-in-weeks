@@ -97,7 +97,7 @@ update msg model =
         JsonLoaded content ->
             case Json.Decode.decodeString Decoder.decoder content of
                 Ok importedModel ->
-                    ( { importedModel | today = model.today }, Cmd.none )
+                    { importedModel | today = model.today } |> save
 
                 Err _ ->
                     ( model, Cmd.none )
