@@ -98,9 +98,11 @@ dotSize =
 view : Model -> Html Msg
 view model =
     let
+        unitsPerYear : Int
         unitsPerYear =
             numberOfUnitsPerYear model.unit
 
+        dates : Dates
         dates =
             getDates
                 { birthdate = model.birthdate
@@ -113,15 +115,49 @@ view model =
     Components.container
         [ div
             []
-            [ lazy3 grid model dates unitsPerYear
-            , lazy2 details model dates
-            , lazy settings model
+            [ lazy grid
+                { birthdate = model.birthdate
+                , categories = model.categories
+                , dates = dates
+                , events = model.events
+                , periods = model.periods
+                , selectedDate = model.selectedDate
+                , today = model.today
+                , unit = model.unit
+                , unitsPerYear = unitsPerYear
+                }
+            , lazy details
+                { birthdate = model.birthdate
+                , dates = dates
+                , events = model.events
+                , periods = model.periods
+                , selectedDate = model.selectedDate
+                , unit = model.unit
+                }
+            , lazy settings
+                { birthdate = model.birthdate
+                , categories = model.categories
+                , events = model.events
+                , lifeExpectancy = model.lifeExpectancy
+                , retirementAge = model.retirementAge
+                , periods = model.periods
+                , unit = model.unit
+                }
             , actionButtons
             ]
         ]
 
 
-settings : Model -> Html Msg
+settings :
+    { birthdate : Date
+    , categories : List Category
+    , events : List Event
+    , lifeExpectancy : Int
+    , retirementAge : Int
+    , periods : List Period
+    , unit : Unit
+    }
+    -> Html Msg
 settings model =
     let
         categoryToCheckboxOption : Category -> ( String, Bool )
@@ -359,8 +395,19 @@ eventFields event =
     ]
 
 
-grid : Model -> Dates -> Int -> Html Msg
-grid model dates unitsPerYear =
+grid :
+    { birthdate : Date
+    , categories : List Category
+    , dates : Dates
+    , events : List Event
+    , periods : List Period
+    , selectedDate : Maybe Date
+    , today : Date
+    , unit : Unit
+    , unitsPerYear : Int
+    }
+    -> Html Msg
+grid ({ dates, unitsPerYear } as model) =
     let
         years =
             dateRange
@@ -386,9 +433,7 @@ grid model dates unitsPerYear =
         , div
             [ css
                 [ property "text-orientation" "mixed"
-                , property
-                    "writing-mode"
-                    "vertical-rl"
+                , property "writing-mode" "vertical-rl"
                 , alignSelf center
                 ]
             ]
@@ -654,8 +699,16 @@ filterMatchingEvents startOfUnit endOfUnit events =
     List.filter filterCondition events
 
 
-details : Model -> Dates -> Html Msg
-details model dates =
+details :
+    { birthdate : Date
+    , dates : Dates
+    , events : List Event
+    , periods : List Period
+    , selectedDate : Maybe Date
+    , unit : Unit
+    }
+    -> Html Msg
+details { birthdate, dates, events, periods, selectedDate, unit } =
     div
         [ css
             [ padding (rem 0.75)
@@ -668,23 +721,38 @@ details model dates =
             , fontSize (rem 0.75)
             ]
         ]
-        [ case model.selectedDate of
+        [ case selectedDate of
             Just date ->
-                detailsForDate model dates date
+                detailsForDate
+                    { birthdate = birthdate
+                    , date = date
+                    , dates = dates
+                    , events = events
+                    , periods = periods
+                    , unit = unit
+                    }
 
             Nothing ->
                 text <|
                     "Select "
-                        ++ DateRange.unitToStringSingular model.unit
+                        ++ DateRange.unitToStringSingular unit
                         ++ " to show details"
         ]
 
 
-detailsForDate : Model -> Dates -> Date -> Html Msg
-detailsForDate model dates date =
+detailsForDate :
+    { birthdate : Date
+    , date : Date
+    , dates : Dates
+    , events : List Event
+    , periods : List Period
+    , unit : Unit
+    }
+    -> Html Msg
+detailsForDate { birthdate, date, dates, events, periods, unit } =
     let
         endOfUnit =
-            DateRange.endOfUnit model.unit date
+            DateRange.endOfUnit unit date
 
         dateFormat =
             "MMMM ddd, y"
@@ -696,14 +764,14 @@ detailsForDate model dates date =
 
         selectedPeriod =
             "Selected "
-                ++ DateRange.unitToStringSingular model.unit
+                ++ DateRange.unitToStringSingular unit
                 ++ ": "
                 ++ periodText
 
         age =
             "Age: "
                 ++ DateRange.timeDifferenceAsString
-                    model.birthdate
+                    birthdate
                     endOfUnit
 
         pastRetirement =
@@ -728,13 +796,13 @@ detailsForDate model dates date =
                 ]
 
         joinPeriodNames : List Period -> String
-        joinPeriodNames periods =
-            periods
+        joinPeriodNames periodList =
+            periodList
                 |> List.map .name
                 |> String.join ", "
 
         periodItems =
-            model.periods
+            periods
                 |> filterMatchingPeriods date endOfUnit
                 |> List.gatherEqualsBy .category
                 |> List.map
@@ -745,7 +813,7 @@ detailsForDate model dates date =
                     )
 
         eventItems =
-            model.events
+            events
                 |> filterMatchingEvents date endOfUnit
                 |> List.map
                     (\event ->
