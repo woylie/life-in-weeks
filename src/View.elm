@@ -625,6 +625,14 @@ column { endOfUnit, periodColors, phase, showEventDot, startOfUnit, state } =
                     ]
                 ]
                 []
+
+        periodOverlays : List (Html Msg)
+        periodOverlays =
+            if state == Selected then
+                []
+
+            else
+                List.map periodDiv periodColors
     in
     li
         [ css
@@ -645,7 +653,7 @@ column { endOfUnit, periodColors, phase, showEventDot, startOfUnit, state } =
         , title <| DateRange.format startOfUnit endOfUnit
         ]
         (Components.showIf showEventDot eventDot
-            :: List.map periodDiv periodColors
+            :: periodOverlays
         )
 
 
