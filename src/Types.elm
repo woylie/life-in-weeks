@@ -8,6 +8,7 @@ module Types exposing
     , Model
     , Msg(..)
     , Period
+    , PeriodColor
     , PeriodField(..)
     , Phase(..)
     , State(..)
@@ -47,6 +48,13 @@ type alias Period =
     , endDate : Maybe Date
     , category : Category
     , color : Color
+    }
+
+
+type alias PeriodColor =
+    { color : Color
+    , endDate : Maybe Date
+    , startDate : Date
     }
 
 

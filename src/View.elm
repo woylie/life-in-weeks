@@ -77,6 +77,7 @@ import Types
         , Model
         , Msg(..)
         , Period
+        , PeriodColor
         , PeriodField(..)
         , Phase(..)
         , State(..)
@@ -135,12 +136,7 @@ view model =
                 , unitsPerYear = unitsPerYear
                 }
 
-        periodsForGrid :
-            List
-                { color : Color
-                , endDate : Maybe Date
-                , startDate : Date
-                }
+        periodsForGrid : List PeriodColor
         periodsForGrid =
             model.periods
                 |> List.filter (\p -> List.member p.category model.categories)
@@ -462,7 +458,7 @@ eventFields event =
 grid :
     { dates : Dates
     , events : List Event
-    , periods : List { color : Color, startDate : Date, endDate : Maybe Date }
+    , periods : List PeriodColor
     , selectedDate : Maybe Date
     , today : Date
     , unit : Unit
@@ -472,7 +468,7 @@ grid :
     -> Html Msg
 grid { dates, events, periods, selectedDate, today, unit, unitsPerYear, years } =
     let
-        rowPeriods : Date -> Date -> List { color : Color, startDate : Date, endDate : Maybe Date }
+        rowPeriods : Date -> Date -> List PeriodColor
         rowPeriods year oneYearLater =
             filterMatchingPeriods year oneYearLater periods
 
@@ -542,7 +538,7 @@ horizontalAxisTitle unit =
 row :
     { dates : Dates
     , events : List Event
-    , periods : List { color : Color, startDate : Date, endDate : Maybe Date }
+    , periods : List PeriodColor
     , selectedDate : Maybe Date
     , today : Date
     , unit : Unit
@@ -580,11 +576,7 @@ row { dates, events, periods, selectedDate, today, unit, units } =
         ]
 
 
-getPeriodColors :
-    Date
-    -> Date
-    -> List { color : Color, startDate : Date, endDate : Maybe Date }
-    -> List Color
+getPeriodColors : Date -> Date -> List PeriodColor -> List Color
 getPeriodColors startDate endDate periods =
     periods
         |> filterMatchingPeriods startDate endDate
