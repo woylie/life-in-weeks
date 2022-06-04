@@ -65,8 +65,7 @@ import Html.Styled
         )
 import Html.Styled.Attributes exposing (css, title)
 import Html.Styled.Events exposing (onClick)
-import Html.Styled.Keyed exposing (node)
-import Html.Styled.Lazy exposing (lazy)
+import Html.Styled.Lazy exposing (lazy, lazy2)
 import List.Extra as List
 import Time exposing (Month(..))
 import Types
@@ -443,7 +442,7 @@ grid ({ dates, periods, unitsPerYear } as model) =
                 ]
             ]
             [ text "Years →" ]
-        , node "ul"
+        , ul
             [ css
                 [ displayFlex
                 , flexDirection Css.column
@@ -455,8 +454,7 @@ grid ({ dates, periods, unitsPerYear } as model) =
             ]
             (List.map
                 (\year ->
-                    ( "row-" ++ Date.toIsoString year
-                    , row
+                    lazy2 row
                         { dates = dates
                         , events = model.events
                         , periods = periods
@@ -466,7 +464,6 @@ grid ({ dates, periods, unitsPerYear } as model) =
                         , unitsPerYear = unitsPerYear
                         }
                         year
-                    )
                 )
                 years
             )
@@ -515,8 +512,7 @@ row { dates, events, periods, selectedDate, today, unit, unitsPerYear } startOfY
             filterMatchingEvents startOfYear oneYearLater events
 
         renderColumn startOfUnit =
-            ( "col-" ++ Date.toIsoString startOfUnit
-            , column
+            column
                 { dates = dates
                 , endOfUnit = DateRange.endOfUnit unit startOfUnit
                 , events = rowEvents
@@ -525,11 +521,10 @@ row { dates, events, periods, selectedDate, today, unit, unitsPerYear } startOfY
                 , startOfUnit = startOfUnit
                 , today = today
                 }
-            )
     in
     li
         []
-        [ node "ul"
+        [ ul
             [ css
                 [ displayFlex
                 , property "gap" gapSize
