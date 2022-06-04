@@ -65,7 +65,7 @@ import Html.Styled
         )
 import Html.Styled.Attributes exposing (css, title)
 import Html.Styled.Events exposing (onClick)
-import Html.Styled.Lazy exposing (lazy, lazy2)
+import Html.Styled.Lazy exposing (lazy)
 import List.Extra as List
 import Time exposing (Month(..))
 import Types
@@ -432,8 +432,9 @@ grid ({ dates, periods, unitsPerYear } as model) =
             , property "grid-template-rows" "auto 1fr"
             ]
         ]
-        [ div [] []
-        , div [ css [ textAlign center ] ] [ text (horizontalAxis model.unit) ]
+        [ div
+            [ css [ textAlign center, property "grid-column-start" "2" ] ]
+            [ text (horizontalAxis model.unit) ]
         , div
             [ css
                 [ property "text-orientation" "mixed"
@@ -454,7 +455,7 @@ grid ({ dates, periods, unitsPerYear } as model) =
             ]
             (List.map
                 (\year ->
-                    lazy2 row
+                    row
                         { dates = dates
                         , events = model.events
                         , periods = periods
@@ -573,6 +574,31 @@ column { dates, endOfUnit, events, periods, selectedDate, startOfUnit, today } =
         dotColor : Color
         dotColor =
             Color.Blending.exclusion boxColor Color.white
+
+        periodDiv : Color -> Html msg
+        periodDiv color =
+            div
+                [ css
+                    [ property "background-color" (Color.toCssString color)
+                    , flex3 (int 1) (int 1) (pct 100)
+                    ]
+                ]
+                []
+
+        eventDot : Html msg
+        eventDot =
+            div
+                [ css
+                    [ width (px dotSize)
+                    , height (px dotSize)
+                    , borderRadius (px 142191)
+                    , property "background-color" (Color.toCssString dotColor)
+                    , position absolute
+                    , left (calc (pct 50) minus (px (dotSize / 2)))
+                    , top (calc (pct 50) minus (px (dotSize / 2)))
+                    ]
+                ]
+                []
     in
     li
         [ css
@@ -592,33 +618,8 @@ column { dates, endOfUnit, events, periods, selectedDate, startOfUnit, today } =
         , onClick <| SelectDate (Just startOfUnit)
         , title <| DateRange.format startOfUnit endOfUnit
         ]
-        (Components.showIf showEventDot
-            (div
-                [ css
-                    [ width (px dotSize)
-                    , height (px dotSize)
-                    , borderRadius (px 142191)
-                    , property "background-color" (Color.toCssString dotColor)
-                    , position absolute
-                    , left (calc (pct 50) minus (px (dotSize / 2)))
-                    , top (calc (pct 50) minus (px (dotSize / 2)))
-                    ]
-                ]
-                []
-            )
-            :: List.map
-                (\color ->
-                    div
-                        [ css
-                            [ property
-                                "background-color"
-                                (Color.toCssString color)
-                            , flex3 (int 1) (int 1) (pct 100)
-                            ]
-                        ]
-                        []
-                )
-                periodColors
+        (Components.showIf showEventDot eventDot
+            :: List.map periodDiv periodColors
         )
 
 
