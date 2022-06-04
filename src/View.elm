@@ -136,11 +136,14 @@ view model =
                 , unitsPerYear = unitsPerYear
                 }
 
+        cutOffPeriods : List Period
+        cutOffPeriods =
+            cutOffWorkAtRetirement dates.retirement model.periods
+
         periodsForGrid : List PeriodColor
         periodsForGrid =
-            model.periods
+            cutOffPeriods
                 |> List.filter (\p -> List.member p.category model.categories)
-                |> cutOffWorkAtRetirement dates.retirement
                 |> List.map
                     (\period ->
                         { color = period.color
@@ -166,7 +169,7 @@ view model =
                 { birthdate = model.birthdate
                 , dates = dates
                 , events = model.events
-                , periods = model.periods
+                , periods = cutOffPeriods
                 , selectedDate = model.selectedDate
                 , unit = model.unit
                 }
@@ -628,7 +631,7 @@ column { endOfUnit, periodColors, phase, showEventDot, startOfUnit, state } =
 
         periodOverlays : List (Html Msg)
         periodOverlays =
-            if state == Selected then
+            if state == Selected || state == Present then
                 []
 
             else
