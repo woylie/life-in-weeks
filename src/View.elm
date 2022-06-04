@@ -107,6 +107,24 @@ view model =
         unitsPerYear =
             numberOfUnitsPerYear model.unit
 
+        maxYear : Date
+        maxYear =
+            Date.add Years 150 model.birthdate
+
+        lastYear : Date
+        lastYear =
+            model.today
+                |> Date.max dates.death
+                |> Date.min maxYear
+
+        years : List Date
+        years =
+            dateRange
+                model.unit
+                unitsPerYear
+                model.birthdate
+                lastYear
+
         dates : Dates
         dates =
             getDates
@@ -117,24 +135,35 @@ view model =
                 , unitsPerYear = unitsPerYear
                 }
 
-        periodsForGrid : List Period
+        periodsForGrid :
+            List
+                { color : Color
+                , endDate : Maybe Date
+                , startDate : Date
+                }
         periodsForGrid =
-            List.filter
-                (\p -> List.member p.category model.categories)
-                model.periods
+            model.periods
+                |> List.filter (\p -> List.member p.category model.categories)
+                |> List.map
+                    (\period ->
+                        { color = period.color
+                        , startDate = period.startDate
+                        , endDate = period.endDate
+                        }
+                    )
     in
     Components.container
         [ div
             []
             [ lazy grid
-                { birthdate = model.birthdate
-                , dates = dates
+                { dates = dates
                 , events = model.events
                 , periods = periodsForGrid
                 , selectedDate = model.selectedDate
                 , today = model.today
                 , unit = model.unit
                 , unitsPerYear = unitsPerYear
+                , years = years
                 }
             , lazy details
                 { birthdate = model.birthdate
@@ -406,24 +435,36 @@ eventFields event =
 
 
 grid :
-    { birthdate : Date
-    , dates : Dates
+    { dates : Dates
     , events : List Event
-    , periods : List Period
+    , periods : List { color : Color, startDate : Date, endDate : Maybe Date }
     , selectedDate : Maybe Date
     , today : Date
     , unit : Unit
     , unitsPerYear : Int
+    , years : List Date
     }
     -> Html Msg
-grid ({ dates, periods, unitsPerYear } as model) =
+grid { dates, events, periods, selectedDate, today, unit, unitsPerYear, years } =
     let
-        years =
-            dateRange
-                model.unit
-                unitsPerYear
-                model.birthdate
-                (Date.max dates.death model.today)
+        rowPeriods : Date -> Date -> List { color : Color, startDate : Date, endDate : Maybe Date }
+        rowPeriods year oneYearLater =
+            filterMatchingPeriods year oneYearLater periods
+
+        renderRow year =
+            let
+                oneYearLater =
+                    Date.add unit unitsPerYear year
+            in
+            row
+                { dates = dates
+                , events = filterMatchingEvents year oneYearLater events
+                , periods = rowPeriods year oneYearLater
+                , selectedDate = selectedDate
+                , today = today
+                , unit = unit
+                , units = dateRange unit 1 year oneYearLater
+                }
     in
     div
         [ css
@@ -434,7 +475,7 @@ grid ({ dates, periods, unitsPerYear } as model) =
         ]
         [ div
             [ css [ textAlign center, property "grid-column-start" "2" ] ]
-            [ text (horizontalAxis model.unit) ]
+            [ text (horizontalAxisTitle unit) ]
         , div
             [ css
                 [ property "text-orientation" "mixed"
@@ -453,26 +494,12 @@ grid ({ dates, periods, unitsPerYear } as model) =
                 , margin (px 0)
                 ]
             ]
-            (List.map
-                (\year ->
-                    row
-                        { dates = dates
-                        , events = model.events
-                        , periods = periods
-                        , selectedDate = model.selectedDate
-                        , today = model.today
-                        , unit = model.unit
-                        , unitsPerYear = unitsPerYear
-                        }
-                        year
-                )
-                years
-            )
+            (List.map renderRow years)
         ]
 
 
-horizontalAxis : Unit -> String
-horizontalAxis unit =
+horizontalAxisTitle : Unit -> String
+horizontalAxisTitle unit =
     case unit of
         Days ->
             "Days →"
@@ -490,37 +517,27 @@ horizontalAxis unit =
 row :
     { dates : Dates
     , events : List Event
-    , periods : List Period
+    , periods : List { color : Color, startDate : Date, endDate : Maybe Date }
     , selectedDate : Maybe Date
     , today : Date
     , unit : Unit
-    , unitsPerYear : Int
+    , units : List Date
     }
-    -> Date
     -> Html Msg
-row { dates, events, periods, selectedDate, today, unit, unitsPerYear } startOfYear =
+row { dates, events, periods, selectedDate, today, unit, units } =
     let
-        oneYearLater =
-            Date.add unit unitsPerYear startOfYear
-
-        units =
-            dateRange unit 1 startOfYear oneYearLater
-
-        rowPeriods =
-            filterMatchingPeriods startOfYear oneYearLater periods
-
-        rowEvents =
-            filterMatchingEvents startOfYear oneYearLater events
-
         renderColumn startOfUnit =
+            let
+                endOfUnit =
+                    DateRange.endOfUnit unit startOfUnit
+            in
             column
-                { dates = dates
-                , endOfUnit = DateRange.endOfUnit unit startOfUnit
-                , events = rowEvents
-                , periods = rowPeriods
-                , selectedDate = selectedDate
+                { endOfUnit = endOfUnit
+                , periodColors = getPeriodColors startOfUnit endOfUnit periods
+                , phase = getPhase dates startOfUnit
+                , showEventDot = hasEvents startOfUnit endOfUnit events
                 , startOfUnit = startOfUnit
-                , today = today
+                , state = getState today selectedDate startOfUnit endOfUnit
                 }
     in
     li
@@ -538,38 +555,30 @@ row { dates, events, periods, selectedDate, today, unit, unitsPerYear } startOfY
         ]
 
 
+getPeriodColors :
+    Date
+    -> Date
+    -> List { color : Color, startDate : Date, endDate : Maybe Date }
+    -> List Color
+getPeriodColors startDate endDate periods =
+    periods
+        |> filterMatchingPeriods startDate endDate
+        |> List.map .color
+
+
 column :
-    { dates : Dates
-    , endOfUnit : Date
-    , events : List Event
-    , periods : List Period
-    , selectedDate : Maybe Date
+    { endOfUnit : Date
+    , periodColors : List Color
+    , phase : Phase
+    , showEventDot : Bool
     , startOfUnit : Date
-    , today : Date
+    , state : State
     }
     -> Html Msg
-column { dates, endOfUnit, events, periods, selectedDate, startOfUnit, today } =
+column { endOfUnit, periodColors, phase, showEventDot, startOfUnit, state } =
     let
-        periodColors : List Color
-        periodColors =
-            periods
-                |> filterMatchingPeriods startOfUnit endOfUnit
-                |> List.map .color
-
-        state : State
-        state =
-            getState today selectedDate startOfUnit endOfUnit
-
-        phase : Phase
-        phase =
-            getPhase dates startOfUnit
-
         ( boxColor, borderColor ) =
             Colors.getColor state phase
-
-        showEventDot : Bool
-        showEventDot =
-            hasEvents startOfUnit endOfUnit events
 
         dotColor : Color
         dotColor =
@@ -664,10 +673,14 @@ getPhase dates startOfUnit =
         Default
 
 
-filterMatchingPeriods : Date -> Date -> List Period -> List Period
+filterMatchingPeriods :
+    Date
+    -> Date
+    -> List { a | startDate : Date, endDate : Maybe Date }
+    -> List { a | startDate : Date, endDate : Maybe Date }
 filterMatchingPeriods startOfUnit endOfUnit periods =
     let
-        periodFilter : Period -> Bool
+        periodFilter : { a | startDate : Date, endDate : Maybe Date } -> Bool
         periodFilter p =
             case p.endDate of
                 Just endDate ->
