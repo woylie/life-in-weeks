@@ -1,6 +1,7 @@
 module Main exposing (main)
 
 import Browser
+import Color exposing (Color)
 import Color.Manipulate exposing (lighten)
 import Colors
 import Date exposing (Interval(..), Unit(..))
@@ -113,11 +114,7 @@ update msg model =
                 |> save
 
         RemovePeriod id ->
-            { model
-                | periods =
-                    List.filter (\period -> period.id /= id) model.periods
-            }
-                |> save
+            { model | periods = removePeriod id model.periods } |> save
 
         SelectDate date ->
             ( { model | selectedDate = date }, Cmd.none )
@@ -220,31 +217,54 @@ addPeriod category periods =
                 |> List.maximum
                 |> Maybe.withDefault -1
 
-        lastColor =
-            periods
-                |> List.filter (\p -> p.category == category)
-                |> List.sortBy .id
-                |> List.reverse
-                |> List.head
-                |> Maybe.map .color
-
-        color =
-            case lastColor of
-                Just someColor ->
-                    lighten 0.15 someColor
-
-                Nothing ->
-                    Colors.categoryColor category
+        newPeriod : Period
+        newPeriod =
+            { id = maxId + 1
+            , name = defaultPeriodName category
+            , startDate = Date.fromCalendarDate 2000 Jan 1
+            , endDate = Just <| Date.fromCalendarDate 2005 Jan 1
+            , category = category
+            , color = Colors.categoryColor category
+            }
     in
-    { id = maxId + 1
-    , name = defaultPeriodName category
-    , startDate = Date.fromCalendarDate 2000 Jan 1
-    , endDate = Just <| Date.fromCalendarDate 2005 Jan 1
-    , category = category
-    , color = color
-    }
+    newPeriod
         :: List.reverse periods
         |> List.reverse
+        |> updateColors category
+
+
+removePeriod : Int -> List Period -> List Period
+removePeriod id periods =
+    let
+        category =
+            periods
+                |> List.filter (\period -> period.id == id)
+                |> List.head
+                |> Maybe.map .category
+                |> Maybe.withDefault Activity
+    in
+    periods
+        |> List.filter (\period -> period.id /= id)
+        |> updateColors category
+
+
+updateColors : Category -> List Period -> List Period
+updateColors category periods =
+    let
+        foldFunc : Period -> ( Color, List Period ) -> ( Color, List Period )
+        foldFunc period ( color, accPeriods ) =
+            if period.category == category then
+                ( lighten 0.12 color, { period | color = color } :: accPeriods )
+
+            else
+                ( color, period :: accPeriods )
+
+        ( _, updatedPeriods ) =
+            List.foldl foldFunc
+                ( Colors.categoryColor category, [] )
+                periods
+    in
+    List.reverse updatedPeriods
 
 
 defaultPeriodName : Category -> String
