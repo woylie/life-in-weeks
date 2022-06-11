@@ -42,6 +42,7 @@ import Css
         , lineHeight
         , margin2
         , marginLeft
+        , marginRight
         , maxWidth
         , normal
         , padding
@@ -191,7 +192,7 @@ checkbox msg ( option, isChecked ) =
             , onInput msg
             ]
             []
-        , Html.span [ css [ marginLeft (rem 0.5) ] ] [ text option ]
+        , Html.span [ css [ marginLeft (rem 0.25), marginRight (rem 0.5) ] ] [ text option ]
         ]
 
 

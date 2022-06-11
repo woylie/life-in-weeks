@@ -2,6 +2,7 @@ module View exposing (view)
 
 import Color exposing (Color)
 import Color.Blending
+import Color.Manipulate exposing (lighten)
 import Colors
 import Components exposing (defaultFieldOpts)
 import Css
@@ -585,9 +586,17 @@ column { endOfUnit, periodColors, phase, showEventDot, startOfUnit, state } =
 
         periodDiv : Color -> Html msg
         periodDiv color =
+            let
+                bgColor =
+                    if state == Future then
+                        lighten 0.3 color
+
+                    else
+                        color
+            in
             div
                 [ css
-                    [ property "background-color" (Color.toCssString color)
+                    [ property "background-color" (Color.toCssString bgColor)
                     , flex3 (int 1) (int 1) (pct 100)
                     ]
                 ]
