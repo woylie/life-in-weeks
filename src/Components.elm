@@ -103,7 +103,6 @@ inputCss =
     , borderRadius (px 4)
     , fontFamilies defaultFontFamily
     , margin2 (rem 0.375) (rem 0)
-    , width (rem 8)
     , backgroundColor (hex "ffffff")
     ]
 
