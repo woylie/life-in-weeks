@@ -16,19 +16,29 @@ module Types exposing
     , categories
     , categoryFromString
     , categoryToString
+    , initialDebounce
     )
 
 import Color exposing (Color)
 import Date exposing (Date, Unit)
+import Debouncer.Messages as Debouncer
+    exposing
+        ( Debouncer
+        , fromSeconds
+        , settleWhenQuietFor
+        , toDebouncer
+        )
 import File exposing (File)
 
 
 type alias Model =
     { categories : List Category
+    , debounce : Debouncer Msg
     , selectedDate : Maybe Date
     , today : Date
     , unit : Unit
     , settings : Settings
+    , form : Settings
     }
 
 
@@ -160,6 +170,7 @@ categories =
 type Msg
     = AddEvent
     | AddPeriod Category
+    | DebounceMsg (Debouncer.Msg Msg)
     | Export
     | ReceiveDate Date
     | RemoveEvent Int
@@ -167,6 +178,7 @@ type Msg
     | JsonLoaded String
     | JsonRequested
     | JsonSelected File
+    | Refresh
     | SelectDate (Maybe Date)
     | SetBirthdate String
     | SetLifeExpectancy String
@@ -205,3 +217,10 @@ type alias ColorMap =
     , blue : Float
     , alpha : Float
     }
+
+
+initialDebounce : Debouncer Msg
+initialDebounce =
+    Debouncer.manual
+        |> settleWhenQuietFor (Just <| fromSeconds 1)
+        |> toDebouncer

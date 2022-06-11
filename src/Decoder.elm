@@ -25,6 +25,7 @@ import Types
         , Period
         , Settings
         , categoryFromString
+        , initialDebounce
         )
 
 
@@ -32,9 +33,11 @@ decoder : Decoder Model
 decoder =
     Decode.succeed Model
         |> required "categories" (list category)
+        |> hardcoded initialDebounce
         |> hardcoded Nothing
         |> hardcoded (Date.fromCalendarDate 2000 Jan 1)
         |> required "unit" unit
+        |> required "settings" settings
         |> required "settings" settings
 
 
@@ -42,10 +45,20 @@ settings : Decoder Settings
 settings =
     Decode.succeed Settings
         |> required "birthdate" date
-        |> required "events" (list event)
+        |> required "events" (list event |> map sortEvents)
         |> required "lifeExpectancy" int
-        |> required "periods" (list period)
+        |> required "periods" (list period |> map sortPeriods)
         |> required "retirementAge" int
+
+
+sortPeriods : List Period -> List Period
+sortPeriods periods =
+    List.sortWith (\p1 p2 -> Date.compare p1.startDate p2.startDate) periods
+
+
+sortEvents : List Event -> List Event
+sortEvents events =
+    List.sortWith (\e1 e2 -> Date.compare e1.date e2.date) events
 
 
 date : Decoder Date

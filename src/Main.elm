@@ -6,6 +6,7 @@ import Color.Manipulate exposing (lighten)
 import Colors
 import Date exposing (Interval(..), Unit(..))
 import DateRange
+import Debouncer.Messages as Debouncer exposing (provideInput)
 import Decoder
 import Encoder
 import File
@@ -30,6 +31,7 @@ import Types
         , Settings
         , categories
         , categoryFromString
+        , initialDebounce
         )
 import View exposing (view)
 
@@ -63,10 +65,12 @@ init maybeStoredState =
 initialModel : Model
 initialModel =
     { categories = categories
+    , debounce = initialDebounce
     , selectedDate = Nothing
     , today = Date.fromCalendarDate 2000 Jan 1
     , unit = Weeks
     , settings = initialSettings
+    , form = initialSettings
     }
 
 
@@ -84,10 +88,15 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         AddEvent ->
-            { model | settings = addEvent model.settings } |> save
+            pushDebounceMsg
+                { model | form = addEvent model.form }
 
         AddPeriod category ->
-            { model | settings = addPeriod category model.settings } |> save
+            pushDebounceMsg
+                { model | form = addPeriod category model.form }
+
+        DebounceMsg subMsg ->
+            Debouncer.update update updateDebouncer subMsg model
 
         Export ->
             ( model
@@ -114,31 +123,39 @@ update msg model =
         ReceiveDate date ->
             ( { model | today = date }, Cmd.none )
 
+        Refresh ->
+            { model | settings = model.form } |> save
+
         RemoveEvent id ->
-            { model | settings = removeEvent id model.settings } |> save
+            pushDebounceMsg
+                { model | form = removeEvent id model.form }
 
         RemovePeriod id ->
-            { model | settings = removePeriod id model.settings } |> save
+            pushDebounceMsg
+                { model | form = removePeriod id model.form }
 
         SelectDate date ->
             ( { model | selectedDate = date }, Cmd.none )
 
         SetBirthdate s ->
-            { model | settings = setBirthdate s model.settings }
-                |> save
+            pushDebounceMsg
+                { model | form = setBirthdate s model.form }
 
         SetLifeExpectancy s ->
-            { model | settings = setLifeExpectancy s model.settings }
-                |> save
+            pushDebounceMsg
+                { model | form = setLifeExpectancy s model.form }
 
         SetRetirementAge s ->
-            { model | settings = setRetirementAge s model.settings }
-                |> save
+            pushDebounceMsg
+                { model | form = setRetirementAge s model.form }
 
         SetUnit s ->
             { model
                 | selectedDate = Nothing
-                , unit = s |> DateRange.unitFromString |> Maybe.withDefault model.unit
+                , unit =
+                    s
+                        |> DateRange.unitFromString
+                        |> Maybe.withDefault model.unit
             }
                 |> save
 
@@ -161,12 +178,36 @@ update msg model =
             { model | categories = newCategories } |> save
 
         UpdateEvent id field value ->
-            { model | settings = updateEvents id field value model.settings }
-                |> save
+            pushDebounceMsg
+                { model | form = updateEvents id field value model.form }
 
         UpdatePeriod id field value ->
-            { model | settings = updatePeriods id field value model.settings }
-                |> save
+            pushDebounceMsg
+                { model | form = updatePeriods id field value model.form }
+
+
+pushDebounceMsg : Model -> ( Model, Cmd Msg )
+pushDebounceMsg updatedModel =
+    let
+        debounceMsg =
+            Refresh
+                |> provideInput
+                |> DebounceMsg
+
+        ( newModel, debounceCmd ) =
+            update debounceMsg updatedModel
+    in
+    ( newModel, debounceCmd )
+
+
+updateDebouncer : Debouncer.UpdateConfig Msg Model
+updateDebouncer =
+    { mapMsg = DebounceMsg
+    , getDebouncer = .debounce
+    , setDebouncer =
+        \debouncer model ->
+            { model | debounce = debouncer }
+    }
 
 
 save : Model -> ( Model, Cmd Msg )
@@ -392,16 +433,6 @@ updatePeriod field value period =
                         |> Date.fromIsoString
                         |> Result.toMaybe
             }
-
-
-sortPeriods : List Period -> List Period
-sortPeriods periods =
-    List.sortWith (\p1 p2 -> Date.compare p1.startDate p2.startDate) periods
-
-
-sortEvents : List Event -> List Event
-sortEvents events =
-    List.sortWith (\e1 e2 -> Date.compare e1.date e2.date) events
 
 
 toIntWithDefault : Int -> String -> Int

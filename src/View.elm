@@ -65,7 +65,7 @@ import Html.Styled
         )
 import Html.Styled.Attributes exposing (css, title)
 import Html.Styled.Events exposing (onClick)
-import Html.Styled.Lazy exposing (lazy)
+import Html.Styled.Lazy exposing (lazy3, lazy5)
 import List.Extra as List
 import Time exposing (Month(..))
 import Types
@@ -80,8 +80,8 @@ import Types
         , PeriodColor
         , PeriodField(..)
         , Phase(..)
+        , Settings
         , State(..)
-        , categories
         , categoryToString
         )
 
@@ -102,62 +102,24 @@ dotSize =
 
 
 view : Model -> Html Msg
-view ({ settings } as model) =
-    let
-        unitsPerYear : Int
-        unitsPerYear =
-            numberOfUnitsPerYear model.unit
-
-        dates : Dates
-        dates =
-            getDates
-                { birthdate = settings.birthdate
-                , lifeExpectancy = settings.lifeExpectancy
-                , retirementAge = settings.retirementAge
-                , unit = model.unit
-                , unitsPerYear = unitsPerYear
-                }
-
-        cutOffPeriods : List Period
-        cutOffPeriods =
-            cutOffWorkAtRetirement dates.retirement settings.periods
-    in
+view ({ form, settings } as model) =
     Components.container
         [ div
             []
-            [ lazy grid
-                { dates = dates
-                , events = settings.events
-                , periods = periodsForGrid model.categories cutOffPeriods
-                , selectedDate = model.selectedDate
-                , today = model.today
-                , unit = model.unit
-                , unitsPerYear = unitsPerYear
-                , years =
-                    getYears
-                        model.unit
-                        unitsPerYear
-                        model.today
-                        settings.birthdate
-                        dates
-                }
-            , lazy details
-                { birthdate = settings.birthdate
-                , dates = dates
-                , events = settings.events
-                , periods = cutOffPeriods
-                , selectedDate = model.selectedDate
-                , unit = model.unit
-                }
-            , lazy settingsForm
-                { birthdate = settings.birthdate
-                , categories = model.categories
-                , events = settings.events
-                , lifeExpectancy = settings.lifeExpectancy
-                , retirementAge = settings.retirementAge
-                , periods = settings.periods
-                , unit = model.unit
-                }
+            [ lazy5 grid
+                model.categories
+                model.selectedDate
+                settings
+                model.today
+                model.unit
+            , lazy3 details
+                model.selectedDate
+                settings
+                model.unit
+            , lazy3 settingsForm
+                model.categories
+                form
+                model.unit
             , actionButtons
             ]
         ]
@@ -219,17 +181,8 @@ getYears unit unitsPerYear today birthdate dates =
         lastYear
 
 
-settingsForm :
-    { birthdate : Date
-    , categories : List Category
-    , events : List Event
-    , lifeExpectancy : Int
-    , retirementAge : Int
-    , periods : List Period
-    , unit : Unit
-    }
-    -> Html Msg
-settingsForm model =
+settingsForm : List Category -> Settings -> Unit -> Html Msg
+settingsForm categories form unit =
     let
         categoryToCheckboxOption : Category -> ( String, Bool )
         categoryToCheckboxOption category =
@@ -237,7 +190,7 @@ settingsForm model =
                 categoryAsString =
                     categoryToString category
             in
-            ( categoryAsString, List.member category model.categories )
+            ( categoryAsString, List.member category categories )
     in
     div
         []
@@ -245,13 +198,13 @@ settingsForm model =
             [ Components.field "liw-field-unit"
                 "Time unit"
                 [ Components.select "liw-field-unit"
-                    (DateRange.unitToString model.unit)
+                    (DateRange.unitToString unit)
                     SetUnit
                     [ ( "weeks", "weeks" ), ( "months", "months" ) ]
                 ]
             , Components.checkboxes "Show or hide categories"
                 ToggleCategory
-                (List.map categoryToCheckboxOption categories)
+                (List.map categoryToCheckboxOption Types.categories)
             ]
         , Components.fieldset "Base variables"
             [ Components.field
@@ -259,7 +212,7 @@ settingsForm model =
                 "Birthdate"
                 [ Components.dateInput
                     "liw-field-birthdate"
-                    (Just model.birthdate)
+                    (Just form.birthdate)
                     SetBirthdate
                     { defaultFieldOpts | required = True }
                 ]
@@ -268,7 +221,7 @@ settingsForm model =
                 "Life expectancy"
                 [ Components.numberInput
                     "liw-field-life-expectancy"
-                    model.lifeExpectancy
+                    form.lifeExpectancy
                     SetLifeExpectancy
                     { defaultFieldOpts
                         | min = Just 0
@@ -281,7 +234,7 @@ settingsForm model =
                 "Retirement age"
                 [ Components.numberInput
                     "liw-field-retirement-age"
-                    model.retirementAge
+                    form.retirementAge
                     SetRetirementAge
                     { defaultFieldOpts
                         | min = Just 0
@@ -306,21 +259,21 @@ settingsForm model =
                 ]
             ]
         , Components.fieldset "Education"
-            [ periodFieldsets Education (filterPeriods Education model.periods) ]
+            [ periodFieldsets Education (filterPeriods Education form.periods) ]
         , Components.fieldset "Work"
-            [ periodFieldsets Work (filterPeriods Work model.periods) ]
+            [ periodFieldsets Work (filterPeriods Work form.periods) ]
         , Components.fieldset "Activities"
-            [ periodFieldsets Activity (filterPeriods Activity model.periods) ]
+            [ periodFieldsets Activity (filterPeriods Activity form.periods) ]
         , Components.fieldset "Memberships"
-            [ periodFieldsets Membership (filterPeriods Membership model.periods) ]
+            [ periodFieldsets Membership (filterPeriods Membership form.periods) ]
         , Components.fieldset "Relationships"
-            [ periodFieldsets Relationship (filterPeriods Relationship model.periods) ]
+            [ periodFieldsets Relationship (filterPeriods Relationship form.periods) ]
         , Components.fieldset "Places of residence"
-            [ periodFieldsets Residence (filterPeriods Residence model.periods) ]
+            [ periodFieldsets Residence (filterPeriods Residence form.periods) ]
         , Components.fieldset "Other periods"
-            [ periodFieldsets Other (filterPeriods Other model.periods) ]
+            [ periodFieldsets Other (filterPeriods Other form.periods) ]
         , Components.fieldset "Singular events"
-            [ eventFieldsets model.events ]
+            [ eventFieldsets form.events ]
         ]
 
 
@@ -460,23 +413,45 @@ eventFields event =
     ]
 
 
-grid :
-    { dates : Dates
-    , events : List Event
-    , periods : List PeriodColor
-    , selectedDate : Maybe Date
-    , today : Date
-    , unit : Unit
-    , unitsPerYear : Int
-    , years : List Date
-    }
-    -> Html Msg
-grid { dates, events, periods, selectedDate, today, unit, unitsPerYear, years } =
+grid : List Category -> Maybe Date -> Settings -> Date -> Unit -> Html Msg
+grid categories selectedDate settings today unit =
     let
+        unitsPerYear : Int
+        unitsPerYear =
+            numberOfUnitsPerYear unit
+
+        dates : Dates
+        dates =
+            getDates
+                { birthdate = settings.birthdate
+                , lifeExpectancy = settings.lifeExpectancy
+                , retirementAge = settings.retirementAge
+                , unit = unit
+                , unitsPerYear = unitsPerYear
+                }
+
+        years : List Date
+        years =
+            getYears
+                unit
+                unitsPerYear
+                today
+                settings.birthdate
+                dates
+
+        cutOffPeriods : List Period
+        cutOffPeriods =
+            cutOffWorkAtRetirement dates.retirement settings.periods
+
+        periods : List PeriodColor
+        periods =
+            periodsForGrid categories cutOffPeriods
+
         rowPeriods : Date -> Date -> List PeriodColor
         rowPeriods year oneYearLater =
             filterMatchingPeriods year oneYearLater periods
 
+        renderRow : Date -> Html Msg
         renderRow year =
             let
                 oneYearLater =
@@ -484,7 +459,7 @@ grid { dates, events, periods, selectedDate, today, unit, unitsPerYear, years } 
             in
             row
                 { dates = dates
-                , events = filterMatchingEvents year oneYearLater events
+                , events = filterMatchingEvents year oneYearLater settings.events
                 , periods = rowPeriods year oneYearLater
                 , selectedDate = selectedDate
                 , today = today
@@ -740,16 +715,23 @@ filterMatchingEvents startDate endDate events =
     List.filter (eventFilter startDate endDate) events
 
 
-details :
-    { birthdate : Date
-    , dates : Dates
-    , events : List Event
-    , periods : List Period
-    , selectedDate : Maybe Date
-    , unit : Unit
-    }
-    -> Html Msg
-details { birthdate, dates, events, periods, selectedDate, unit } =
+details : Maybe Date -> Settings -> Unit -> Html Msg
+details selectedDate settings unit =
+    let
+        dates : Dates
+        dates =
+            getDates
+                { birthdate = settings.birthdate
+                , lifeExpectancy = settings.lifeExpectancy
+                , retirementAge = settings.retirementAge
+                , unit = unit
+                , unitsPerYear = numberOfUnitsPerYear unit
+                }
+
+        periods : List Period
+        periods =
+            cutOffWorkAtRetirement dates.retirement settings.periods
+    in
     div
         [ css
             [ padding (rem 0.75)
@@ -765,10 +747,10 @@ details { birthdate, dates, events, periods, selectedDate, unit } =
         [ case selectedDate of
             Just date ->
                 detailsForDate
-                    { birthdate = birthdate
+                    { birthdate = settings.birthdate
                     , date = date
                     , dates = dates
-                    , events = events
+                    , events = settings.events
                     , periods = periods
                     , unit = unit
                     }
