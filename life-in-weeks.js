@@ -12981,6 +12981,7 @@ var $rtfeldman$elm_css$Html$Styled$Attributes$boolProperty = F2(
 var $rtfeldman$elm_css$Html$Styled$Attributes$checked = $rtfeldman$elm_css$Html$Styled$Attributes$boolProperty('checked');
 var $rtfeldman$elm_css$Html$Styled$input = $rtfeldman$elm_css$Html$Styled$node('input');
 var $rtfeldman$elm_css$Html$Styled$label = $rtfeldman$elm_css$Html$Styled$node('label');
+var $rtfeldman$elm_css$Css$marginLeft = $rtfeldman$elm_css$Css$prop1('margin-left');
 var $rtfeldman$elm_css$Html$Styled$Events$alwaysStop = function (x) {
 	return _Utils_Tuple2(x, true);
 };
@@ -13024,7 +13025,9 @@ var $author$project$Components$checkbox = F2(
 						[
 							$rtfeldman$elm_css$Css$fontSize(
 							$rtfeldman$elm_css$Css$rem(0.75)),
-							$rtfeldman$elm_css$Css$fontFamilies($author$project$Components$defaultFontFamily)
+							$rtfeldman$elm_css$Css$fontFamilies($author$project$Components$defaultFontFamily),
+							$rtfeldman$elm_css$Css$marginLeft(
+							$rtfeldman$elm_css$Css$rem(0.5))
 						]))
 				]),
 			_List_fromArray(
@@ -13077,16 +13080,7 @@ var $author$project$Components$checkboxes = F3(
 						])),
 					A2(
 					$rtfeldman$elm_css$Html$Styled$div,
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Html$Styled$Attributes$css(
-							_List_fromArray(
-								[
-									$rtfeldman$elm_css$Css$displayFlex,
-									$rtfeldman$elm_css$Css$flexWrap($rtfeldman$elm_css$Css$wrap),
-									A2($rtfeldman$elm_css$Css$property, 'gap', '0.5rem')
-								]))
-						]),
+					_List_Nil,
 					A2(
 						$elm$core$List$map,
 						$author$project$Components$checkbox(msg),
