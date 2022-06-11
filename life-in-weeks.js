@@ -12529,6 +12529,7 @@ var $author$project$View$periodsForGrid = F2(
 				},
 				periods));
 	});
+var $author$project$Types$Future = 2;
 var $author$project$Types$Present = 1;
 var $author$project$Types$SelectDate = function (a) {
 	return {$: 11, a: a};
@@ -12667,6 +12668,7 @@ var $author$project$View$column = function (_v0) {
 	var startOfUnit = _v0.cx;
 	var state = _v0.cy;
 	var periodDiv = function (color) {
+		var bgColor = (state === 2) ? A2($noahzgordon$elm_color_extra$Color$Manipulate$lighten, 0.3, color) : color;
 		return A2(
 			$rtfeldman$elm_css$Html$Styled$div,
 			_List_fromArray(
@@ -12677,7 +12679,7 @@ var $author$project$View$column = function (_v0) {
 							A2(
 							$rtfeldman$elm_css$Css$property,
 							'background-color',
-							$avh4$elm_color$Color$toCssString(color)),
+							$avh4$elm_color$Color$toCssString(bgColor)),
 							A3(
 							$rtfeldman$elm_css$Css$flex3,
 							$rtfeldman$elm_css$Css$int(1),
@@ -12786,7 +12788,6 @@ var $author$project$View$getPhase = F2(
 	function (dates, startOfUnit) {
 		return (!(!A2($justinmimbs$date$Date$compare, startOfUnit, dates.c$))) ? $author$project$Types$PastLifeExpectancy : ((!(!A2($justinmimbs$date$Date$compare, startOfUnit, dates.dx))) ? $author$project$Types$Retirement : $author$project$Types$Default);
 	});
-var $author$project$Types$Future = 2;
 var $author$project$Types$Past = 0;
 var $justinmimbs$date$Date$isBetween = F3(
 	function (_v0, _v1, _v2) {
