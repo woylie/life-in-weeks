@@ -11941,6 +11941,7 @@ var $author$project$View$actionButtons = A2(
 			A2($author$project$Components$button, 'export JSON', $author$project$Types$Export),
 			A2($author$project$Components$button, 'import JSON', $author$project$Types$JsonRequested)
 		]));
+var $rtfeldman$elm_css$Css$boxSizing = $rtfeldman$elm_css$Css$prop1('box-sizing');
 var $rtfeldman$elm_css$Css$ChUnits = 0;
 var $rtfeldman$elm_css$Css$ch = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, 0, 'ch');
 var $rtfeldman$elm_css$Html$Styled$footer = $rtfeldman$elm_css$Html$Styled$node('footer');
@@ -12045,6 +12046,7 @@ var $author$project$Components$container = function (content) {
 			_List_fromArray(
 				[$author$project$Components$footer])));
 };
+var $rtfeldman$elm_css$Css$contentBox = {a8: 0, aP: 0, G: 'content-box'};
 var $justinmimbs$date$Date$add = F3(
 	function (unit, n, _v0) {
 		var rd = _v0;
@@ -13025,9 +13027,7 @@ var $author$project$Components$checkbox = F2(
 						[
 							$rtfeldman$elm_css$Css$fontSize(
 							$rtfeldman$elm_css$Css$rem(0.75)),
-							$rtfeldman$elm_css$Css$fontFamilies($author$project$Components$defaultFontFamily),
-							$rtfeldman$elm_css$Css$marginLeft(
-							$rtfeldman$elm_css$Css$rem(0.5))
+							$rtfeldman$elm_css$Css$fontFamilies($author$project$Components$defaultFontFamily)
 						]))
 				]),
 			_List_fromArray(
@@ -13044,7 +13044,15 @@ var $author$project$Components$checkbox = F2(
 					_List_Nil),
 					A2(
 					$rtfeldman$elm_css$Html$Styled$span,
-					_List_Nil,
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Html$Styled$Attributes$css(
+							_List_fromArray(
+								[
+									$rtfeldman$elm_css$Css$marginLeft(
+									$rtfeldman$elm_css$Css$rem(0.5))
+								]))
+						]),
 					_List_fromArray(
 						[
 							$rtfeldman$elm_css$Html$Styled$text(option)
@@ -13727,7 +13735,14 @@ var $author$project$View$view = function (model) {
 			[
 				A2(
 				$rtfeldman$elm_css$Html$Styled$div,
-				_List_Nil,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$boxSizing($rtfeldman$elm_css$Css$contentBox)
+							]))
+					]),
 				_List_fromArray(
 					[
 						A6($rtfeldman$elm_css$Html$Styled$Lazy$lazy5, $author$project$View$grid, model.cW, model.bn, settings, model.a4, model.dH),
