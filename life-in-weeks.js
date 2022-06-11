@@ -13144,8 +13144,6 @@ var $author$project$Components$inputCss = _List_fromArray(
 		$rtfeldman$elm_css$Css$margin2,
 		$rtfeldman$elm_css$Css$rem(0.375),
 		$rtfeldman$elm_css$Css$rem(0)),
-		$rtfeldman$elm_css$Css$width(
-		$rtfeldman$elm_css$Css$rem(8)),
 		$rtfeldman$elm_css$Css$backgroundColor(
 		$rtfeldman$elm_css$Css$hex('ffffff'))
 	]);
