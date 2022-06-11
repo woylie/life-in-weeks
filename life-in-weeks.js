@@ -13008,6 +13008,7 @@ var $rtfeldman$elm_css$Html$Styled$Attributes$boolProperty = F2(
 			$elm$json$Json$Encode$bool(bool));
 	});
 var $rtfeldman$elm_css$Html$Styled$Attributes$checked = $rtfeldman$elm_css$Html$Styled$Attributes$boolProperty('checked');
+var $rtfeldman$elm_css$Css$inlineFlex = {k: 0, G: 'inline-flex'};
 var $rtfeldman$elm_css$Html$Styled$input = $rtfeldman$elm_css$Html$Styled$node('input');
 var $rtfeldman$elm_css$Html$Styled$label = $rtfeldman$elm_css$Html$Styled$node('label');
 var $rtfeldman$elm_css$Css$marginLeft = $rtfeldman$elm_css$Css$prop1('margin-left');
@@ -13055,7 +13056,8 @@ var $author$project$Components$checkbox = F2(
 						[
 							$rtfeldman$elm_css$Css$fontSize(
 							$rtfeldman$elm_css$Css$rem(0.75)),
-							$rtfeldman$elm_css$Css$fontFamilies($author$project$Components$defaultFontFamily)
+							$rtfeldman$elm_css$Css$fontFamilies($author$project$Components$defaultFontFamily),
+							$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineFlex)
 						]))
 				]),
 			_List_fromArray(
