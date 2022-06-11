@@ -12995,6 +12995,7 @@ var $rtfeldman$elm_css$Html$Styled$Attributes$checked = $rtfeldman$elm_css$Html$
 var $rtfeldman$elm_css$Html$Styled$input = $rtfeldman$elm_css$Html$Styled$node('input');
 var $rtfeldman$elm_css$Html$Styled$label = $rtfeldman$elm_css$Html$Styled$node('label');
 var $rtfeldman$elm_css$Css$marginLeft = $rtfeldman$elm_css$Css$prop1('margin-left');
+var $rtfeldman$elm_css$Css$marginRight = $rtfeldman$elm_css$Css$prop1('margin-right');
 var $rtfeldman$elm_css$Html$Styled$Events$alwaysStop = function (x) {
 	return _Utils_Tuple2(x, true);
 };
@@ -13061,6 +13062,8 @@ var $author$project$Components$checkbox = F2(
 							_List_fromArray(
 								[
 									$rtfeldman$elm_css$Css$marginLeft(
+									$rtfeldman$elm_css$Css$rem(0.25)),
+									$rtfeldman$elm_css$Css$marginRight(
 									$rtfeldman$elm_css$Css$rem(0.5))
 								]))
 						]),
