@@ -38,6 +38,7 @@ import Css
         , hex
         , hover
         , inlineBlock
+        , inlineFlex
         , int
         , lineHeight
         , margin2
@@ -182,6 +183,7 @@ checkbox msg ( option, isChecked ) =
         [ css
             [ fontSize (rem 0.75)
             , fontFamilies defaultFontFamily
+            , display inlineFlex
             ]
         ]
         [ Html.input
