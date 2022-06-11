@@ -31,6 +31,7 @@ import Css
         , flexEnd
         , flexStart
         , flexWrap
+        , focus
         , fontFamilies
         , fontSize
         , fontWeight
@@ -181,7 +182,6 @@ checkbox msg ( option, isChecked ) =
         [ css
             [ fontSize (rem 0.75)
             , fontFamilies defaultFontFamily
-            , marginLeft (rem 0.5)
             ]
         ]
         [ Html.input
@@ -191,7 +191,7 @@ checkbox msg ( option, isChecked ) =
             , onInput msg
             ]
             []
-        , Html.span [] [ text option ]
+        , Html.span [ css [ marginLeft (rem 0.5) ] ] [ text option ]
         ]
 
 
@@ -312,6 +312,10 @@ button buttonText msg =
             , width auto
             , alignSelf flexEnd
             , hover
+                [ color (hex "202c31")
+                , backgroundColor (hex "eeeeee")
+                ]
+            , focus
                 [ color (hex "202c31")
                 , backgroundColor (hex "eeeeee")
                 ]

@@ -14,9 +14,11 @@ import Css
         , borderRadius
         , borderStyle
         , borderWidth
+        , boxSizing
         , calc
         , center
         , color
+        , contentBox
         , cursor
         , display
         , displayFlex
@@ -628,6 +630,7 @@ column { endOfUnit, periodColors, phase, showEventDot, startOfUnit, state } =
             , displayFlex
             , flexDirection Css.column
             , position relative
+            , boxSizing contentBox
             ]
         , onClick <| SelectDate (Just startOfUnit)
         , title <| DateRange.format startOfUnit endOfUnit
