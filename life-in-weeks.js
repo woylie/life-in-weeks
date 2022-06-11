@@ -11376,6 +11376,18 @@ var $author$project$Components$defaultFontFamily = _List_fromArray(
 	['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Helvetica', 'Arial', 'sans-serif']);
 var $rtfeldman$elm_css$Css$display = $rtfeldman$elm_css$Css$prop1('display');
 var $rtfeldman$elm_css$Css$flexEnd = $rtfeldman$elm_css$Css$prop1('flex-end');
+var $rtfeldman$elm_css$Css$Preprocess$ExtendSelector = F2(
+	function (a, b) {
+		return {$: 1, a: a, b: b};
+	});
+var $rtfeldman$elm_css$Css$Structure$PseudoClassSelector = function (a) {
+	return {$: 2, a: a};
+};
+var $rtfeldman$elm_css$Css$pseudoClass = function (_class) {
+	return $rtfeldman$elm_css$Css$Preprocess$ExtendSelector(
+		$rtfeldman$elm_css$Css$Structure$PseudoClassSelector(_class));
+};
+var $rtfeldman$elm_css$Css$focus = $rtfeldman$elm_css$Css$pseudoClass('focus');
 var $rtfeldman$elm_css$Css$stringsToValue = function (list) {
 	return $elm$core$List$isEmpty(list) ? {G: 'none'} : {
 		G: A2($elm$core$String$join, ', ', list)
@@ -11742,17 +11754,6 @@ var $rtfeldman$elm_css$Css$hex = function (str) {
 	}
 	return $rtfeldman$elm_css$Css$erroneousHex(str);
 };
-var $rtfeldman$elm_css$Css$Preprocess$ExtendSelector = F2(
-	function (a, b) {
-		return {$: 1, a: a, b: b};
-	});
-var $rtfeldman$elm_css$Css$Structure$PseudoClassSelector = function (a) {
-	return {$: 2, a: a};
-};
-var $rtfeldman$elm_css$Css$pseudoClass = function (_class) {
-	return $rtfeldman$elm_css$Css$Preprocess$ExtendSelector(
-		$rtfeldman$elm_css$Css$Structure$PseudoClassSelector(_class));
-};
 var $rtfeldman$elm_css$Css$hover = $rtfeldman$elm_css$Css$pseudoClass('hover');
 var $rtfeldman$elm_css$Css$inlineBlock = {k: 0, G: 'inline-block'};
 var $rtfeldman$elm_css$Css$prop2 = F3(
@@ -11834,6 +11835,14 @@ var $author$project$Components$button = F2(
 							$rtfeldman$elm_css$Css$width($rtfeldman$elm_css$Css$auto),
 							$rtfeldman$elm_css$Css$alignSelf($rtfeldman$elm_css$Css$flexEnd),
 							$rtfeldman$elm_css$Css$hover(
+							_List_fromArray(
+								[
+									$rtfeldman$elm_css$Css$color(
+									$rtfeldman$elm_css$Css$hex('202c31')),
+									$rtfeldman$elm_css$Css$backgroundColor(
+									$rtfeldman$elm_css$Css$hex('eeeeee'))
+								])),
+							$rtfeldman$elm_css$Css$focus(
 							_List_fromArray(
 								[
 									$rtfeldman$elm_css$Css$color(
