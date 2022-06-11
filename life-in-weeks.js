@@ -11941,7 +11941,6 @@ var $author$project$View$actionButtons = A2(
 			A2($author$project$Components$button, 'export JSON', $author$project$Types$Export),
 			A2($author$project$Components$button, 'import JSON', $author$project$Types$JsonRequested)
 		]));
-var $rtfeldman$elm_css$Css$boxSizing = $rtfeldman$elm_css$Css$prop1('box-sizing');
 var $rtfeldman$elm_css$Css$ChUnits = 0;
 var $rtfeldman$elm_css$Css$ch = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, 0, 'ch');
 var $rtfeldman$elm_css$Html$Styled$footer = $rtfeldman$elm_css$Html$Styled$node('footer');
@@ -12046,7 +12045,6 @@ var $author$project$Components$container = function (content) {
 			_List_fromArray(
 				[$author$project$Components$footer])));
 };
-var $rtfeldman$elm_css$Css$contentBox = {a8: 0, aP: 0, G: 'content-box'};
 var $justinmimbs$date$Date$add = F3(
 	function (unit, n, _v0) {
 		var rd = _v0;
@@ -12531,6 +12529,7 @@ var $rtfeldman$elm_css$Css$absolute = {aH: 0, G: 'absolute'};
 var $rtfeldman$elm_css$Css$block = {k: 0, G: 'block'};
 var $rtfeldman$elm_css$Css$borderStyle = $rtfeldman$elm_css$Css$prop1('border-style');
 var $rtfeldman$elm_css$Css$borderWidth = $rtfeldman$elm_css$Css$prop1('border-width');
+var $rtfeldman$elm_css$Css$boxSizing = $rtfeldman$elm_css$Css$prop1('box-sizing');
 var $rtfeldman$elm_css$Css$calcExpressionToString = function (expression) {
 	if (!expression) {
 		return '+';
@@ -12555,6 +12554,7 @@ var $rtfeldman$elm_css$Css$calc = F3(
 				[calcs]));
 		return {bG: 0, am: 0, p: 0, aF: 0, ar: 0, M: 0, as: 0, at: 0, X: 0, Y: 0, E: 0, ay: 0, G: value};
 	});
+var $rtfeldman$elm_css$Css$contentBox = {a8: 0, aP: 0, G: 'content-box'};
 var $author$project$View$dotSize = 4;
 var $noahzgordon$elm_color_extra$Color$Blending$clampChannel = A2($elm$core$Basics$clamp, 0, 1);
 var $noahzgordon$elm_color_extra$Color$Blending$calcChanel = F6(
@@ -12747,7 +12747,8 @@ var $author$project$View$column = function (_v0) {
 						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
 						$rtfeldman$elm_css$Css$displayFlex,
 						$rtfeldman$elm_css$Css$flexDirection($rtfeldman$elm_css$Css$column),
-						$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$relative)
+						$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$relative),
+						$rtfeldman$elm_css$Css$boxSizing($rtfeldman$elm_css$Css$contentBox)
 					])),
 				$rtfeldman$elm_css$Html$Styled$Events$onClick(
 				$author$project$Types$SelectDate(
@@ -13735,14 +13736,7 @@ var $author$project$View$view = function (model) {
 			[
 				A2(
 				$rtfeldman$elm_css$Html$Styled$div,
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Html$Styled$Attributes$css(
-						_List_fromArray(
-							[
-								$rtfeldman$elm_css$Css$boxSizing($rtfeldman$elm_css$Css$contentBox)
-							]))
-					]),
+				_List_Nil,
 				_List_fromArray(
 					[
 						A6($rtfeldman$elm_css$Html$Styled$Lazy$lazy5, $author$project$View$grid, model.cW, model.bn, settings, model.a4, model.dH),
