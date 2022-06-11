@@ -6768,6 +6768,15 @@ var $author$project$Decoder$settings = A3(
 					'birthdate',
 					$author$project$Decoder$date,
 					$elm$json$Json$Decode$succeed($author$project$Types$Settings))))));
+var $author$project$Types$settingsToForm = function (settings) {
+	return {
+		cR: settings.cR,
+		c5: settings.c5,
+		di: $elm$core$String$fromInt(settings.di),
+		ds: settings.ds,
+		dy: $elm$core$String$fromInt(settings.dy)
+	};
+};
 var $justinmimbs$date$Date$Days = 3;
 var $justinmimbs$date$Date$Months = 1;
 var $justinmimbs$date$Date$Weeks = 2;
@@ -6796,7 +6805,7 @@ var $author$project$Decoder$unit = A2(
 var $author$project$Decoder$decoder = A3(
 	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
 	'settings',
-	$author$project$Decoder$settings,
+	A2($elm$json$Json$Decode$map, $author$project$Types$settingsToForm, $author$project$Decoder$settings),
 	A3(
 		$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
 		'settings',
@@ -6831,7 +6840,7 @@ var $author$project$Main$initialSettings = {
 var $author$project$Main$initialModel = {
 	cW: $author$project$Types$categories,
 	ba: $author$project$Types$initialDebounce,
-	j: $author$project$Main$initialSettings,
+	j: $author$project$Types$settingsToForm($author$project$Main$initialSettings),
 	bn: $elm$core$Maybe$Nothing,
 	dD: $author$project$Main$initialSettings,
 	a4: A3($justinmimbs$date$Date$fromCalendarDate, 2000, 0, 1),
@@ -7905,7 +7914,7 @@ var $elm$core$List$maximum = function (list) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
-var $author$project$Main$addEvent = function (settings) {
+var $author$project$Main$addEvent = function (form) {
 	var insertEvent = function (events) {
 		var maxId = A2(
 			$elm$core$Maybe$withDefault,
@@ -7928,9 +7937,9 @@ var $author$project$Main$addEvent = function (settings) {
 				$elm$core$List$reverse(events)));
 	};
 	return _Utils_update(
-		settings,
+		form,
 		{
-			c5: insertEvent(settings.c5)
+			c5: insertEvent(form.c5)
 		});
 };
 var $avh4$elm_color$Color$scaleFrom255 = function (c) {
@@ -8070,7 +8079,7 @@ var $author$project$Main$updateColors = F2(
 		return $elm$core$List$reverse(updatedPeriods);
 	});
 var $author$project$Main$addPeriod = F2(
-	function (category, settings) {
+	function (category, form) {
 		var maxId = A2(
 			$elm$core$Maybe$withDefault,
 			-1,
@@ -8080,7 +8089,7 @@ var $author$project$Main$addPeriod = F2(
 					function ($) {
 						return $.bX;
 					},
-					settings.ds)));
+					form.ds)));
 		var newPeriod = {
 			cX: category,
 			cZ: $author$project$Colors$categoryColor(category),
@@ -8097,9 +8106,9 @@ var $author$project$Main$addPeriod = F2(
 				A2(
 					$elm$core$List$cons,
 					newPeriod,
-					$elm$core$List$reverse(settings.ds))));
+					$elm$core$List$reverse(form.ds))));
 		return _Utils_update(
-			settings,
+			form,
 			{ds: newPeriods});
 	});
 var $author$project$Types$categoryToString = function (category) {
@@ -9025,19 +9034,19 @@ var $Gizra$elm_debouncer$Debouncer$Basic$ProvideInput = function (a) {
 var $Gizra$elm_debouncer$Debouncer$Basic$provideInput = $Gizra$elm_debouncer$Debouncer$Basic$ProvideInput;
 var $Gizra$elm_debouncer$Debouncer$Messages$provideInput = $Gizra$elm_debouncer$Debouncer$Basic$provideInput;
 var $author$project$Main$removeEvent = F2(
-	function (id, settings) {
+	function (id, form) {
 		var events = A2(
 			$elm$core$List$filter,
 			function (event) {
 				return !_Utils_eq(event.bX, id);
 			},
-			settings.c5);
+			form.c5);
 		return _Utils_update(
-			settings,
+			form,
 			{c5: events});
 	});
 var $author$project$Main$removePeriod = F2(
-	function (id, settings) {
+	function (id, form) {
 		var category = A2(
 			$elm$core$Maybe$withDefault,
 			1,
@@ -9052,7 +9061,7 @@ var $author$project$Main$removePeriod = F2(
 						function (period) {
 							return _Utils_eq(period.bX, id);
 						},
-						settings.ds))));
+						form.ds))));
 		var periods = A2(
 			$author$project$Main$updateColors,
 			category,
@@ -9061,9 +9070,9 @@ var $author$project$Main$removePeriod = F2(
 				function (period) {
 					return !_Utils_eq(period.bX, id);
 				},
-				settings.ds));
+				form.ds));
 		return _Utils_update(
-			settings,
+			form,
 			{ds: periods});
 	});
 var $author$project$Ports$storeModel = _Platform_outgoingPort('storeModel', $elm$json$Json$Encode$string);
@@ -9080,38 +9089,27 @@ var $author$project$Main$save = function (model) {
 		$author$project$Main$sendModelToPort(model));
 };
 var $author$project$Main$setBirthdate = F2(
-	function (s, settings) {
+	function (s, form) {
 		return _Utils_update(
-			settings,
+			form,
 			{
 				cR: A2(
 					$elm$core$Result$withDefault,
-					settings.cR,
+					form.cR,
 					$justinmimbs$date$Date$fromIsoString(s))
 			});
 	});
-var $author$project$Main$toIntWithDefault = F2(
-	function (_default, s) {
-		return A2(
-			$elm$core$Maybe$withDefault,
-			_default,
-			$elm$core$String$toInt(s));
-	});
 var $author$project$Main$setLifeExpectancy = F2(
-	function (s, settings) {
+	function (s, form) {
 		return _Utils_update(
-			settings,
-			{
-				di: A2($author$project$Main$toIntWithDefault, settings.di, s)
-			});
+			form,
+			{di: s});
 	});
 var $author$project$Main$setRetirementAge = F2(
-	function (s, settings) {
+	function (s, form) {
 		return _Utils_update(
-			settings,
-			{
-				dy: A2($author$project$Main$toIntWithDefault, settings.dy, s)
-			});
+			form,
+			{dy: s});
 	});
 var $elm$file$File$Download$string = F3(
 	function (name, mime, content) {
@@ -9550,15 +9548,15 @@ var $author$project$Main$updateEvent = F3(
 		}
 	});
 var $author$project$Main$updateEvents = F4(
-	function (id, field, value, settings) {
+	function (id, field, value, form) {
 		var events = A2(
 			$elm$core$List$map,
 			function (event) {
 				return _Utils_eq(event.bX, id) ? A3($author$project$Main$updateEvent, field, value, event) : event;
 			},
-			settings.c5);
+			form.c5);
 		return _Utils_update(
-			settings,
+			form,
 			{c5: events});
 	});
 var $author$project$Main$updatePeriod = F3(
@@ -9587,16 +9585,32 @@ var $author$project$Main$updatePeriod = F3(
 		}
 	});
 var $author$project$Main$updatePeriods = F4(
-	function (id, field, value, settings) {
+	function (id, field, value, form) {
 		var periods = A2(
 			$elm$core$List$map,
 			function (period) {
 				return _Utils_eq(period.bX, id) ? A3($author$project$Main$updatePeriod, field, value, period) : period;
 			},
-			settings.ds);
+			form.ds);
 		return _Utils_update(
-			settings,
+			form,
 			{ds: periods});
+	});
+var $author$project$Main$updateSettings = F2(
+	function (form, settings) {
+		return {
+			cR: form.cR,
+			c5: form.c5,
+			di: A2(
+				$elm$core$Maybe$withDefault,
+				settings.di,
+				$elm$core$String$toInt(form.di)),
+			ds: form.ds,
+			dy: A2(
+				$elm$core$Maybe$withDefault,
+				settings.dy,
+				$elm$core$String$toInt(form.dy))
+		};
 	});
 var $author$project$Main$pushDebounceMsg = function (updatedModel) {
 	var debounceMsg = $author$project$Types$DebounceMsg(
@@ -9677,7 +9691,9 @@ var $author$project$Main$update = F2(
 				return $author$project$Main$save(
 					_Utils_update(
 						model,
-						{dD: model.j}));
+						{
+							dD: A2($author$project$Main$updateSettings, model.j, model.dD)
+						}));
 			case 5:
 				var id = msg.a;
 				return $author$project$Main$pushDebounceMsg(
@@ -13358,8 +13374,7 @@ var $author$project$Components$numberInput = F4(
 				[
 					$rtfeldman$elm_css$Html$Styled$Attributes$id(inputId),
 					$rtfeldman$elm_css$Html$Styled$Attributes$type_('number'),
-					$rtfeldman$elm_css$Html$Styled$Attributes$value(
-					$elm$core$String$fromInt(currentValue)),
+					$rtfeldman$elm_css$Html$Styled$Attributes$value(currentValue),
 					$rtfeldman$elm_css$Html$Styled$Events$onInput(event),
 					$rtfeldman$elm_css$Html$Styled$Attributes$min(
 					rangeAttr(opts.b5)),
