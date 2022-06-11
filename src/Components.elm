@@ -227,7 +227,7 @@ dateInput inputId currentValue event opts =
 
 numberInput :
     String
-    -> Int
+    -> String
     -> (String -> msg)
     -> FieldOpts msg
     -> Html msg
@@ -239,7 +239,7 @@ numberInput inputId currentValue event opts =
     input
         [ id inputId
         , type_ "number"
-        , value <| String.fromInt currentValue
+        , value currentValue
         , onInput event
         , Attr.min <| rangeAttr opts.min
         , Attr.max <| rangeAttr opts.max

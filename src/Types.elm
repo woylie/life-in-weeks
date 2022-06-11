@@ -5,6 +5,7 @@ module Types exposing
     , Event
     , EventField(..)
     , FieldOpts
+    , Form
     , Model
     , Msg(..)
     , Period
@@ -17,6 +18,7 @@ module Types exposing
     , categoryFromString
     , categoryToString
     , initialDebounce
+    , settingsToForm
     )
 
 import Color exposing (Color)
@@ -38,7 +40,7 @@ type alias Model =
     , today : Date
     , unit : Unit
     , settings : Settings
-    , form : Settings
+    , form : Form
     }
 
 
@@ -48,6 +50,25 @@ type alias Settings =
     , lifeExpectancy : Int
     , periods : List Period
     , retirementAge : Int
+    }
+
+
+type alias Form =
+    { birthdate : Date
+    , events : List Event
+    , lifeExpectancy : String
+    , periods : List Period
+    , retirementAge : String
+    }
+
+
+settingsToForm : Settings -> Form
+settingsToForm settings =
+    { birthdate = settings.birthdate
+    , events = settings.events
+    , lifeExpectancy = String.fromInt settings.lifeExpectancy
+    , periods = settings.periods
+    , retirementAge = String.fromInt settings.retirementAge
     }
 
 

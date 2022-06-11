@@ -77,6 +77,7 @@ import Types
         , Dates
         , Event
         , EventField(..)
+        , Form
         , Model
         , Msg(..)
         , Period
@@ -184,7 +185,7 @@ getYears unit unitsPerYear today birthdate dates =
         lastYear
 
 
-settingsForm : List Category -> Settings -> Unit -> Html Msg
+settingsForm : List Category -> Form -> Unit -> Html Msg
 settingsForm categories form unit =
     let
         categoryToCheckboxOption : Category -> ( String, Bool )

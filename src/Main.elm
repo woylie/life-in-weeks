@@ -24,6 +24,7 @@ import Types
         ( Category(..)
         , Event
         , EventField(..)
+        , Form
         , Model
         , Msg(..)
         , Period
@@ -32,6 +33,7 @@ import Types
         , categories
         , categoryFromString
         , initialDebounce
+        , settingsToForm
         )
 import View exposing (view)
 
@@ -70,7 +72,7 @@ initialModel =
     , today = Date.fromCalendarDate 2000 Jan 1
     , unit = Weeks
     , settings = initialSettings
-    , form = initialSettings
+    , form = settingsToForm initialSettings
     }
 
 
@@ -124,7 +126,8 @@ update msg model =
             ( { model | today = date }, Cmd.none )
 
         Refresh ->
-            { model | settings = model.form } |> save
+            { model | settings = updateSettings model.form model.settings }
+                |> save
 
         RemoveEvent id ->
             pushDebounceMsg
@@ -210,6 +213,20 @@ updateDebouncer =
     }
 
 
+updateSettings : Form -> Settings -> Settings
+updateSettings form settings =
+    { birthdate = form.birthdate
+    , events = form.events
+    , lifeExpectancy =
+        String.toInt form.lifeExpectancy
+            |> Maybe.withDefault settings.lifeExpectancy
+    , periods = form.periods
+    , retirementAge =
+        String.toInt form.retirementAge
+            |> Maybe.withDefault settings.retirementAge
+    }
+
+
 save : Model -> ( Model, Cmd Msg )
 save model =
     ( model, sendModelToPort model )
@@ -223,28 +240,28 @@ sendModelToPort model =
         |> Ports.storeModel
 
 
-setBirthdate : String -> Settings -> Settings
-setBirthdate s settings =
-    { settings
+setBirthdate : String -> Form -> Form
+setBirthdate s form =
+    { form
         | birthdate =
             s
                 |> Date.fromIsoString
-                |> Result.withDefault settings.birthdate
+                |> Result.withDefault form.birthdate
     }
 
 
-setLifeExpectancy : String -> Settings -> Settings
-setLifeExpectancy s settings =
-    { settings | lifeExpectancy = toIntWithDefault settings.lifeExpectancy s }
+setLifeExpectancy : String -> Form -> Form
+setLifeExpectancy s form =
+    { form | lifeExpectancy = s }
 
 
-setRetirementAge : String -> Settings -> Settings
-setRetirementAge s settings =
-    { settings | retirementAge = toIntWithDefault settings.retirementAge s }
+setRetirementAge : String -> Form -> Form
+setRetirementAge s form =
+    { form | retirementAge = s }
 
 
-addEvent : Settings -> Settings
-addEvent settings =
+addEvent : Form -> Form
+addEvent form =
     let
         insertEvent : List Event -> List Event
         insertEvent events =
@@ -262,23 +279,23 @@ addEvent settings =
                 :: List.reverse events
                 |> List.reverse
     in
-    { settings | events = insertEvent settings.events }
+    { form | events = insertEvent form.events }
 
 
-removeEvent : Int -> Settings -> Settings
-removeEvent id settings =
+removeEvent : Int -> Form -> Form
+removeEvent id form =
     let
         events =
-            List.filter (\event -> event.id /= id) settings.events
+            List.filter (\event -> event.id /= id) form.events
     in
-    { settings | events = events }
+    { form | events = events }
 
 
-addPeriod : Category -> Settings -> Settings
-addPeriod category settings =
+addPeriod : Category -> Form -> Form
+addPeriod category form =
     let
         maxId =
-            settings.periods
+            form.periods
                 |> List.map .id
                 |> List.maximum
                 |> Maybe.withDefault -1
@@ -294,29 +311,29 @@ addPeriod category settings =
             }
 
         newPeriods =
-            (newPeriod :: List.reverse settings.periods)
+            (newPeriod :: List.reverse form.periods)
                 |> List.reverse
                 |> updateColors category
     in
-    { settings | periods = newPeriods }
+    { form | periods = newPeriods }
 
 
-removePeriod : Int -> Settings -> Settings
-removePeriod id settings =
+removePeriod : Int -> Form -> Form
+removePeriod id form =
     let
         category =
-            settings.periods
+            form.periods
                 |> List.filter (\period -> period.id == id)
                 |> List.head
                 |> Maybe.map .category
                 |> Maybe.withDefault Activity
 
         periods =
-            settings.periods
+            form.periods
                 |> List.filter (\period -> period.id /= id)
                 |> updateColors category
     in
-    { settings | periods = periods }
+    { form | periods = periods }
 
 
 updateColors : Category -> List Period -> List Period
@@ -363,8 +380,8 @@ defaultPeriodName category =
             "Acme Corporation"
 
 
-updateEvents : Int -> EventField -> String -> Settings -> Settings
-updateEvents id field value settings =
+updateEvents : Int -> EventField -> String -> Form -> Form
+updateEvents id field value form =
     let
         events =
             List.map
@@ -375,9 +392,9 @@ updateEvents id field value settings =
                     else
                         event
                 )
-                settings.events
+                form.events
     in
-    { settings | events = events }
+    { form | events = events }
 
 
 updateEvent : EventField -> String -> Event -> Event
@@ -395,8 +412,8 @@ updateEvent field value event =
             }
 
 
-updatePeriods : Int -> PeriodField -> String -> Settings -> Settings
-updatePeriods id field value settings =
+updatePeriods : Int -> PeriodField -> String -> Form -> Form
+updatePeriods id field value form =
     let
         periods =
             List.map
@@ -407,9 +424,9 @@ updatePeriods id field value settings =
                     else
                         period
                 )
-                settings.periods
+                form.periods
     in
-    { settings | periods = periods }
+    { form | periods = periods }
 
 
 updatePeriod : PeriodField -> String -> Period -> Period

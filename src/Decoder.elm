@@ -26,6 +26,7 @@ import Types
         , Settings
         , categoryFromString
         , initialDebounce
+        , settingsToForm
         )
 
 
@@ -38,7 +39,7 @@ decoder =
         |> hardcoded (Date.fromCalendarDate 2000 Jan 1)
         |> required "unit" unit
         |> required "settings" settings
-        |> required "settings" settings
+        |> required "settings" (settings |> map settingsToForm)
 
 
 settings : Decoder Settings
