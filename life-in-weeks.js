@@ -9884,6 +9884,7 @@ var $rtfeldman$elm_css$Css$alignSelf = function (fn) {
 		'align-self',
 		fn($rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty));
 };
+var $rtfeldman$elm_css$Css$auto = {cN: 0, c: 0, am: 0, aT: 0, dh: 0, ar: 0, M: 0, E: 0, au: 0, B: 0, a2: 0, az: 0, u: 0, G: 'auto'};
 var $rtfeldman$elm_css$Css$property = F2(
 	function (key, value) {
 		return $rtfeldman$elm_css$Css$Preprocess$AppendProperty(key + (':' + value));
@@ -9908,6 +9909,9 @@ var $rtfeldman$elm_css$VirtualDom$Styled$Node = F3(
 var $rtfeldman$elm_css$VirtualDom$Styled$node = $rtfeldman$elm_css$VirtualDom$Styled$Node;
 var $rtfeldman$elm_css$Html$Styled$node = $rtfeldman$elm_css$VirtualDom$Styled$node;
 var $rtfeldman$elm_css$Html$Styled$button = $rtfeldman$elm_css$Html$Styled$node('button');
+var $rtfeldman$elm_css$Css$color = function (c) {
+	return A2($rtfeldman$elm_css$Css$property, 'color', c.G);
+};
 var $rtfeldman$elm_css$VirtualDom$Styled$Attribute = F3(
 	function (a, b, c) {
 		return {$: 0, a: a, b: b, c: c};
@@ -11370,6 +11374,7 @@ var $rtfeldman$elm_css$Html$Styled$Attributes$css = $rtfeldman$elm_css$Html$Styl
 var $rtfeldman$elm_css$Css$cursor = $rtfeldman$elm_css$Css$prop1('cursor');
 var $author$project$Components$defaultFontFamily = _List_fromArray(
 	['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Helvetica', 'Arial', 'sans-serif']);
+var $rtfeldman$elm_css$Css$display = $rtfeldman$elm_css$Css$prop1('display');
 var $rtfeldman$elm_css$Css$flexEnd = $rtfeldman$elm_css$Css$prop1('flex-end');
 var $rtfeldman$elm_css$Css$stringsToValue = function (list) {
 	return $elm$core$List$isEmpty(list) ? {G: 'none'} : {
@@ -11733,6 +11738,7 @@ var $rtfeldman$elm_css$Css$hex = function (str) {
 	}
 	return $rtfeldman$elm_css$Css$erroneousHex(str);
 };
+var $rtfeldman$elm_css$Css$inlineBlock = {k: 0, G: 'inline-block'};
 var $rtfeldman$elm_css$Css$prop2 = F3(
 	function (key, argA, argB) {
 		return A2($rtfeldman$elm_css$Css$property, key, argA.G + (' ' + argB.G));
@@ -11775,6 +11781,7 @@ var $rtfeldman$elm_css$VirtualDom$Styled$text = function (str) {
 		$elm$virtual_dom$VirtualDom$text(str));
 };
 var $rtfeldman$elm_css$Html$Styled$text = $rtfeldman$elm_css$VirtualDom$Styled$text;
+var $rtfeldman$elm_css$Css$width = $rtfeldman$elm_css$Css$prop1('width');
 var $author$project$Components$button = F2(
 	function (buttonText, msg) {
 		return A2(
@@ -11786,6 +11793,8 @@ var $author$project$Components$button = F2(
 						[
 							$rtfeldman$elm_css$Css$fontSize(
 							$rtfeldman$elm_css$Css$rem(0.75)),
+							$rtfeldman$elm_css$Css$color(
+							$rtfeldman$elm_css$Css$hex('202c31')),
 							$rtfeldman$elm_css$Css$padding(
 							$rtfeldman$elm_css$Css$rem(0.5)),
 							A3(
@@ -11803,6 +11812,8 @@ var $author$project$Components$button = F2(
 							$rtfeldman$elm_css$Css$backgroundColor(
 							$rtfeldman$elm_css$Css$hex('eeeeee')),
 							$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+							$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineBlock),
+							$rtfeldman$elm_css$Css$width($rtfeldman$elm_css$Css$auto),
 							$rtfeldman$elm_css$Css$alignSelf($rtfeldman$elm_css$Css$flexEnd)
 						])),
 					$rtfeldman$elm_css$Html$Styled$Events$onClick(msg)
@@ -11910,9 +11921,6 @@ var $author$project$View$actionButtons = A2(
 		]));
 var $rtfeldman$elm_css$Css$ChUnits = 0;
 var $rtfeldman$elm_css$Css$ch = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, 0, 'ch');
-var $rtfeldman$elm_css$Css$color = function (c) {
-	return A2($rtfeldman$elm_css$Css$property, 'color', c.G);
-};
 var $rtfeldman$elm_css$Html$Styled$footer = $rtfeldman$elm_css$Html$Styled$node('footer');
 var $rtfeldman$elm_css$Html$Styled$a = $rtfeldman$elm_css$Html$Styled$node('a');
 var $rtfeldman$elm_css$Css$Preprocess$ExtendSelector = F2(
@@ -12535,7 +12543,6 @@ var $rtfeldman$elm_css$Css$calc = F3(
 				[calcs]));
 		return {bG: 0, am: 0, p: 0, aF: 0, ar: 0, M: 0, as: 0, at: 0, X: 0, Y: 0, E: 0, ay: 0, G: value};
 	});
-var $rtfeldman$elm_css$Css$display = $rtfeldman$elm_css$Css$prop1('display');
 var $author$project$View$dotSize = 4;
 var $noahzgordon$elm_color_extra$Color$Blending$clampChannel = A2($elm$core$Basics$clamp, 0, 1);
 var $noahzgordon$elm_color_extra$Color$Blending$calcChanel = F6(
@@ -12631,7 +12638,6 @@ var $author$project$View$squareSize = 6;
 var $rtfeldman$elm_css$Html$Styled$Attributes$title = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('title');
 var $rtfeldman$elm_css$Css$top = $rtfeldman$elm_css$Css$prop1('top');
 var $avh4$elm_color$Color$white = A4($avh4$elm_color$Color$RgbaSpace, 255 / 255, 255 / 255, 255 / 255, 1.0);
-var $rtfeldman$elm_css$Css$width = $rtfeldman$elm_css$Css$prop1('width');
 var $author$project$View$column = function (_v0) {
 	var endOfUnit = _v0.bO;
 	var periodColors = _v0.cc;
