@@ -40,7 +40,9 @@ import Css
         , int
         , lineHeight
         , margin2
+        , marginLeft
         , maxWidth
+        , normal
         , padding
         , pointer
         , property
@@ -169,9 +171,7 @@ checkboxes labelText msg options =
                 ]
             ]
             [ text labelText ]
-        , div
-            [ css [ displayFlex, flexWrap wrap, property "gap" "0.5rem" ] ]
-            (List.map (checkbox msg) options)
+        , div [] (List.map (checkbox msg) options)
         ]
 
 
@@ -181,6 +181,7 @@ checkbox msg ( option, isChecked ) =
         [ css
             [ fontSize (rem 0.75)
             , fontFamilies defaultFontFamily
+            , marginLeft (rem 0.5)
             ]
         ]
         [ Html.input
@@ -298,6 +299,7 @@ button buttonText msg =
     Html.button
         [ css
             [ fontSize (rem 0.75)
+            , fontWeight normal
             , color (hex "202c31")
             , padding (rem 0.5)
             , border3 (px 1) solid (hex "bbbbbb")
@@ -309,6 +311,10 @@ button buttonText msg =
             , display inlineBlock
             , width auto
             , alignSelf flexEnd
+            , hover
+                [ color (hex "202c31")
+                , backgroundColor (hex "eeeeee")
+                ]
             ]
         , onClick msg
         ]
