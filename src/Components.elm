@@ -18,6 +18,7 @@ import Css
         ( Style
         , alignItems
         , alignSelf
+        , auto
         , backgroundColor
         , block
         , border3
@@ -35,6 +36,7 @@ import Css
         , fontWeight
         , hex
         , hover
+        , inlineBlock
         , int
         , lineHeight
         , margin2
@@ -296,6 +298,7 @@ button buttonText msg =
     Html.button
         [ css
             [ fontSize (rem 0.75)
+            , color (hex "202c31")
             , padding (rem 0.5)
             , border3 (px 1) solid (hex "bbbbbb")
             , borderRadius (px 4)
@@ -303,6 +306,8 @@ button buttonText msg =
             , margin2 (rem 0.375) (rem 0)
             , backgroundColor (hex "eeeeee")
             , cursor pointer
+            , display inlineBlock
+            , width auto
             , alignSelf flexEnd
             ]
         , onClick msg
