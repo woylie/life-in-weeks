@@ -18,7 +18,7 @@
             "elm-community/list-extra": "8.7.0",
             "justinmimbs/date": "4.0.1",
             "noahzgordon/elm-color-extra": "1.0.2",
-            "rtfeldman/elm-css": "17.1.1"
+            "rtfeldman/elm-css": "18.0.0"
         },
         "indirect": {
             "elm/bytes": "1.0.8",
