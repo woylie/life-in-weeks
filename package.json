@@ -14,7 +14,7 @@
   "devDependencies": {
     "elm": "^0.19.1-6",
     "elm-analyse": "^0.16.5",
-    "elm-format": "^0.8.7",
+    "elm-format": "^0.8.8",
     "elm-live": "^4.0.2"
   }
 }
